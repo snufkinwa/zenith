@@ -6,8 +6,8 @@ export default function LeftCurlyBracket() {
       <defs>
         <linearGradient id="gradient2" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" style={{stopColor:"#0bc39c", stopOpacity:1}} />
-          <stop offset="30%" style={{stopColor:"#124dff", stopOpacity:1}} />
-          <stop offset="80%" style={{stopColor:"#33cc99", stopOpacity:1}} />
+          <stop offset="17%" style={{stopColor:"#124dff", stopOpacity:1}} />
+          <stop offset="100%" style={{stopColor:"#33cc99", stopOpacity:1}} />
         </linearGradient>
       </defs>
       <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">

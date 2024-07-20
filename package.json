@@ -18,7 +18,7 @@
     "@uiw/react-codemirror": "^4.23.0",
     "compile-run": "^2.3.4",
     "firebase": "^10.12.3",
-    "framer-motion": "^11.3.7",
+    "framer-motion": "^11.3.8",
     "langchain": "^0.2.10",
     "next": "14.2.5",
     "react": "^18",
