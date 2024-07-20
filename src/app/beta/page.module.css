@@ -1,0 +1,42 @@
+.main {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.maincontainer {
+  height: 100vh;
+  width: 100%;
+  display: inherit;
+  align-items: inherit;
+  justify-content: center;
+  border-right: #ffffff70 solid 5px;
+}
+
+.codecontainer {
+  height: 100vh;
+  width: 60%;
+  display: inherit;
+  align-items: inherit;
+  flex-direction: column;
+  justify-content: inherit;
+}
+
+.editor {
+  height: 70%;
+  width: 100%;
+  display: inherit;
+  align-items: inherit;
+  justify-content: center;
+}
+
+.terminal {
+  height: 30%;
+  width: 100%;
+  display: inherit;
+  align-items: inherit;
+  justify-content: center;
+  border-top: #ffffff70 solid 5px;
+}

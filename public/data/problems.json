@@ -1,0 +1,202 @@
+[
+  {
+    "id": 1,
+    "title": "Two Sum",
+    "description": "Given an array of integer nums and an integer target, return indices of the two numbers such that they add up to the target. You may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order.",
+    "examples": [
+      {
+        "input": "nums = [2, 7, 11, 15], target = 9",
+        "output": "[0, 1]",
+        "explanation": "Because nums[0] + nums[1] == 9, we return [0, 1]."
+      },
+      {
+        "input": "nums = [3, 2, 4], target = 6",
+        "output": "[1, 2]",
+        "explanation": "Because nums[1] + nums[2] == 6, we return [1, 2]."
+      },
+      {
+        "input": "nums = [3, 3], target = 6",
+        "output": "[0, 1]",
+        "explanation": "Because nums[0] + nums[1] == 6, we return [0, 1]."
+      }
+    ],
+    "constraints": "2 <= nums.length <= 104\n-109 <= nums[i] <= 109\n-109 <= target <= 109"
+  },
+  {
+    "id": 2,
+    "title": "Palidrome Number",
+    "description": "Given an integer x, return true if x is a palindrome, and false otherwise.",
+    "examples": [
+      {
+        "input": "x = 121",
+        "output": "true",
+        "explanation": "121 reads as 121 from left to right and from right to left."
+      },
+      {
+        "input": "x = -121",
+        "output": "false",
+        "explanation": "From left to right, it reads -121. From right to left, it becomes 121-. Therefore it is not a palindrome."
+      },
+      {
+        "input": "x = 10",
+        "output": "false",
+        "explanation": "Reads 01 from right to left. Therefore it is not a palindrome."
+      }
+    ],
+    "constraints": "-2³¹ <= x <= 2³¹ - 1"
+  },
+  {
+    "id": 3,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 4,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 5,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 6,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 7,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 8,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 19,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 10,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 11,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 12,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 13,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 14,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 15,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 16,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 17,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 18,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 19,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 20,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 21,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 22,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 23,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  },
+  {
+    "id": 24,
+    "title": "Problem 1",
+    "description": "Write a Python function to find the maximum value in a list.",
+    "stdin": "[1, 2, 3, 4, 5]",
+    "stdout": "5"
+  }
+]

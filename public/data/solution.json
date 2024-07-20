@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "solution": "from typing import List\n\nclass Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        for i in range(len(nums)):\n            for j in range(i + 1, len(nums)):\n                if nums[i] + nums[j] == target:\n                    return [i, j]\n\nsolution = Solution()\nnums = [2, 7, 11, 15]\ntarget = 9\nresult = solution.twoSum(nums, target)\nprint(result)"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  },
+  {
+    "id": 2,
+    "solution": "P"
+  }
+]
