@@ -53,7 +53,7 @@ const Waitlist: React.FC = () => {
       opacity: 1, 
       transition: { 
         duration: 0.8, 
-        ease: [0.42, 0, 0.58, 1] // Custom cubic-bezier for a smoother effect
+        ease: [0.42, 0, 0.58, 1] 
       } 
     },
     closed: (isLeft: boolean) => ({
@@ -61,7 +61,7 @@ const Waitlist: React.FC = () => {
       opacity: 1,
       transition: { 
         duration: 0.8, 
-        ease: [0.42, 0, 0.58, 1] // Custom cubic-bezier for a smoother effect
+        ease: [0.42, 0, 0.58, 1] 
       }
     })
   };
@@ -73,7 +73,7 @@ const Waitlist: React.FC = () => {
       transition: { 
         delay: 0.3, 
         duration: 0.8, 
-        ease: [0.42, 0, 0.58, 1] // Custom cubic-bezier for a smoother effect
+        ease: [0.42, 0, 0.58, 1] 
       } 
     },
     hidden: { 
@@ -81,7 +81,7 @@ const Waitlist: React.FC = () => {
       scale: 0.8, 
       transition: { 
         duration: 0.8, 
-        ease: [0.42, 0, 0.58, 1] // Custom cubic-bezier for a smoother effect
+        ease: [0.42, 0, 0.58, 1] 
       } 
     }
   };
