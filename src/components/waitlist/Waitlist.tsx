@@ -41,19 +41,21 @@ const Waitlist: React.FC = () => {
         },
         body: JSON.stringify({ email }),
       });
-
+  
       const data = await response.json();
+  
       if (response.ok) {
-        setMessage('Successfully added to the waitlist!');
+        setMessage(data.message);
         setEmail('');
       } else {
-        setMessage(data.message);
+        throw new Error(data.message || 'An error occurred');
       }
     } catch (error) {
-      console.error('Error adding to waitlist: ', error);
+      console.error('Error adding to waitlist:', error);
       setMessage('Failed to join the waitlist. Please try again.');
     }
   };
+  
 
   const bracketVariants = {
     open: { 
@@ -144,7 +146,7 @@ const Waitlist: React.FC = () => {
                     type="email"
                     placeholder="Your Email"
                     value={email}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                   <button type="submit">Join Waitlist</button>
