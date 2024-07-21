@@ -1,7 +1,6 @@
-// src/app/api/waitlist/route.ts
-import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@config/firebase/utils';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {

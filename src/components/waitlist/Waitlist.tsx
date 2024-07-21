@@ -42,7 +42,12 @@ const Waitlist: React.FC = () => {
         body: JSON.stringify({ email }),
       });
   
-      const data = await response.json();
+    
+      const rawData = await response.text();
+      console.log('Raw response data:', rawData);
+  
+  
+      const data = JSON.parse(rawData);
   
       if (response.ok) {
         setMessage(data.message);
@@ -55,6 +60,7 @@ const Waitlist: React.FC = () => {
       setMessage('Failed to join the waitlist. Please try again.');
     }
   };
+  
   
 
   const bracketVariants = {
