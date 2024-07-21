@@ -152,9 +152,9 @@ const Waitlist: React.FC = () => {
             </motion.div>
           </div>
           <div className={styles.avatars}>
-            <li><img src="https://randomuser.me/api/portraits/men/62.jpg" /></li>
-            <li><img src="https://xsgames.co/randomusers/assets/avatars/female/60.jpg" /></li>
-            <li><img src="https://xsgames.co/randomusers/assets/avatars/male/76.jpg" /></li>
+            <li><img src="https://randomuser.me/api/portraits/men/62.jpg" alt="."   /></li>
+            <li><img src="https://xsgames.co/randomusers/assets/avatars/female/60.jpg" alt="." /></li>
+            <li><img src="https://xsgames.co/randomusers/assets/avatars/male/76.jpg" alt="." /></li>
             <div className={styles.avatarsText}>
               <span>Coding challenges reimagined.</span>
               <span>Join our beta!</span>
