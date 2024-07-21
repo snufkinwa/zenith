@@ -43,7 +43,7 @@ const Waitlist: React.FC = () => {
       setEmail('');
     } catch (error) {
       console.error('Error adding to waitlist: ', error);
-      setMessage('Failed to join the waitlist. \nPlease try again.');
+      setMessage('Failed to join the waitlist. Please try again.');
     }
   };
 
