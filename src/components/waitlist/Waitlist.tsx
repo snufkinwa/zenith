@@ -31,16 +31,24 @@ const Waitlist: React.FC = () => {
     }
   }, [message]);
 
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, 'waitlist'), {
-        email,
-        timestamp: serverTimestamp(),
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
       });
-      setMessage('Successfully added to the waitlist!');
-      setEmail('');
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('Successfully added to the waitlist!');
+        setEmail('');
+      } else {
+        setMessage(data.message);
+      }
     } catch (error) {
       console.error('Error adding to waitlist: ', error);
       setMessage('Failed to join the waitlist. Please try again.');
