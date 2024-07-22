@@ -2,8 +2,6 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 import styles from './Waitlist.module.css';
-import { db } from '@config/firebase/utils';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 import { BsTwitterX } from "react-icons/bs";
 import { SiDiscord } from "react-icons/si";
