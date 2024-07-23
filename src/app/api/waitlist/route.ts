@@ -6,21 +6,6 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY!
 )
 
-export async function GET(request: NextRequest) {
-  try {
-    const { data, error } = await supabase
-      .from('waitlist')
-      .select('*')
-
-    if (error) throw error
-
-    return NextResponse.json({ entries: data }, { status: 200 })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-}
-
-
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json()
@@ -28,7 +13,6 @@ export async function POST(request: NextRequest) {
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
-
 
     const { data, error } = await supabase
     .from('waitlist')
@@ -43,10 +27,10 @@ export async function POST(request: NextRequest) {
     }
     throw error;
   }
-
     return NextResponse.json({ message: 'Successfully joined the waitlist!' }, { status: 200 })
-  } catch (error: any) {
-    console.error('Server error:', error)
-    return NextResponse.json({ error: error.message || 'An error occurred' }, { status: 500 })
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    } 
   }
 }

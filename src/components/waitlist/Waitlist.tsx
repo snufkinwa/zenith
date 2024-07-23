@@ -31,8 +31,8 @@ const Waitlist: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setMessage(''); 
-  
+    setMessage('');
+
     try {
       const response = await fetch('/api/waitlist', {
         method: 'POST',
