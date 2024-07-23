@@ -16,23 +16,17 @@ export function middleware(req: NextRequest) {
   }
 
   if (pathname.startsWith('/api/waitlist')) {
-    const requestHeaders = new Headers(req.headers);
     const origin = req.headers.get('origin');
-    
     if (origin && !allowedOrigins.includes(origin)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
-    
-    const apiKey = requestHeaders.get('x-api-key');
+
+    const apiKey = req.headers.get('x-api-key');
     if (apiKey !== API_KEY) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    });
+    return NextResponse.next();
   }
 
   return NextResponse.next();
