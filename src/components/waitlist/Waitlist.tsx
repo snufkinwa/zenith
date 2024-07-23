@@ -31,13 +31,21 @@ const Waitlist: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setMessage(''); 
+    setMessage('');
+  
+    const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+  
+    if (!apiKey) {
+      setMessage('API key is missing. Please contact support.');
+      return;
+    }
   
     try {
       const response = await fetch('/api/waitlist', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-api-key': apiKey, // Add custom header
         },
         body: JSON.stringify({ email }),
       });

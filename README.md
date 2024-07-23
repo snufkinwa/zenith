@@ -19,7 +19,7 @@ Zenith is a coding problem platform that leverages AI and advanced metrics to ch
 
 - **Frontend**: React, TypeScript, CSS
 - **Backend**: Next.js, TypeScript
-- **Database**: Firebase
+- **Database**: <s>Firebase</s> Supabase
 - **AI**: OpenAI
 
 ## TODO
