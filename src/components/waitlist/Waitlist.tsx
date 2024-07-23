@@ -31,6 +31,8 @@ const Waitlist: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setMessage(''); 
+  
     try {
       const response = await fetch('/api/waitlist', {
         method: 'POST',
@@ -40,22 +42,17 @@ const Waitlist: React.FC = () => {
         body: JSON.stringify({ email }),
       });
   
-    
-      const rawData = await response.text();
-      console.log('Raw response data:', rawData);
-  
-  
-      const data = JSON.parse(rawData);
+      const data = await response.json();
   
       if (response.ok) {
-        setMessage(data.message);
+        setMessage(data.message || 'Successfully joined the waitlist!');
         setEmail('');
       } else {
-        throw new Error(data.message || 'An error occurred');
+        throw new Error(data.error || 'An error occurred');
       }
     } catch (error) {
       console.error('Error adding to waitlist:', error);
-      setMessage('Failed to join the waitlist. Please try again.');
+      setMessage(error instanceof Error ? error.message : 'Failed to join the waitlist. Please try again.');
     }
   };
   
@@ -112,7 +109,7 @@ const Waitlist: React.FC = () => {
           </div>
           <h1 className={styles.heroTitle}>Future-Proof Your Coding Skills</h1>
           <p className={styles.heroSubtitle}>
-            <span>Harness the power of AI and metrics to elevate your coding skills.</span>
+            <span>Harness the power of AI and data-driven insights to elevate your coding skills.</span>
             <span>Join our waitlist and prepare for the future of software engineering.</span>
           </p>
           <div className={styles.heroForm}>

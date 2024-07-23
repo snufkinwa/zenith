@@ -1,36 +1,52 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@config/firebase/utils';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { createClient } from '@supabase/supabase-js'
+import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(req: NextRequest) {
-  console.log('Request received:', req.method, req.url);
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+)
 
+export async function GET(request: NextRequest) {
   try {
-    const { email } = await req.json();
-    
+    const { data, error } = await supabase
+      .from('waitlist')
+      .select('*')
+
+    if (error) throw error
+
+    return NextResponse.json({ entries: data }, { status: 200 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
+
+
+export async function POST(request: NextRequest) {
+  try {
+    const { email } = await request.json()
+
     if (!email) {
-      console.log('Email is required but not provided');
-      return NextResponse.json({ message: 'Email is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Request timed out')), 10000) // 10 seconds timeout
-    );
 
-    const addDocPromise = addDoc(collection(db, 'waitlist'), {
-      email,
-      timestamp: serverTimestamp(),
-    });
+    const { data, error } = await supabase
+    .from('waitlist')
+    .insert([{ email }]);
+  
+  if (error) {
+    if (error.code === '23505') { 
+      return NextResponse.json(
+        { error: 'This email is already on the waitlist.' }, 
+        { status: 409 } 
+      );
+    }
+    throw error;
+  }
 
-    await Promise.race([addDocPromise, timeoutPromise]);
-
-    console.log('Successfully added to the waitlist');
-    return NextResponse.json({ message: 'Successfully added to the waitlist!' }, { status: 200 });
-
-  } catch (error) {
-    const err = error as Error;
-    console.error('Error adding to waitlist:', err.message || err);
-    const status = err.message === 'Request timed out' ? 504 : 500;
-    return NextResponse.json({ message: 'Failed to join the waitlist. Please try again.' }, { status });
+    return NextResponse.json({ message: 'Successfully joined the waitlist!' }, { status: 200 })
+  } catch (error: any) {
+    console.error('Server error:', error)
+    return NextResponse.json({ error: error.message || 'An error occurred' }, { status: 500 })
   }
 }
