@@ -1,21 +1,20 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServerClient } from '@/utils/supabaseServerClient';
 
-export default async function POST(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    try {
-      const { error } = await supabaseServerClient.auth.signOut();
+export async function POST(req: NextRequest) {
+  if (req.method !== 'POST') {
+    return new NextResponse('Method Not Allowed', { status: 405, headers: { 'Allow': 'POST' } });
+  }
 
-      if (error) {
-        return res.status(401).json({ error: error.message });
-      }
+  try {
+    const { error } = await supabaseServerClient.auth.signOut();
 
-      res.status(200).json({ message: 'Signed out successfully' });
-    } catch (error) {
-      res.status(500).json({ error: 'Internal Server Error' });
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
     }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+
+    return NextResponse.json({ message: 'Signed out successfully' }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
