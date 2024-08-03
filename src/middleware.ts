@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 
 const allowedOrigins = [
   'https://zenith-delta.vercel.app',
@@ -8,11 +9,18 @@ const allowedOrigins = [
 
 const API_KEY = process.env.API_KEY;
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req, res });
 
   if (pathname.startsWith('/beta')) {
-    return NextResponse.redirect(new URL('/', req.url));
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const redirectUrl = new URL('/beta', req.url);
+      redirectUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
   }
 
   if (pathname.startsWith('/api/waitlist')) {
@@ -33,5 +41,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/beta', '/beta/:path*', '/((?!api|_next/static|_next/image|favicon.ico).*)',],
+  matcher: ['/beta', '/beta/:path*', '/api/waitlist', '/api/waitlist/:path*'],
 };

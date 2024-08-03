@@ -1,18 +1,14 @@
 .main {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 100vh;
+  color: black;
+
 }
 
 .maincontainer {
-  height: 100vh;
   width: 100%;
-  display: inherit;
-  align-items: inherit;
+  height: 100vh;
   justify-content: center;
-  border-right: #ffffff70 solid 5px;
+ 
 }
 
 .codecontainer {

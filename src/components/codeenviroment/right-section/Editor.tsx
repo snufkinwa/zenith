@@ -20,7 +20,7 @@ const Editor: React.FC<EditorProps> = ({ input, setInput }) => {
       <div className={styles.editorHeader}></div>
       <CodeMirror
         value={input}
-        height="63vh"
+        height="51vh"
         basicSetup={{
           lineNumbers: false,
           foldGutter: false,

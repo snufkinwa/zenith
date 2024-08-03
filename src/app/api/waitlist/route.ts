@@ -1,10 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabaseServerClient } from '@utils/supabaseServerClient' 
 import { NextRequest, NextResponse } from 'next/server'
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-)
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseServerClient
     .from('waitlist')
     .insert([{ email }]);
   

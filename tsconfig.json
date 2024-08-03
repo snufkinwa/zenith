@@ -21,12 +21,14 @@
       "@/*": ["./src/*"],
       "@public/*": ["./public/*"],
       "/public/*": ["./public/*"],
+      "@/components/*": ["./src/components/*"],
       "@components/*": ["./src/components/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@config/*": ["./src/config/*"],
       "@containers/*": ["./src/containers/*"],
       "@styles/*": ["./src/styles/*"],
-    
+      "@utils/*": ["./src/utils/*"],
+      "@/utils/*": ["./src/utils/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/**/*"],

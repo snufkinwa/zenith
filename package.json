@@ -13,6 +13,9 @@
     "@codemirror/lang-java": "^6.0.1",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-python": "^6.1.6",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/ssr": "^0.4.0",
     "@supabase/supabase-js": "^2.44.4",
     "@uiw/codemirror-theme-tokyo-night": "^4.23.0",
     "@uiw/codemirror-theme-tokyo-night-day": "^4.23.0",
@@ -23,7 +26,8 @@
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
-    "react-icons": "^5.2.1"
+    "react-icons": "^5.2.1",
+    "react-resizable-panels": "^2.0.22"
   },
   "devDependencies": {
     "@types/node": "^20",
