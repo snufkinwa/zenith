@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseServerClient } from '@/utils/supabaseServerClient';
+import { createClient } from '@/utils/supabase/supabaseServerClient';
 
 async function sendMagicLinks(): Promise<void> {
-  const { data: waitlist, error } = await supabaseServerClient
+  const supabase = createClient();
+  const { data: waitlist, error } = await supabase
     .from('waitlist')
     .select('email');
 
@@ -13,7 +14,7 @@ async function sendMagicLinks(): Promise<void> {
 
   for (const entry of waitlist) {
     const { email } = entry;
-    const { error: authError } = await supabaseServerClient.auth.signInWithOtp({
+    const { error: authError } = await supabase.auth.signInWithOtp({
       email,
       options: {
         shouldCreateUser: false,
