@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Editor from "./right-section/Editor";
 import Terminal from "./terminal";
 import ProblemList from "./left-section/question/ProblemList";
 import ProblemDisplay from "./left-section/question/ProblemDisplay";
 import BottomModal from "./BottomModal";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { ChevronLeft, ChevronRight, Code, BookOpen } from "lucide-react";
+import { ChevronLeft, BookOpen } from "lucide-react";
 
 interface Problem {
   id: string;
@@ -20,17 +21,6 @@ interface LanguageOption {
   version: string;
 }
 
-interface CompileResult {
-  run?: {
-    output?: string;
-    stderr?: string;
-  };
-  compile?: {
-    output?: string;
-    stderr?: string;
-  };
-}
-
 const languageOptions: { [key: string]: LanguageOption } = {
   python: { language: "python", version: "3.10.0" },
   java: { language: "java", version: "15.0.2" },
@@ -39,17 +29,43 @@ const languageOptions: { [key: string]: LanguageOption } = {
 };
 
 const CodeEnvironment: React.FC<{ problems: Problem[] }> = ({ problems }) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
   const [input, setInput] = useState("");
-  const [output, setOutput] = useState<string>("");
-  const [consoleOutput, setConsoleOutput] = useState<string>("");
-  const [errors, setErrors] = useState<string>("");
+  const [output, setOutput] = useState("");
+  const [consoleOutput, setConsoleOutput] = useState("");
+  const [errors, setErrors] = useState("");
   const [language, setLanguage] = useState("python");
   const [loading, setLoading] = useState(false);
   const [testLoading, setTestLoading] = useState(false);
   const [isProblemPanelCollapsed, setIsProblemPanelCollapsed] = useState(false);
 
-  // Separate function for running code (from editor)
+  // Handle URL parameter for problem selection
+  useEffect(() => {
+    const problemId = searchParams.get('problem');
+    
+    if (problemId && problems.length > 0) {
+      // Find problem by ID
+      const problemFromUrl = problems.find(p => p.id === problemId);
+      if (problemFromUrl) {
+        setSelectedProblem(problemFromUrl);
+        return;
+      }
+    }
+    
+    // Fallback: select first problem if none selected and no URL param
+    if (!selectedProblem && problems.length > 0) {
+      const firstProblem = problems[0];
+      setSelectedProblem(firstProblem);
+      // Update URL to reflect the selected problem
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set('problem', firstProblem.id);
+      router.replace(newUrl.pathname + newUrl.search, { scroll: false });
+    }
+  }, [searchParams, problems, selectedProblem, router]);
+
   const runCode = async () => {
     setLoading(true);
     setOutput("");
@@ -74,76 +90,53 @@ const CodeEnvironment: React.FC<{ problems: Problem[] }> = ({ problems }) => {
         body: JSON.stringify(requestData),
       });
 
-      const result: CompileResult = await res.json();
-      
-      // Handle successful execution
+      const result = await res.json();
+
       if (result?.run?.output) {
         setOutput(result.run.output);
         setConsoleOutput(`Code executed successfully at ${new Date().toLocaleTimeString()}\nLanguage: ${language}\n${result.run.output}`);
+        setErrors("");
       } else {
         setOutput("No output returned.");
-        setConsoleOutput(`Code executed at ${new Date().toLocaleTimeString()}\nLanguage: ${language}\nNo output returned.`);
+        setConsoleOutput("No output returned.");
+        setErrors("");
       }
 
       // Handle compilation errors
-      if (result?.compile && typeof result.compile.stderr === "string") {
-        setErrors(`Compilation Error:\n${result.compile.stderr}`);
-        setConsoleOutput(prev => `${prev}\n\nCompilation Error:\n${result.compile?.stderr}`);
+      if (result?.compile?.stderr) {
+        setErrors(result.compile.stderr);
+        setConsoleOutput(prev => `${prev}\n\nCompilation Error:\n${result.compile.stderr}`);
       }
 
       // Handle runtime errors
-      if (result?.run && typeof result.run.stderr === "string") {
-        setErrors(prev => `${prev}\nRuntime Error:\n${result.run && result.run.stderr ? result.run.stderr : ''}`);
-        setConsoleOutput(prev => `${prev}\n\nRuntime Error:\n${result.run && result.run.stderr ? result.run.stderr : ''}`);
+      if (result?.run?.stderr) {
+        setErrors(result.run.stderr);
+        setConsoleOutput(prev => `${prev}\n\nRuntime Error:\n${result.run.stderr}`);
       }
 
     } catch (error) {
-      const errorMessage = `Network/API Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      const errorMessage = `Execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+      setOutput(errorMessage);
+      setConsoleOutput(errorMessage);
       setErrors(errorMessage);
-      setConsoleOutput(`Error at ${new Date().toLocaleTimeString()}\n${errorMessage}`);
-      setOutput("Failed to execute code. Check console for details.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Separate function for running test cases
-  const runTestCases = async () => {
+  const runTests = async () => {
     setTestLoading(true);
-    setConsoleOutput(prev => `${prev}\n\n--- Running Test Cases at ${new Date().toLocaleTimeString()} ---`);
-    
     try {
-      // This would typically run against predefined test cases
-      // For now, we'll simulate test case execution
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Mock test implementation - replace with actual test logic
+      const testResults = "Test 1: PASSED\nTest 2: PASSED\nTest 3: FAILED - Expected 5, got 4\nOverall: 2/3 tests passed";
       
-      const testResults = `Test Case 1: PASSED ✓
-Input: [2,7,11,15], target = 9
-Expected: [0,1]
-Output: [0,1]
-Time: 0.001s
-
-Test Case 2: PASSED ✓
-Input: [3,2,4], target = 6
-Expected: [1,2]
-Output: [1,2]
-Time: 0.001s
-
-Test Case 3: FAILED ✗
-Input: [3,3], target = 6
-Expected: [0,1]
-Output: [1,0]
-Time: 0.002s
-
-Summary: 2/3 test cases passed`;
-
-      setConsoleOutput(prev => `${prev}\n${testResults}`);
+      setConsoleOutput(testResults);
       setOutput(testResults);
-      
+      setErrors("");
     } catch (error) {
       const errorMessage = `Test execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      setErrors(prev => `${prev}\n${errorMessage}`);
-      setConsoleOutput(prev => `${prev}\n${errorMessage}`);
+      setErrors(errorMessage);
+      setConsoleOutput(errorMessage);
     } finally {
       setTestLoading(false);
     }
@@ -155,6 +148,11 @@ Summary: 2/3 test cases passed`;
     setOutput("");
     setConsoleOutput("");
     setErrors("");
+    
+    // Update URL to reflect the selected problem
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set('problem', problem.id);
+    router.replace(newUrl.pathname + newUrl.search, { scroll: false });
   };
 
   return (
@@ -178,13 +176,11 @@ Summary: 2/3 test cases passed`;
                 <div className="flex-1 overflow-auto">
                   <div className="p-6 pr-16"> {/* Extra right padding for button */}
                     <div className="mb-6">
-                              <ProblemDisplay 
-  problem={selectedProblem}
-  className=""
-/>
-
+                      <ProblemDisplay 
+                        problem={selectedProblem}
+                        className=""
+                      />
                     </div>
-                    
 
                     {/* Problem List Component */}
                     <div className="mt-8 border-t pt-6">
@@ -214,17 +210,15 @@ Summary: 2/3 test cases passed`;
               <BookOpen size={18} />
             </button>
             
-            <div className="writing-mode-vertical text-xs text-gray-500 transform rotate-90 mt-8">
-              Problem
+            <div className="transform rotate-90 text-xs text-gray-500 whitespace-nowrap origin-center mt-8">
+              Problems
             </div>
           </div>
         )}
-        
-        {/* Right Panel - Code & Terminal */}
+
+        {/* Right Panel - Code Editor and Terminal */}
         <Panel minSize={30}>
           <div className="h-full flex flex-col bg-gray-50 relative">
-
-            
             {/* Editor Section - Fixed 60% height */}
             <div className="h-3/5 bg-white border-l border-gray-200">
               <Editor 
@@ -246,7 +240,7 @@ Summary: 2/3 test cases passed`;
                 consoleOutput={consoleOutput}
                 errors={errors}
                 runCode={runCode}
-                runTestCases={runTestCases}
+                runTestCases={runTests}
                 loading={loading}
                 testLoading={testLoading}
               />
@@ -254,8 +248,6 @@ Summary: 2/3 test cases passed`;
           </div>
         </Panel>
       </PanelGroup>
-      
-      {/* Bottom Modal Component - Outside PanelGroup */}
       <BottomModal />
     </div>
   );

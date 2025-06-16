@@ -2,9 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Staatliches&display=swap');
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
+--background: 0 0% 0%;
+
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;

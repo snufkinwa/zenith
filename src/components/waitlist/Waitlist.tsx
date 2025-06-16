@@ -1,187 +1,714 @@
-'use client';
+"use client"
 
-import { useState, useEffect, FormEvent } from 'react';
-import styles from './Waitlist.module.css';
+import {
+  Brain,
+  Code,
+  Search,
+  Timer,
+  PenTool,
+  Lightbulb,
+  BookOpen,
+  Highlighter,
+  Check,
+  Star,
+  Twitter,
+  MessageCircle,
+  Linkedin,
+  ArrowRight,
+  ChevronDown,
+  TrendingUp,
+  Shield,
+  Users
+} from "lucide-react"
+import { useState, useEffect } from "react"
 
-import { BsTwitterX } from "react-icons/bs";
-import { SiDiscord } from "react-icons/si";
-import { SiLinkedin } from "react-icons/si";
+// UI Components
+type ButtonSize = "sm" | "default" | "lg";
+type ButtonVariant = "default" | "outline";
 
-import Logo from '@/container/landing-page/ui/logo';
-import LeftCurlyBracket from './left-curly';
-import RightCurlyBracket from './right-curly';
-import { motion, AnimatePresence } from 'framer-motion';
-
-const Waitlist: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
-  const [isMessageVisible, setIsMessageVisible] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (message) {
-      setIsMessageVisible(true);
-      const timer = setTimeout(() => {
-        setIsMessageVisible(false);
-        setMessage(''); 
-      }, 5000); 
-
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setMessage('');
-
-    try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        setMessage(data.message || 'Successfully joined the waitlist!');
-        setEmail('');
-      } else {
-        throw new Error(data.error || 'An error occurred');
-      }
-    } catch (error) {
-      console.error('Error adding to waitlist:', error);
-      setMessage(error instanceof Error ? error.message : 'Failed to join the waitlist. Please try again.');
-    }
-  };
-  
-  
-
-  const bracketVariants = {
-    open: { 
-      x: 0, 
-      opacity: 1, 
-      transition: { 
-        duration: 0.8, 
-        ease: [0.42, 0, 0.58, 1] 
-      } 
-    },
-    closed: (isLeft: boolean) => ({
-      x: isLeft ? '50%' : '-50%',
-      opacity: 1,
-      transition: { 
-        duration: 0.8, 
-        ease: [0.42, 0, 0.58, 1] 
-      }
-    })
-  };
-  
-  const formVariants = {
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
-      transition: { 
-        delay: 0.3, 
-        duration: 0.8, 
-        ease: [0.42, 0, 0.58, 1] 
-      } 
-    },
-    hidden: { 
-      opacity: 0, 
-      scale: 0.8, 
-      transition: { 
-        duration: 0.8, 
-        ease: [0.42, 0, 0.58, 1] 
-      } 
-    }
-  };
-  
-  
-  
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.heroContainer}>
-        <div className={styles.heroContent}>
-          <div className={styles.logoContainer}>
-            <Logo />
-          </div>
-          <h1 className={styles.heroTitle}>Future-Proof Your Coding Skills</h1>
-          <p className={styles.heroSubtitle}>
-            <span>Harness the power of AI and data-driven insights to elevate your coding skills.</span>
-            <span>Join our waitlist and prepare for the future of software engineering.</span>
-          </p>
-          <div className={styles.heroForm}>
-            <motion.div
-              layout
-              variants={bracketVariants}
-              custom={true}
-              animate={isMessageVisible ? 'closed' : 'open'}
-            >
-              <LeftCurlyBracket />
-            </motion.div>
-            <AnimatePresence mode="wait">
-              {isMessageVisible ? (
-                <motion.p
-                  key="message"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.3 }}
-                  className={styles.message}
-                >
-                  {message}
-                </motion.p>
-              ) : (
-                <motion.form
-                  key="form"
-                  variants={formVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  onSubmit={handleSubmit}
-                  className={styles.heroFormInner}
-                >
-                  <input
-                    type="email"
-                    placeholder="Your Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                  <button type="submit">Join Waitlist</button>
-                </motion.form>
-              )}
-            </AnimatePresence>
-            <motion.div
-              variants={bracketVariants}
-              custom={false}
-              animate={isMessageVisible ? 'closed' : 'open'}
-            >
-              <RightCurlyBracket />
-            </motion.div>
-          </div>
-          <div className={styles.avatars}>
-            <li><img src="https://randomuser.me/api/portraits/men/62.jpg" alt="."   /></li>
-            <li><img src="https://xsgames.co/randomusers/assets/avatars/female/60.jpg" alt="." /></li>
-            <li><img src="https://xsgames.co/randomusers/assets/avatars/male/76.jpg" alt="." /></li>
-            <div className={styles.avatarsText}>
-              <span>Coding challenges reimagined.</span>
-              <span>Join our beta!</span>
-            </div>
-          </div>
-          <div className={styles.footer}>
-            <div className={styles.socialIcons}>
-              <a href="/"><BsTwitterX size={18} /></a>
-              <a href="/"><SiDiscord size={18} /></a>
-              <a href="/"><SiLinkedin size={18} /></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children: React.ReactNode;
+  size?: ButtonSize;
+  variant?: ButtonVariant;
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
-export default Waitlist;
+function Button({ 
+  children, 
+  size = "default", 
+  variant = "default", 
+  className = "", 
+  onClick,
+  ...props 
+}: ButtonProps) {
+  const baseClasses = "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background"
+  
+  const sizeClasses: Record<ButtonSize, string> = {
+    sm: "h-9 px-3 text-sm",
+    default: "h-10 py-2 px-4",
+    lg: "h-11 px-8 text-lg"
+  }
+  
+  const variantClasses: Record<ButtonVariant, string> = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90",
+    outline: "border border-input hover:bg-accent hover:text-accent-foreground"
+  }
+  
+  return (
+    <button 
+      className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
+
+import { ReactNode, HTMLAttributes } from "react"
+
+function Card({
+  children,
+  className = "",
+  ...props
+}: { children: ReactNode; className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`} {...props}>
+      {children}
+    </div>
+  )
+}
+
+
+
+function CardHeader({
+  children,
+  className = "",
+  ...props
+}: { children: ReactNode; className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props}>
+      {children}
+    </div>
+  )
+}
+
+
+
+function CardTitle({
+  children,
+  className = "",
+  ...props
+}: { children: ReactNode; className?: string } & HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`} {...props}>
+      {children}
+    </h3>
+  )
+}
+
+function CardDescription({
+  children,
+  className = "",
+  ...props
+}: { children: React.ReactNode; className?: string } & React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p className={`text-sm text-muted-foreground ${className}`} {...props}>
+      {children}
+    </p>
+  )
+}
+
+function CardContent({
+  children,
+  className = "",
+  ...props
+}: { children: React.ReactNode; className?: string } & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={`p-6 pt-0 ${className}`} {...props}>
+      {children}
+    </div>
+  )
+}
+
+
+
+function Badge({
+  children,
+  className = "",
+  ...props
+}: { children: ReactNode; className?: string } & HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`} {...props}>
+      {children}
+    </div>
+  )
+}
+
+// Your actual Zenith logo component
+function ZenithLogo() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" viewBox="0 0 375 374.999991" height="48" preserveAspectRatio="xMidYMid meet" version="1.1">
+      <defs>
+        <clipPath id="a532571bdc">
+          <path d="M 24.140625 105 L 280 105 L 280 293 L 24.140625 293 Z M 24.140625 105 " clipRule="nonzero"/>
+        </clipPath>
+        <clipPath id="dd3e341031">
+          <path d="M 24.140625 221 L 338 221 L 338 375 L 24.140625 375 Z M 24.140625 221 " clipRule="nonzero"/>
+        </clipPath>
+        <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#124dff" stopOpacity="1"/>
+          <stop offset="1" stopColor="#33cc99" stopOpacity="1"/>
+        </linearGradient>
+      </defs>
+      
+      <path fill="none" strokeWidth="5" stroke="url(#blueGradient)" d="M 35.179688 89.871094 L 188.144531 0.0546875 L 348.277344 93.777344 L 348.921875 151.695312 L 185.5625 57.328125 L 83.347656 118.507812 Z M 35.179688 89.871094 " fillOpacity="1" fillRule="evenodd"/>
+      
+      <g clipPath="url(#a532571bdc)">
+        <path fill="none" strokeWidth="5" stroke="url(#blueGradient)" d="M 24.140625 105.496094 L 24.785156 200.511719 L 186.855469 292.941406 L 279.285156 240.867188 L 279.285156 215.492188 L 250.648438 201.15625 L 186.210938 236.3125 L 75.535156 173.164062 L 75.535156 137.394531 Z M 24.140625 105.496094 " fillOpacity="1" fillRule="evenodd"/>
+      </g>
+      
+      <g clipPath="url(#dd3e341031)">
+        <path fill="none" strokeWidth="5" stroke="url(#blueGradient)" d="M 291.652344 259.109375 L 337.847656 288.390625 L 186.210938 374.945312 L 24.785156 280.578125 L 26.078125 221.980469 L 187.5 317.027344 Z M 291.652344 259.109375 " fillOpacity="1" fillRule="evenodd"/>
+      </g>
+      
+      <path fill="none" strokeWidth="5" stroke="url(#blueGradient)" d="M 97.039062 136.714844 L 95.070312 159.507812 L 124.351562 175.136719 L 185.53125 138.6875 L 297.492188 204.417969 L 300.753906 243.480469 L 350.859375 271.472656 L 347.632812 173.84375 L 190.117188 83.996094 Z M 97.039062 136.714844 " fillOpacity="1" fillRule="evenodd"/>
+    </svg>
+  )
+}
+
+export default function ZenithLanding() {
+  const [scrollY, setScrollY] = useState(0)
+  const [currentTestimonial, setCurrentTestimonial] = useState(0)
+  const [activeTab, setActiveTab] = useState('ai')
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+  const link = document.createElement('link')
+  link.href = 'https://fonts.googleapis.com/css2?family=Staatliches&display=swap'
+  link.rel = 'stylesheet'
+  document.head.appendChild(link)
+}, [])
+
+  const testimonials = [
+    {
+      text: "Zenith transformed my coding interview prep. The AI feedback is incredibly insightful.",
+      author: "Sarah Chen",
+      role: "Software Engineer at Google"
+    },
+    {
+      text: "The best coding platform I've used. Complex challenges that actually prepare you for real work.",
+      author: "Marcus Johnson",
+      role: "Senior Developer at Meta"
+    },
+    {
+      text: "Love the visual thinking tools. Finally a platform that gets how developers actually think.",
+      author: "Priya Patel",
+      role: "Tech Lead at Stripe"
+    }
+  ]
+
+  return (
+    <div className="h-full w-full  text-white">
+      {/* Grid Background */}
+      <div className="fixed inset-0 z-0">
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255, 255, 255, 0.2) 1px, transparent 1px)
+            `,
+            backgroundSize: "45px 45px",
+            mask: "linear-gradient(-20deg, transparent 50%, white)",
+          }}
+        />
+      </div>
+
+      {/* Navigation */}
+      <nav className="relative z-50 flex items-center justify-end p-6">
+
+        <div className="hidden md:flex items-center gap-8">
+          <a href="#features" className="text-gray-300 hover:text-[#33cc99] transition-colors">Features</a>
+          <a href="#pricing" className="text-gray-300 hover:text-[#33cc99] transition-colors">Pricing</a>
+          <Button 
+            size="sm" 
+            className="bg-[#0bc39c] hover:bg-[#0aa083] text-white"
+            onClick={() => window.location.href = '/login'}
+          > Sign In
+          </Button>
+        </div>
+      </nav>
+
+      {/* Hero Section - Matching waitlist style */}
+      <section className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center">
+        <div className="mb-8">
+          <ZenithLogo />
+        </div>
+
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 text-[#33cc99] font-['Staatliches']">
+          FUTURE-PROOF YOUR CODING SKILLS
+        </h1>
+
+        <div className="max-w-2xl mx-auto mb-12 space-y-4">
+          <p className="text-gray-300 text-xl">
+            Master complex algorithms, receive intelligent feedback, and accelerate your software engineering career.
+          </p>
+          <p className="text-gray-400 text-lg">
+            Join thousands of developers already using Zenith to level up their coding skills.
+          </p>
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-16 justify-center">
+          <Button size="lg" className="bg-[#0bc39c] hover:bg-[#0aa083] text-white px-8 py-3 text-lg font-semibold">
+            Start Coding Now
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            className="border-[#33cc99] text-[#33cc99] hover:bg-[#33cc99] hover:text-black px-8 py-3 text-lg"
+          >
+            View Demo
+          </Button>
+        </div>
+
+        {/* Simple stats */}
+        <div className="grid grid-cols-3 gap-12  text-center">
+          <div>
+            <div className="text-3xl font-bold text-[#33cc99]">1000+</div>
+            <div className="text-gray-400">Challenges</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-[#33cc99]">50K+</div>
+            <div className="text-gray-400">Users</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-[#33cc99]">AI-Powered</div>
+            <div className="text-gray-400">Feedback</div>
+          </div>
+        </div>
+
+        {/* Avatar section */}
+        <div className="flex items-center  gap-4 mt-12">
+          <div className="flex -space-x-3">
+            <img src="https://randomuser.me/api/portraits/men/62.jpg" alt="" className="w-8 h-8 rounded-full border-2 border-black" />
+            <img src="https://xsgames.co/randomusers/assets/avatars/female/60.jpg" alt="" className="w-8 h-8 rounded-full border-2 border-black" />
+            <img src="https://xsgames.co/randomusers/assets/avatars/male/76.jpg" alt="" className="w-8 h-8 rounded-full border-2 border-black" />
+          </div>
+          <div className="text-sm text-gray-400">
+            <div>50,000+ developers already coding</div>
+            <div>Join the community today!</div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-6 h-6 text-[#33cc99]" />
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="relative   z-10 py-24 px-4">
+        {/* Additional subtle grid for features section */}
+        <div className="absolute inset-0 opacity-5">
+          <div
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(51, 204, 153, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(51, 204, 153, 0.3) 1px, transparent 1px)
+              `,
+              backgroundSize: "30px 30px",
+            }}
+          />
+        </div>
+        
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[#33cc99] font-['Staatliches']">
+              Built for Modern Developers
+            </h2>
+            <p className="text-gray-400 text-xl max-w-2xl mx-auto mb-8">
+              Everything you need to master coding challenges and advance your career
+            </p>
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="flex justify-center mb-8">
+            <div className="flex bg-gray-900/50 rounded-lg p-1 border border-gray-800">
+              <button 
+                onClick={() => setActiveTab('ai')}
+                className={`px-6 py-3 rounded-md text-sm font-medium transition-all ${
+                  activeTab === 'ai' 
+                    ? 'bg-[#33cc99] text-black' 
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                AI-Powered
+              </button>
+              <button 
+                onClick={() => setActiveTab('tools')}
+                className={`px-6 py-3 rounded-md text-sm font-medium transition-all ${
+                  activeTab === 'tools' 
+                    ? 'bg-[#33cc99] text-black' 
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Learning Tools
+              </button>
+              <button 
+                onClick={() => setActiveTab('analytics')}
+                className={`px-6 py-3 rounded-md text-sm font-medium transition-all ${
+                  activeTab === 'analytics' 
+                    ? 'bg-[#33cc99] text-black' 
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Analytics
+              </button>
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {activeTab === 'ai' && [
+              {
+                icon: Brain,
+                title: "AI-Powered Feedback",
+                description: "Get intelligent feedback and suggestions to improve your code quality and problem-solving approach"
+              },
+              {
+                icon: Lightbulb,
+                title: "Smart Hints",
+                description: "Contextual hints that guide your thinking without giving away solutions"
+              },
+              {
+                icon: Code,
+                title: "Real-World Challenges",
+                description: "Tackle problems inspired by actual tech company interviews"
+              }
+            ].map((feature, index) => (
+              <Card key={index} className="bg-gray-900/50 border-gray-800 hover:border-[#33cc99] transition-colors">
+                <CardHeader>
+                  <feature.icon className="w-12 h-12 text-[#33cc99] mb-4" />
+                  <CardTitle className="text-white">{feature.title}</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+
+            {activeTab === 'tools' && [
+              {
+                icon: BookOpen,
+                title: "Smart Note-Taking",
+                description: "Take notes directly on problems and organize your learning for better retention"
+              },
+              {
+                icon: Highlighter,
+                title: "Highlight & Annotate",
+                description: "Highlight important parts of problems and add annotations for focused learning"
+              },
+              {
+                icon: PenTool,
+                title: "Visual Thinking",
+                description: "Draw out algorithms and visualize your problem-solving process"
+              }
+            ].map((feature, index) => (
+              <Card key={index} className="bg-gray-900/50 border-gray-800 hover:border-[#33cc99] transition-colors">
+                <CardHeader>
+                  <feature.icon className="w-12 h-12 text-[#33cc99] mb-4" />
+                  <CardTitle className="text-white">{feature.title}</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+
+            {activeTab === 'analytics' && [
+              {
+                icon: Timer,
+                title: "Focus Sessions",
+                description: "Built-in Pomodoro timer to help you maintain focus and productivity"
+              },
+              {
+                icon: Search,
+                title: "Advanced Search",
+                description: "Quickly find problems by difficulty, topic, or company with our search engine"
+              },
+              {
+                icon: TrendingUp,
+                title: "Progress Tracking",
+                description: "Monitor your improvement with detailed analytics and performance metrics"
+              }
+            ].map((feature, index) => (
+              <Card key={index} className="bg-gray-900/50 border-gray-800 hover:border-[#33cc99] transition-colors">
+                <CardHeader>
+                  <feature.icon className="w-12 h-12 text-[#33cc99] mb-4" />
+                  <CardTitle className="text-white">{feature.title}</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="relative z-10 py-24 px-4 ">
+        {/* Diagonal grid pattern for testimonials */}
+        <div className="absolute inset-0 opacity-5 ">
+          <div
+            style={{
+              backgroundImage: `
+                linear-gradient(45deg, rgba(18, 77, 255, 0.3) 1px, transparent 1px),
+                linear-gradient(-45deg, rgba(18, 77, 255, 0.3) 1px, transparent 1px)
+              `,
+              backgroundSize: "20px 20px",
+            }}
+          />
+        </div>
+        
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-4xl font-bold mb-16 text-[#33cc99] font-['Staatliches']">
+            What Developers Say
+          </h2>
+          
+          <Card className="bg-gray-900/50 border-gray-800">
+            <CardContent className="p-8">
+              <div className="mb-6 text-2xl text-[#33cc99]">★★★★★</div>
+              <blockquote className="text-xl text-gray-200 mb-6">
+                "{testimonials[currentTestimonial].text}"
+              </blockquote>
+              <div className="text-center">
+                <div className="font-semibold text-white">{testimonials[currentTestimonial].author}</div>
+                <div className="text-gray-400 text-sm">{testimonials[currentTestimonial].role}</div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <div className="flex justify-center gap-2 mt-6">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentTestimonial ? 'bg-[#33cc99] w-8' : 'bg-gray-600'
+                }`}
+                onClick={() => setCurrentTestimonial(index)}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="relative z-10 py-24 px-4">
+        {/* Hexagonal grid pattern for pricing */}
+        <div className="absolute inset-0 opacity-5">
+          <div
+            style={{
+              backgroundImage: `
+                radial-gradient(circle at 50% 50%, rgba(51, 204, 153, 0.3) 2px, transparent 2px),
+                radial-gradient(circle at 0% 50%, rgba(51, 204, 153, 0.2) 1px, transparent 1px),
+                radial-gradient(circle at 100% 50%, rgba(51, 204, 153, 0.2) 1px, transparent 1px)
+              `,
+              backgroundSize: "40px 40px, 40px 40px, 40px 40px",
+              backgroundPosition: "0 0, 20px 20px, 20px 20px",
+            }}
+          />
+        </div>
+        
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[#33cc99] font-['Staatliches']">
+              Choose Your Plan
+            </h2>
+            <p className="text-gray-400 text-xl">Start free and upgrade as you grow</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Free Plan */}
+            <Card className="bg-gray-900/50 border-gray-800">
+              <CardHeader>
+                <CardTitle className="text-white text-2xl">Free</CardTitle>
+                <div className="text-4xl font-bold text-white">
+                  $0
+                  <span className="text-lg text-gray-400 font-normal">/month</span>
+                </div>
+                <CardDescription className="text-gray-400">
+                  Perfect for getting started
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  {[
+                    "50 coding challenges",
+                    "Basic AI hints",
+                    "Note-taking",
+                    "Progress tracking"
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <Check className="w-5 h-5 text-[#33cc99]" />
+                      <span className="text-gray-300">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                <Button className="w-full bg-gray-800 hover:bg-gray-700 text-white">
+                  Get Started Free
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Pro Plan */}
+            <Card className="bg-gray-900/50 border-[#33cc99] relative scale-105">
+              <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#33cc99] text-black">
+                Most Popular
+              </Badge>
+              <CardHeader>
+                <CardTitle className="text-white text-2xl">Pro</CardTitle>
+                <div className="text-4xl font-bold text-white">
+                  $19
+                  <span className="text-lg text-gray-400 font-normal">/month</span>
+                </div>
+                <CardDescription className="text-gray-400">
+                  For serious developers
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  {[
+                    "Unlimited challenges",
+                    "Advanced AI feedback",
+                    "Pomodoro timer",
+                    "Drawing tools",
+                    "Advanced search",
+                    "Highlighting & annotations"
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <Check className="w-5 h-5 text-[#33cc99]" />
+                      <span className="text-gray-300">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                <Button className="w-full bg-[#0bc39c] hover:bg-[#0aa083] text-white">
+                  Start Pro Trial
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Enterprise Plan */}
+            <Card className="bg-gray-900/50 border-gray-800">
+              <CardHeader>
+                <CardTitle className="text-white text-2xl">Enterprise</CardTitle>
+                <div className="text-4xl font-bold text-white">
+                  $49
+                  <span className="text-lg text-gray-400 font-normal">/month</span>
+                </div>
+                <CardDescription className="text-gray-400">
+                  For teams and organizations
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  {[
+                    "Everything in Pro",
+                    "Team management",
+                    "Custom challenges",
+                    "Analytics dashboard",
+                    "Priority support",
+                    "API access"
+                  ].map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <Check className="w-5 h-5 text-[#33cc99]" />
+                      <span className="text-gray-300">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                <Button className="w-full bg-gray-800 hover:bg-gray-700 text-white">
+                  Contact Sales
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative z-10 py-24  px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[#33cc99] font-['Staatliches']">
+            Ready to Elevate Your Coding Skills?
+          </h2>
+          <p className="text-gray-400 text-lg mb-8">
+            Join thousands of developers mastering complex challenges
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-[#0bc39c] hover:bg-[#0aa083] text-white px-8 py-3 text-lg">
+              Start Your Free Trial
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-[#33cc99] text-[#33cc99] hover:bg-[#33cc99] hover:text-black px-8 py-3 text-lg"
+            >
+              Schedule Demo
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer with original CSS styling */}
+      <footer className="relative z-10 py-12 px-4">
+        <div 
+          className="absolute left-0 bottom-0 w-full h-[100px] border-t-[7px] border-solid"
+          style={{
+            borderImage: 'linear-gradient(to right, #33cc99 40%, #124dff 60%) 1',
+            WebkitMask: 'var(--mask)',
+            mask: 'var(--mask)',
+    
+            '--slope': '150px',
+      
+            '--mask': `radial-gradient(farthest-side, #000 99%, transparent 100%) 50% 0 / 150% calc(var(--slope) * 2) no-repeat, linear-gradient(#000, #000) 0 100% / 100% calc(100% - var(--slope)) no-repeat`,
+          } as React.CSSProperties}
+        />
+        
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div className="flex items-center gap-4 mb-6 md:mb-0">
+              <ZenithLogo />
+              <span className="text-xl font-bold text-[#33cc99]">ZENITH</span>
+            </div>
+
+            <div className="flex items-center gap-6">
+              <Twitter className="w-5 h-5 text-gray-400 hover:text-[#33cc99] cursor-pointer transition-colors" />
+              <MessageCircle className="w-5 h-5 text-gray-400 hover:text-[#33cc99] cursor-pointer transition-colors" />
+              <Linkedin className="w-5 h-5 text-gray-400 hover:text-[#33cc99] cursor-pointer transition-colors" />
+            </div>
+          </div>
+
+          <div className="text-center text-gray-400">
+            <p>&copy; 2024 Zenith. All rights reserved. Future-proof your coding skills.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}

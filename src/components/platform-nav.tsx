@@ -7,13 +7,10 @@ import { usePathname } from 'next/navigation';
 import { 
   Home, 
   Code, 
-  BarChart3, 
   Settings, 
   User, 
   LogOut,
   BookOpen,
-  Trophy,
-  Target
 } from 'lucide-react';
 
 interface PlatformNavProps {

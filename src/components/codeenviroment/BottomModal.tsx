@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Tldraw } from 'tldraw';
 import 'tldraw/tldraw.css';
-import { X, Maximize2, Minimize2, Edit3, Search, PenTool, RotateCcw, Brain, Send, Lightbulb } from 'lucide-react';
+import PomodoroTimer from './pomodoro-timer';
+import { X, Maximize2, Minimize2, Edit3, Search, PenTool, RotateCcw, Brain, Send, Lightbulb, Timer as TimerIcon } from 'lucide-react';
 
 interface ModalProps {
   title: string;
@@ -281,7 +282,7 @@ const AIHintsModal: React.FC<AIHintsModalProps> = ({ isOpen, onClose, zIndex, on
     } catch (error) {
       setHints(prev => [...prev, {
         question: query,
-        answer: "Sorry, I couldn't generate a hint right now. Please try again.",
+        answer: "Sorry, I couldn&apos;t generate a hint right now. Please try again.",
         timestamp
       }]);
     } finally {
@@ -331,7 +332,7 @@ const AIHintsModal: React.FC<AIHintsModalProps> = ({ isOpen, onClose, zIndex, on
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-1">
-            Ask questions like: "How do I approach this?", "What algorithm should I use?", "Help with time complexity"
+            Ask questions like: &quot;How do I approach this?&quot;, &quot;What algorithm should I use?&quot;, &quot;Help with time complexity&quot;
           </p>
         </div>
 
@@ -386,6 +387,40 @@ const AIHintsModal: React.FC<AIHintsModalProps> = ({ isOpen, onClose, zIndex, on
   );
 };
 
+interface PomodoroModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  zIndex: number;
+  onBringToFront: () => void;
+}
+
+const PomodoroModal: React.FC<PomodoroModalProps> = ({ isOpen, onClose, zIndex, onBringToFront }) => {
+  return (
+    <DraggableModal
+      title="Focus Timer"
+      isOpen={isOpen}
+      onClose={onClose}
+      initialPosition={{ x: 100, y: 100 }}
+      initialSize={{ width: 400, height: 600 }}
+      icon={<TimerIcon size={16} className="text-red-600" />}
+      zIndex={zIndex}
+      onBringToFront={onBringToFront}
+    >
+      <div className="p-4 h-full overflow-auto">
+        <PomodoroTimer 
+          onSessionComplete={() => {
+            // Optional: Show celebration or save progress
+            console.log('Pomodoro session completed!');
+          }}
+          onBreakComplete={() => {
+            console.log('Break completed, back to work!');
+          }}
+        />
+      </div>
+    </DraggableModal>
+  );
+};
+
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -408,11 +443,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, zIndex, onBr
     setSearchQuery('algorithm data structures');
   };
 
-  useEffect(() => {
-    if (searchQuery) {
-      handleSearch();
-    }
-  }, []);
+useEffect(() => {
+  if (searchQuery) {
+    handleSearch();
+  }
+}, [searchQuery, handleSearch]); 
 
   return (
     <DraggableModal
@@ -431,7 +466,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, zIndex, onBr
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             placeholder="Enter search query..."
             className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -468,6 +503,7 @@ const BottomModal: React.FC = () => {
     canvas: false,
     search: false,
     hints: false,
+    pomodoro: false,
   });
 
   const [zIndexes, setZIndexes] = useState({
@@ -475,6 +511,7 @@ const BottomModal: React.FC = () => {
     canvas: 1000,
     search: 1000,
     hints: 1000,
+    pomodoro: 1000,
   });
 
   const [topZIndex, setTopZIndex] = useState(1000);
@@ -501,6 +538,11 @@ const BottomModal: React.FC = () => {
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-gray-700">Tools</h3>
           <div className="flex items-center gap-2">
+          <button
+              onClick={() => openModal('pomodoro')}
+              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-red-50 hover:bg-red-100 text-red-700 rounded-md transition-colors"
+              title="Focus Timer"
+            ></button>
             <button
               onClick={() => openModal('notes')}
               className="flex items-center gap-2 px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md transition-colors"
@@ -538,6 +580,12 @@ const BottomModal: React.FC = () => {
       </div>
 
       {/* Modals */}
+        <PomodoroModal 
+        isOpen={modals.pomodoro} 
+        onClose={() => closeModal('pomodoro')} 
+        zIndex={zIndexes.pomodoro}
+        onBringToFront={() => bringToFront('pomodoro')}
+      />
       <NotesModal 
         isOpen={modals.notes} 
         onClose={() => closeModal('notes')} 

@@ -31,10 +31,6 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
   const fetchUserProfile = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -54,6 +50,10 @@ const Dashboard: React.FC = () => {
       setLoading(false);
     }
   };
+
+useEffect(() => {
+  fetchUserProfile();
+}, [fetchUserProfile]); 
 
   if (loading) return <div>Loading...</div>;
   if (!userProfile) return <div>No user data found.</div>;

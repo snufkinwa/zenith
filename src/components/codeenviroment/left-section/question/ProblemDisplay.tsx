@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Clock, Star, Zap, ChevronLeft, Bookmark, ThumbsUp, ThumbsDown } from 'lucide-react';
+import HighlightableText from '@/components/ui/HighlightableText';
 
 interface Problem {
   id: string;
@@ -144,7 +145,15 @@ const ProblemDisplay: React.FC<ProblemDisplayProps> = ({
         {/* Problem Description */}
         {description && (
           <div className="mb-6">
-            <ReactMarkdown>{description}</ReactMarkdown>
+                   <HighlightableText 
+          content={description}
+          problemId={problem.id}
+          isMarkdown={true}  
+          className="text-gray-700"
+          onHighlightChange={(highlights) => {
+            console.log(`Problem ${problem.id} has ${highlights.length} highlights`);
+          }}
+        />
           </div>
         )}
 

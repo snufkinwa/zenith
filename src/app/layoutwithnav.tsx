@@ -1,9 +1,9 @@
-// src/app/LayoutWithNav.tsx
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import PlatformNav from '@/components/platform-nav';
+import { PomodoroProvider, GlobalFocusStats } from '@/contexts/PomodoroContext'; // Add this import
 import { ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 
 interface LayoutWithNavProps {
@@ -14,11 +14,8 @@ const LayoutWithNav: React.FC<LayoutWithNavProps> = ({ children }) => {
   const [isNavCollapsed, setIsNavCollapsed] = useState(false);
   const pathname = usePathname();
   
-  // Pages that should show the navigation
   const pagesWithNav = ['/beta', '/dashboard', '/problems'];
   const shouldShowNav = pagesWithNav.some(page => pathname.startsWith(page));
-
-  // Hide nav on login page or other auth pages
   const authPages = ['/login', '/signup', '/'];
   const isAuthPage = authPages.includes(pathname);
 
@@ -31,51 +28,56 @@ const LayoutWithNav: React.FC<LayoutWithNavProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen flex flex-row">
-      {/* Collapsible Sidebar */}
-      <aside 
-        className={`bg-gray-900 text-white flex flex-col transition-all duration-300 ${
-          isNavCollapsed ? 'w-16' : 'w-64'
-        }`}
-      >
-        {/* Collapse/Expand Button */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          {!isNavCollapsed && (
-            <div className="text-lg font-bold">
-              𝖹 𝖤 𝖭 𝖨 𝖳 𝖧
+    <PomodoroProvider> {/* Wrap everything in PomodoroProvider */}
+      <div className="h-screen flex flex-row overflow-hidden">
+        {/* Sidebar */}
+        <aside 
+          className={`bg-gray-900 text-white flex flex-col h-full transition-all duration-300 ${
+            isNavCollapsed ? 'w-16' : 'w-64'
+          }`}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
+            {!isNavCollapsed && (
+              <div className="text-lg font-bold">
+                𝖹 𝖤 𝖭 𝖨 𝖳 𝖧
+              </div>
+            )}
+            <button
+              onClick={() => setIsNavCollapsed(!isNavCollapsed)}
+              className="p-2 hover:bg-gray-700 rounded-md transition-colors"
+              title={isNavCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {isNavCollapsed ? (
+                <ChevronRight size={16} />
+              ) : (
+                <ChevronLeft size={16} />
+              )}
+            </button>
+          </div>
+
+          {/* Navigation Content */}
+          <div className="flex-1 min-h-0">
+            <PlatformNav isCollapsed={isNavCollapsed} />
+          </div>
+
+          {/* Collapse Indicator */}
+          {isNavCollapsed && (
+            <div className="p-2 text-center border-t border-gray-700 flex-shrink-0">
+              <Menu size={16} className="mx-auto text-gray-400" />
             </div>
           )}
-          <button
-            onClick={() => setIsNavCollapsed(!isNavCollapsed)}
-            className="p-2 hover:bg-gray-700 rounded-md transition-colors"
-            title={isNavCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {isNavCollapsed ? (
-              <ChevronRight size={16} />
-            ) : (
-              <ChevronLeft size={16} />
-            )}
-          </button>
-        </div>
+        </aside>
 
-        {/* Navigation Content */}
-        <div className="flex-1">
-          <PlatformNav isCollapsed={isNavCollapsed} />
-        </div>
+        {/* Main Content */}
+        <main className="flex-1 bg-gray-50 overflow-y-auto h-full">
+          {children}
+        </main>
 
-        {/* Collapse State Indicator */}
-        {isNavCollapsed && (
-          <div className="p-2 text-center border-t border-gray-700">
-            <Menu size={16} className="mx-auto text-gray-400" />
-          </div>
-        )}
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 bg-gray-50 overflow-auto">
-        {children}
-      </main>
-    </div>
+        {/* Global Focus Stats - shows when pomodoro is active */}
+        <GlobalFocusStats />
+      </div>
+    </PomodoroProvider>
   );
 };
 
