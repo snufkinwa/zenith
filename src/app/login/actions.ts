@@ -1,69 +1,90 @@
 'use server'
-
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/supabaseServerClient'
 
+function getBaseUrl() {
+  // For development
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:3000'
+  }
+  
+  // For production - try multiple environment variables
+  return process.env.NEXT_PUBLIC_SITE_URL || 
+         process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 
+         'http://localhost:3000'
+}
+
 export async function signInWithProvider(provider: 'github' | 'discord' | 'google') {
   const supabase = createClient()
-
+  const redirectUrl = `${getBaseUrl()}/auth/callback?next=/beta`
+  
+  console.log('OAuth redirect URL:', redirectUrl) // Debug log
+  
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/beta`, // Add ?next=/beta
+      redirectTo: redirectUrl,
     },
-  });
+  })
 
   if (error) {
-    console.error('OAuth sign-in error:', error.message);
-    throw new Error(`${provider} sign-in failed: ${error.message}`);
+    console.error(`${provider} OAuth error:`, error)
+    throw new Error(`${provider} sign-in failed: ${error.message}`)
   }
 
   if (data.url) {
-    redirect(data.url);
+    redirect(data.url)
   }
 }
 
-// Also update regular login/signup to redirect to beta:
 export async function login(formData: FormData) {
   const supabase = createClient()
   
-  const email = formData.get('email');
-  const password = formData.get('password');
-  
-  if (typeof email !== 'string' || typeof password !== 'string') {
-    throw new Error('Invalid form input');
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  if (!email || !password) {
+    throw new Error('Email and password are required')
   }
-  
-  const { data, error } = await supabase.auth.signInWithPassword({
+
+  const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
-  });
+  })
 
   if (error) {
-    throw new Error(error.message);
+    console.error('Login error:', error)
+    throw new Error(error.message)
   }
-  
-  redirect('/beta') 
+
+  revalidatePath('/', 'layout')
+  redirect('/beta')
 }
 
 export async function signup(formData: FormData) {
   const supabase = createClient()
-
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
   
-  const { data, error } = await supabase.auth.signUp({
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  if (!email || !password) {
+    throw new Error('Email and password are required')
+  }
+
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/beta`,
+      emailRedirectTo: `${getBaseUrl()}/auth/callback?next=/beta`,
     },
-  });
+  })
 
   if (error) {
-    throw new Error(error.message);
+    console.error('Signup error:', error)
+    throw new Error(error.message)
   }
 
-  redirect('/beta') 
+  // For email signup, don't redirect immediately - user needs to verify email
+  redirect('/auth/verify-email')
 }
