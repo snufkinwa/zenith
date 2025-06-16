@@ -44,8 +44,7 @@ export async function login(formData: FormData) {
     throw new Error(error.message);
   }
   
-  revalidatePath('/', 'layout')
-  redirect('/beta') // Changed from /dashboard to /beta
+  redirect('/beta') 
 }
 
 export async function signup(formData: FormData) {
@@ -65,7 +64,6 @@ export async function signup(formData: FormData) {
   if (error) {
     throw new Error(error.message);
   }
-  
-  revalidatePath('/', 'layout')
-  redirect('/beta') // Changed from /dashboard to /beta
+
+  redirect('/beta') 
 }
