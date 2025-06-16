@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, Filter, CheckCircle, Circle, Clock, Star, Zap, ArrowRight } from 'lucide-react';
-import problemsData from '@/public/data/problems.json';
+import problemsData from '../../../public/data/problems.json';
 
 interface Problem {
   id: string;

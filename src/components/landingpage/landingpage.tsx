@@ -344,7 +344,7 @@ export default function ZenithLanding() {
             <CardContent className="p-8">
               <div className="mb-6 text-2xl text-[#33cc99]">★★★★★</div>
               <blockquote className="text-xl text-gray-200 mb-6">
-                "{testimonials[currentTestimonial].text}"
+                &quot;{testimonials[currentTestimonial].text}&quot;
               </blockquote>
               <div className="text-center">
                 <div className="font-semibold text-white">{testimonials[currentTestimonial].author}</div>
