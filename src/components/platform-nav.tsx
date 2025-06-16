@@ -1,49 +1,117 @@
-'use client'
+// src/components/platform-nav/index.tsx
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Home, FileText, Bot, Trophy, Book, Settings, User } from "lucide-react"
-import Logo from "../container/landing-page/ui/logo"
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { 
+  Home, 
+  Code, 
+  BarChart3, 
+  Settings, 
+  User, 
+  LogOut,
+  BookOpen,
+  Trophy,
+  Target
+} from 'lucide-react';
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: <Home size={18} /> },
-  { href: "/problems", label: "Problems", icon: <FileText size={18} /> },
-  { href: "/hints", label: "AI Hints", icon: <Bot size={18} /> },
-  { href: "/leaderboard", label: "Leaderboard", icon: <Trophy size={18} /> },
-  { href: "/learning", label: "Learning", icon: <Book size={18} /> },
-  { href: "/profile", label: "Profile", icon: <User size={18} /> },
-  { href: "/settings", label: "Settings", icon: <Settings size={18} /> },
-]
+interface PlatformNavProps {
+  isCollapsed?: boolean;
+}
 
-export default function PlatformNav() {
-  const pathname = usePathname()
+const PlatformNav: React.FC<PlatformNavProps> = ({ isCollapsed = false }) => {
+  const pathname = usePathname();
+
+  const navigationItems = [
+    {
+      name: 'Dashboard',
+      href: '/dashboard',
+      icon: Home,
+      active: pathname === '/dashboard'
+    },
+    {
+      name: 'Problems',
+      href: '/problems',
+      icon: BookOpen,
+      active: pathname.startsWith('/problems')
+    },
+    {
+      name: 'Code Environment',
+      href: '/beta',
+      icon: Code,
+      active: pathname.startsWith('/beta')
+    },
+  ];
+
+  const bottomItems = [
+    {
+      name: 'Profile',
+      href: '/profile',
+      icon: User,
+      active: pathname === '/profile'
+    },
+    {
+      name: 'Settings',
+      href: '/settings',
+      icon: Settings,
+      active: pathname === '/settings'
+    }
+  ];
+
+  const NavItem = ({ item, showLabel = true }: { item: any; showLabel?: boolean }) => (
+    <Link
+      href={item.href}
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+        item.active
+          ? 'bg-blue-600 text-white'
+          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+      } ${isCollapsed ? 'justify-center' : ''}`}
+      title={isCollapsed ? item.name : ''}
+    >
+      <item.icon size={20} />
+      {showLabel && !isCollapsed && (
+        <span className="font-medium">{item.name}</span>
+      )}
+    </Link>
+  );
 
   return (
-    <aside className="h-screen w-[220px] bg-zinc-900 text-white flex flex-col justify-between border-r px-4 py-6">
-      <div>
-        <div className="flex items-center gap-2 mb-6">
-          <Logo />
-          <span className="text-lg font-bold">Zenith</span>
-        </div>
-
-        <nav className="flex flex-col gap-1">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <div className={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-zinc-800 transition 
-                ${pathname === item.href ? "bg-zinc-800 font-semibold" : "text-zinc-300"}`}>
-                {item.icon}
-                {item.label}
-              </div>
-            </Link>
+    <nav className="h-full flex flex-col">
+      {/* Main Navigation */}
+      <div className="flex-1 px-3 py-4">
+        <div className="space-y-1">
+          {navigationItems.map((item) => (
+            <NavItem key={item.name} item={item} />
           ))}
-        </nav>
+        </div>
       </div>
 
-      <div className="text-sm text-zinc-400 mt-8">
-        <button className="w-full text-left hover:text-white" onClick={() => {/* logout logic */}}>
-          Sign Out
-        </button>
+      {/* Bottom Navigation */}
+      <div className="px-3 py-4 border-t border-gray-700">
+        <div className="space-y-1">
+          {bottomItems.map((item) => (
+            <NavItem key={item.name} item={item} />
+          ))}
+          
+          {/* Logout Button */}
+          <button
+            onClick={() => {
+              // Handle logout logic
+              window.location.href = '/login';
+            }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-gray-300 hover:bg-red-600 hover:text-white ${
+              isCollapsed ? 'justify-center' : ''
+            }`}
+            title={isCollapsed ? 'Logout' : ''}
+          >
+            <LogOut size={20} />
+            {!isCollapsed && <span className="font-medium">Logout</span>}
+          </button>
+        </div>
       </div>
-    </aside>
-  )
-}
+    </nav>
+  );
+};
+
+export default PlatformNav;
