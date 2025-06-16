@@ -1,13 +1,11 @@
 import React, { useEffect } from "react";
 
 interface Problem {
-  id: number;
+  id: string;
   title: string;
-  description: string;
-  example: string;
-  input: string;
-  output: string;
-  explanation: string;
+  slug: string;
+  difficulty: string | null;
+  content: string;
 }
 
 interface ProblemListProps {
@@ -36,11 +34,8 @@ const ProblemList: React.FC<ProblemListProps> = ({
         {problems.map((problem) => (
           <React.Fragment key={problem.id}>
             <li>{problem.title}</li>
-            <li>{problem.description}</li>
-            <li>{problem.example}</li>
-            <li>{problem.input}</li>
-            <li>{problem.output}</li>
-            <li>{problem.explanation}</li>
+            <li>{problem.difficulty}</li>
+            <li>{problem.content}</li>
           </React.Fragment>
         ))}
       </ul>

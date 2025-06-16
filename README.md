@@ -24,13 +24,13 @@ Zenith is a coding problem platform that leverages AI and advanced metrics to ch
 
 ## TODO
 
-☐ Integrate compilers for C, C++, JavaScript and Java <br />
+✅ Integrate compilers for C, C++, JavaScript and Java <br />
 ☐ Integrate AI for feedback <br />
 ☐ Integrate AI for hints <br />
 ☐ Integrate Langchain for AI <br />
 ☐ Add challenges <br />
-☐ Add dashboard <br />
-☐ Add auth <br />
+✅ Add dashboard <br />
+✅ Add auth <br />
 ☐ Add tests <br />
 ☐ Add more documentation <br />
 
