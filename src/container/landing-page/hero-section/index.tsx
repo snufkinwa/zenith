@@ -1,7 +1,7 @@
-import Waitlist from '@components/waitlist/Waitlist';
+import Zenithlandingpage from '@/components/landingpage/landingpage';
 
 export default function Hero() {
   return (
-    <Waitlist />
+    <Zenithlandingpage />
   );
 }

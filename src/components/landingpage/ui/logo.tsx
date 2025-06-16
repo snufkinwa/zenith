@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Logo() {
+export default function ZenithLogo() {
   return (
     <Link href="/">
 <svg xmlns="http://www.w3.org/2000/svg" width="48" viewBox="0 0 375 374.999991" height="48" preserveAspectRatio="xMidYMid meet" version="1.1">

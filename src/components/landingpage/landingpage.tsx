@@ -22,161 +22,10 @@ import {
 } from "lucide-react"
 import { useState, useEffect } from "react"
 
-// UI Components
-type ButtonSize = "sm" | "default" | "lg";
-type ButtonVariant = "default" | "outline";
-
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-  size?: ButtonSize;
-  variant?: ButtonVariant;
-  className?: string;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-}
-
-function Button({ 
-  children, 
-  size = "default", 
-  variant = "default", 
-  className = "", 
-  onClick,
-  ...props 
-}: ButtonProps) {
-  const baseClasses = "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background"
-  
-  const sizeClasses: Record<ButtonSize, string> = {
-    sm: "h-9 px-3 text-sm",
-    default: "h-10 py-2 px-4",
-    lg: "h-11 px-8 text-lg"
-  }
-  
-  const variantClasses: Record<ButtonVariant, string> = {
-    default: "bg-primary text-primary-foreground hover:bg-primary/90",
-    outline: "border border-input hover:bg-accent hover:text-accent-foreground"
-  }
-  
-  return (
-    <button 
-      className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
-      onClick={onClick}
-      {...props}
-    >
-      {children}
-    </button>
-  )
-}
-
-import { ReactNode, HTMLAttributes } from "react"
-
-function Card({
-  children,
-  className = "",
-  ...props
-}: { children: ReactNode; className?: string } & HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`} {...props}>
-      {children}
-    </div>
-  )
-}
+import ZenithLogo from "./ui/logo";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badge } from "./ui/comp-ui";
 
 
-
-function CardHeader({
-  children,
-  className = "",
-  ...props
-}: { children: ReactNode; className?: string } & HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={`flex flex-col space-y-1.5 p-6 ${className}`} {...props}>
-      {children}
-    </div>
-  )
-}
-
-
-
-function CardTitle({
-  children,
-  className = "",
-  ...props
-}: { children: ReactNode; className?: string } & HTMLAttributes<HTMLHeadingElement>) {
-  return (
-    <h3 className={`text-2xl font-semibold leading-none tracking-tight ${className}`} {...props}>
-      {children}
-    </h3>
-  )
-}
-
-function CardDescription({
-  children,
-  className = "",
-  ...props
-}: { children: React.ReactNode; className?: string } & React.HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p className={`text-sm text-muted-foreground ${className}`} {...props}>
-      {children}
-    </p>
-  )
-}
-
-function CardContent({
-  children,
-  className = "",
-  ...props
-}: { children: React.ReactNode; className?: string } & React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={`p-6 pt-0 ${className}`} {...props}>
-      {children}
-    </div>
-  )
-}
-
-
-
-function Badge({
-  children,
-  className = "",
-  ...props
-}: { children: ReactNode; className?: string } & HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`} {...props}>
-      {children}
-    </div>
-  )
-}
-
-// Your actual Zenith logo component
-function ZenithLogo() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" viewBox="0 0 375 374.999991" height="48" preserveAspectRatio="xMidYMid meet" version="1.1">
-      <defs>
-        <clipPath id="a532571bdc">
-          <path d="M 24.140625 105 L 280 105 L 280 293 L 24.140625 293 Z M 24.140625 105 " clipRule="nonzero"/>
-        </clipPath>
-        <clipPath id="dd3e341031">
-          <path d="M 24.140625 221 L 338 221 L 338 375 L 24.140625 375 Z M 24.140625 221 " clipRule="nonzero"/>
-        </clipPath>
-        <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#124dff" stopOpacity="1"/>
-          <stop offset="1" stopColor="#33cc99" stopOpacity="1"/>
-        </linearGradient>
-      </defs>
-      
-      <path fill="none" strokeWidth="5" stroke="url(#blueGradient)" d="M 35.179688 89.871094 L 188.144531 0.0546875 L 348.277344 93.777344 L 348.921875 151.695312 L 185.5625 57.328125 L 83.347656 118.507812 Z M 35.179688 89.871094 " fillOpacity="1" fillRule="evenodd"/>
-      
-      <g clipPath="url(#a532571bdc)">
-        <path fill="none" strokeWidth="5" stroke="url(#blueGradient)" d="M 24.140625 105.496094 L 24.785156 200.511719 L 186.855469 292.941406 L 279.285156 240.867188 L 279.285156 215.492188 L 250.648438 201.15625 L 186.210938 236.3125 L 75.535156 173.164062 L 75.535156 137.394531 Z M 24.140625 105.496094 " fillOpacity="1" fillRule="evenodd"/>
-      </g>
-      
-      <g clipPath="url(#dd3e341031)">
-        <path fill="none" strokeWidth="5" stroke="url(#blueGradient)" d="M 291.652344 259.109375 L 337.847656 288.390625 L 186.210938 374.945312 L 24.785156 280.578125 L 26.078125 221.980469 L 187.5 317.027344 Z M 291.652344 259.109375 " fillOpacity="1" fillRule="evenodd"/>
-      </g>
-      
-      <path fill="none" strokeWidth="5" stroke="url(#blueGradient)" d="M 97.039062 136.714844 L 95.070312 159.507812 L 124.351562 175.136719 L 185.53125 138.6875 L 297.492188 204.417969 L 300.753906 243.480469 L 350.859375 271.472656 L 347.632812 173.84375 L 190.117188 83.996094 Z M 97.039062 136.714844 " fillOpacity="1" fillRule="evenodd"/>
-    </svg>
-  )
-}
 
 export default function ZenithLanding() {
   const [scrollY, setScrollY] = useState(0)
@@ -337,8 +186,7 @@ export default function ZenithLanding() {
         </div>
         
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[#33cc99] font-['Staatliches']">
+          <div className="text-center mb-16">            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[#33cc99] font-['Staatliches']">
               Built for Modern Developers
             </h2>
             <p className="text-gray-400 text-xl max-w-2xl mx-auto mb-8">
@@ -451,6 +299,7 @@ export default function ZenithLanding() {
                 title: "Advanced Search",
                 description: "Quickly find problems by difficulty, topic, or company with our search engine"
               },
+
               {
                 icon: TrendingUp,
                 title: "Progress Tracking",
