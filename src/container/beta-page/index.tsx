@@ -1,17 +1,19 @@
 import CodeEnvironment from "@components/codeenviroment/CodeEnvironment";
-import  problemsData  from "@public/data/problems.json";
-import Header from "../landing-page/ui/header";
-import styles from "./betacontainer.module.css";
+import problemsData from "@public/data/problems.json";
+import PlatformNav from "@/components/platform-nav";
 
 export default function BetaPage() {
   return (
-    <div className={styles.maincontainer}>
-  
-        <Header />
+    <div className="min-h-screen flex flex-row">
+      {/* Sidebar */}
+      <aside className=" bg-gray-900 text-white flex flex-col">
+        <PlatformNav />
+      </aside>
 
-      <div className={styles.codeenvironmentcontainer}>
+      {/* Main Content */}
+      <main className="flex-1 bg-gray-50 overflow-auto">
         <CodeEnvironment problems={problemsData} />
-      </div>
+      </main>
     </div>
   );
 }

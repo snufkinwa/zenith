@@ -1,72 +1,36 @@
-import { useSession } from '@supabase/auth-helpers-react';
-import { Provider } from '@supabase/supabase-js';
+import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
+import type { Provider } from '@supabase/supabase-js'
 
 const useSupabaseAuth = () => {
-  const session = useSession();
+  const session = useSession()
+  const supabase = useSupabaseClient()
 
   const signIn = async (email: string, password: string) => {
-    const response = await fetch('/api/auth/signin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error);
-    }
-  };
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    if (error) throw new Error(error.message)
+  }
 
   const signInWithProvider = async (provider: Provider) => {
-    try {
-      const response = await fetch('/api/auth/sign-in-with-provider', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ provider }),
-      });
-  
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error);
-      }
-  
-      const { url } = await response.json();
-      if (!url) {
-        throw new Error('No authentication URL returned');
-      }
-  
-      window.location.href = url;
-    } catch (error) {
-      console.error('Sign in error:', error);
-    
-    }
-  };
+    const { data, error } = await supabase.auth.signInWithOAuth({ provider })
+    if (error) throw new Error(error.message)
+    if (data.url) window.location.href = data.url
+  }
 
   const signOut = async () => {
-    const response = await fetch('/api/auth/signout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const { error } = await supabase.auth.signOut()
+    if (error) throw new Error(error.message)
+  }
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error);
-    }
-  };
-
-  return { 
-    user: session?.user, 
-    signIn, 
-    signInWithProvider, 
-    signOut,
+  return {
+    user: session?.user,
     session,
-  };
-};
+    signIn,
+    signInWithProvider,
+    signOut,
+  }
+}
 
-export default useSupabaseAuth;
+export default useSupabaseAuth

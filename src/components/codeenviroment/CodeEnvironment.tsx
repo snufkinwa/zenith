@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { compileCode } from "../../actions/compile";
 import Editor from "./right-section/Editor";
 import Terminal from "./right-section/Terminal";
 import ProblemList from "./left-section/question/ProblemList";
-import Sidebar from "./left-section/Sidebar";
 import styles from "./CodeEnvironment.module.css";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
@@ -48,18 +46,31 @@ const CodeEnvironment: React.FC<{ problems: Problem[] }> = ({ problems }) => {
         },
       ],
     };
-    try {
-      const result = await compileCode(requestData);
+try {
+    const res = await fetch("/api/compile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestData),
+    });
+
+    const result = await res.json();
+
+    if (result?.run?.output) {
       setOutput(result.run.output.split("\n"));
-      console.log(result);
-      setLoading(false);
       setErr(false);
-    } catch (error) {
+    } else {
+      setOutput(["No output returned."]);
       setErr(true);
-      setLoading(false);
-      console.log(error);
     }
-  };
+
+    setLoading(false);
+  } catch (error) {
+    console.error("Compile error:", error);
+    setErr(true);
+    setLoading(false);
+  }
+};
+
 
   const handleSelectProblem = (problem: Problem) => {
     setSelectedProblem(problem);
@@ -70,13 +81,14 @@ const CodeEnvironment: React.FC<{ problems: Problem[] }> = ({ problems }) => {
     <PanelGroup direction="horizontal" className={styles.maincontainer}>
       <Panel minSize={0} defaultSize={50}>
         <div className={styles.problem}>
-          <div className={styles.sidebar}>
-            <Sidebar />
           </div>
           <div className={styles.generateProblem}>
             PROBLEM
           </div>
+          <div>
+            BOTTOM
         </div>
+      
       </Panel>
       <PanelResizeHandle className={styles.resizeHandle} />
       <Panel minSize={0}>
