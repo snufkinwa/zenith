@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Tldraw } from 'tldraw';
 import 'tldraw/tldraw.css';
 import PomodoroTimer from './pomodoro-timer';
-import { X, Maximize2, Minimize2, Edit3, Search, PenTool, RotateCcw, Brain, Send, Lightbulb, Timer as TimerIcon } from 'lucide-react';
+import { X, Maximize2, Minimize2, Edit3, Search, PenTool, RotateCcw, Brain, Send, Lightbulb, Timer as TimerIcon, Clock } from 'lucide-react';
 
 interface ModalProps {
   title: string;
@@ -421,81 +421,6 @@ const PomodoroModal: React.FC<PomodoroModalProps> = ({ isOpen, onClose, zIndex, 
   );
 };
 
-interface SearchModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  zIndex: number;
-  onBringToFront: () => void;
-}
-
-const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, zIndex, onBringToFront }) => {
-  const [searchQuery, setSearchQuery] = useState('algorithm data structures');
-  const [currentUrl, setCurrentUrl] = useState('');
-
-  const handleSearch = () => {
-    const encodedQuery = encodeURIComponent(searchQuery);
-    const googleUrl = `https://www.google.com/search?q=${encodedQuery}&igu=1`;
-    setCurrentUrl(googleUrl);
-  };
-
-  const handleReset = () => {
-    setCurrentUrl('');
-    setSearchQuery('algorithm data structures');
-  };
-
-useEffect(() => {
-  if (searchQuery) {
-    handleSearch();
-  }
-}, [searchQuery, handleSearch]); 
-
-  return (
-    <DraggableModal
-      title="Google Search"
-      isOpen={isOpen}
-      onClose={onClose}
-      initialPosition={{ x: 250, y: 200 }}
-      initialSize={{ width: 900, height: 700 }}
-      icon={<Search size={16} className="text-red-600" />}
-      zIndex={zIndex}
-      onBringToFront={onBringToFront}
-    >
-      <div className="p-4 h-full flex flex-col">
-        <div className="mb-3 flex gap-2">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="Enter search query..."
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={handleSearch}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
-          >
-            Search
-          </button>
-          <button
-            onClick={handleReset}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
-            title="Reset"
-          >
-            <RotateCcw size={16} />
-          </button>
-        </div>
-        {currentUrl && (
-          <iframe
-            src={currentUrl}
-            className="flex-1 w-full border border-gray-300 rounded"
-            title="Google Search"
-            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-          />
-        )}
-      </div>
-    </DraggableModal>
-  );
-};
 
 const BottomModal: React.FC = () => {
   const [modals, setModals] = useState({
@@ -542,7 +467,10 @@ const BottomModal: React.FC = () => {
               onClick={() => openModal('pomodoro')}
               className="flex items-center gap-2 px-3 py-1.5 text-xs bg-red-50 hover:bg-red-100 text-red-700 rounded-md transition-colors"
               title="Focus Timer"
-            ></button>
+            >
+              <Clock size={14} />
+              Pomodoro
+            </button>
             <button
               onClick={() => openModal('notes')}
               className="flex items-center gap-2 px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md transition-colors"
@@ -567,14 +495,7 @@ const BottomModal: React.FC = () => {
               <Brain size={14} />
               AI Hints
             </button>
-            <button
-              onClick={() => openModal('search')}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-red-50 hover:bg-red-100 text-red-700 rounded-md transition-colors"
-              title="Open Google Search"
-            >
-              <Search size={14} />
-              Search
-            </button>
+         
           </div>
         </div>
       </div>
@@ -604,12 +525,7 @@ const BottomModal: React.FC = () => {
         zIndex={zIndexes.hints}
         onBringToFront={() => bringToFront('hints')}
       />
-      <SearchModal 
-        isOpen={modals.search} 
-        onClose={() => closeModal('search')} 
-        zIndex={zIndexes.search}
-        onBringToFront={() => bringToFront('search')}
-      />
+
     </div>
   );
 };
