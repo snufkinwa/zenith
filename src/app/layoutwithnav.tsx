@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import PlatformNav from '@/components/platform-nav';
-import { PomodoroProvider, GlobalFocusStats } from '@/contexts/PomodoroContext'; // Add this import
+import { PomodoroProvider } from '@/contexts/PomodoroContext'; // Add this import
 import { ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 
 interface LayoutWithNavProps {
@@ -73,9 +73,6 @@ const LayoutWithNav: React.FC<LayoutWithNavProps> = ({ children }) => {
         <main className="flex-1 bg-gray-50 overflow-y-auto h-full">
           {children}
         </main>
-
-        {/* Global Focus Stats - shows when pomodoro is active */}
-        <GlobalFocusStats />
       </div>
     </PomodoroProvider>
   );

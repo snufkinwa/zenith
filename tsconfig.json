@@ -28,7 +28,7 @@
       "@public/*": [
         "./public/*"
       ],
-      "/public/*": [
+      "@/public/*": [
         "./public/*"
       ],
       "@/components/*": [
@@ -52,8 +52,11 @@
       "@utils/*": [
         "./src/utils/*"
       ],
-      "@/utils/*": [
-        "./src/utils/*"
+      "@/lib/*": [
+        "./src/lib/*"
+      ],
+      "@/context/*": [
+        "./src/context/*"
       ]
     }
   },

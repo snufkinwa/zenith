@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import { useIdleTimer } from 'react-idle-timer';
 
 interface PomodoroState {
   timeLeft: number;
@@ -9,6 +10,10 @@ interface PomodoroState {
   totalFocusTime: number;
   showFocusWarning: boolean;
   isTabVisible: boolean;
+  isPausedByIdle: boolean;
+  idleTime: number;
+  lastActiveTime: number;
+  showIdleWarning: boolean;
 }
 
 interface PomodoroContextType {
@@ -27,6 +32,12 @@ interface PomodoroContextType {
   isFocusLocked: boolean;
   requestFocusLock: () => void;
   releaseFocusLock: () => void;
+  
+  // Idle timer methods
+  getRemainingIdleTime: () => number;
+  getIdleTime: () => number;
+  isIdle: () => boolean;
+  resetIdleTimer: () => void;
 }
 
 const PomodoroContext = createContext<PomodoroContextType | null>(null);
@@ -50,6 +61,8 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
   const WORK_DURATION = 25 * 60; // 25 minutes
   const SHORT_BREAK = 5 * 60;   // 5 minutes
   const LONG_BREAK = 15 * 60;   // 15 minutes
+  const IDLE_TIMEOUT = 3 * 60 * 1000; // 3 minutes in milliseconds
+  const IDLE_WARNING_TIME = 30 * 1000; // 30 seconds warning
 
   // Pomodoro state
   const [pomodoroState, setPomodoroState] = useState<PomodoroState>({
@@ -61,21 +74,129 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
     totalFocusTime: 0,
     showFocusWarning: false,
     isTabVisible: true,
+    isPausedByIdle: false,
+    idleTime: 0,
+    lastActiveTime: Date.now(),
+    showIdleWarning: false,
   });
 
   const [selectedColor, setSelectedColor] = useState('#ffeb3b');
   const [isFocusLocked, setIsFocusLocked] = useState(false);
+  const [wasActiveBeforeIdle, setWasActiveBeforeIdle] = useState(false);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const focusStartTime = useRef<number>(Date.now());
+  const idleWarningTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Global tab visibility and focus lock
+  // Idle timer handlers
+  const handleOnIdle = () => {
+    console.log('🥱 User went idle');
+    
+    // Only pause if timer was active during work session (not during breaks)
+    if (pomodoroState.isActive && !pomodoroState.isBreak) {
+      setWasActiveBeforeIdle(true);
+      setPomodoroState(prev => ({
+        ...prev,
+        isPausedByIdle: true,
+        isActive: false,
+        showFocusWarning: true,
+        showIdleWarning: false
+      }));
+      
+      // Show notification
+      showBrowserNotification(
+        '⏸️ Timer Auto-Paused', 
+        'Your Pomodoro was paused due to inactivity. Move your mouse or press a key to resume!'
+      );
+      
+      // Play notification sound
+      playNotificationSound(600, 'square'); // Different tone for idle
+    }
+  };
+
+  const handleOnActive = () => {
+    console.log('🎯 User became active again');
+    
+    setPomodoroState(prev => ({
+      ...prev,
+      lastActiveTime: Date.now(),
+      showFocusWarning: false,
+      showIdleWarning: false
+    }));
+
+    // Clear idle warning timeout
+    if (idleWarningTimeoutRef.current) {
+      clearTimeout(idleWarningTimeoutRef.current);
+      idleWarningTimeoutRef.current = null;
+    }
+
+    // Auto-resume if timer was paused by idle during work session
+    if (pomodoroState.isPausedByIdle && wasActiveBeforeIdle && !pomodoroState.isBreak) {
+      setTimeout(() => {
+        setPomodoroState(prev => ({
+          ...prev,
+          isActive: true,
+          isPausedByIdle: false
+        }));
+        setWasActiveBeforeIdle(false);
+        
+        showBrowserNotification(
+          '▶️ Timer Auto-Resumed', 
+          'Welcome back! Your Pomodoro has been automatically resumed.'
+        );
+        
+        playNotificationSound(800, 'sine'); // Success tone
+      }, 500); // Small delay to avoid immediate triggers
+    }
+  };
+
+  const handleOnAction = () => {
+    // Reset any warnings on user action
+    if (pomodoroState.showIdleWarning) {
+      setPomodoroState(prev => ({ ...prev, showIdleWarning: false }));
+    }
+    
+    // Clear warning timeout
+    if (idleWarningTimeoutRef.current) {
+      clearTimeout(idleWarningTimeoutRef.current);
+      idleWarningTimeoutRef.current = null;
+    }
+    
+    // Set up new warning timeout (30 seconds before idle)
+    if (pomodoroState.isActive && !pomodoroState.isBreak && !pomodoroState.isPausedByIdle) {
+      idleWarningTimeoutRef.current = setTimeout(() => {
+        setPomodoroState(prev => ({ ...prev, showIdleWarning: true }));
+      }, IDLE_TIMEOUT - IDLE_WARNING_TIME);
+    }
+  };
+
+  // Initialize idle timer
+  const {
+    getRemainingTime,
+    getLastActiveTime,
+    getIdleTime,
+    isIdle,
+    reset: resetIdleTimer
+  } = useIdleTimer({
+    timeout: IDLE_TIMEOUT,
+    onIdle: handleOnIdle,
+    onActive: handleOnActive,
+    onAction: handleOnAction,
+    debounce: 500,
+    crossTab: true,
+    startOnMount: true,
+    stopOnIdle: false,
+    // Only track during work sessions, not breaks
+    disabled: pomodoroState.isBreak || !pomodoroState.isActive
+  });
+
+  // Enhanced page leave prevention
   useEffect(() => {
     const handleVisibilityChange = () => {
       const isVisible = !document.hidden;
       setPomodoroState(prev => ({ ...prev, isTabVisible: isVisible }));
       
-      if (!isVisible && pomodoroState.isActive && !pomodoroState.isBreak) {
+      if (!isVisible && pomodoroState.isActive && !pomodoroState.isBreak && isFocusLocked) {
         // User switched away during active work session
         setPomodoroState(prev => ({
           ...prev,
@@ -83,78 +204,140 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
           showFocusWarning: true
         }));
         
-        // Auto-hide warning after 3 seconds when they return
+        // More persistent warning for tab switching
+        setTimeout(() => {
+          if (document.hidden) {
+            showBrowserNotification(
+              '🚨 Focus Broken!',
+              'You switched tabs during an active Pomodoro session. Come back to maintain focus!'
+            );
+          }
+        }, 2000);
+        
+        // Auto-hide warning after they return
         setTimeout(() => {
           setPomodoroState(prev => ({ ...prev, showFocusWarning: false }));
-        }, 3000);
+        }, 5000);
       } else if (isVisible && pomodoroState.isActive) {
-        // User returned to tab
+        // User returned to tab - reset idle timer
+        resetIdleTimer();
         focusStartTime.current = Date.now();
       }
     };
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (pomodoroState.isActive && !pomodoroState.isBreak && isFocusLocked) {
-        const message = "🍅 Focus session in progress! Are you sure you want to leave and break your focus streak?";
+        const message = "🍅 Focus session in progress! Leaving now will break your Pomodoro streak and reset your progress. Are you sure?";
         e.preventDefault();
         e.returnValue = message;
         return message;
       }
     };
 
+    // Prevent back button navigation during focus lock
+    const handlePopState = (e: PopStateEvent) => {
+      if (pomodoroState.isActive && !pomodoroState.isBreak && isFocusLocked) {
+        e.preventDefault();
+        
+        // Push the current state back to prevent navigation
+        window.history.pushState(null, '', window.location.href);
+        
+        // Show warning
+        const shouldLeave = window.confirm(
+          "🍅 You're in an active Pomodoro session! Navigating away will break your focus. Are you sure you want to continue?"
+        );
+        
+        if (shouldLeave) {
+          // User confirmed they want to leave
+          setIsFocusLocked(false);
+          setPomodoroState(prev => ({ ...prev, isActive: false }));
+          window.history.back(); 
+        }
+      }
+    };
+
+    // Add state to prevent back navigation
+    if (pomodoroState.isActive && !pomodoroState.isBreak && isFocusLocked) {
+      window.history.pushState(null, '', window.location.href);
+    }
+
     // Add global event listeners
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('popstate', handlePopState);
     
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('popstate', handlePopState);
     };
-  }, [pomodoroState.isActive, pomodoroState.isBreak, isFocusLocked]);
+  }, [pomodoroState.isActive, pomodoroState.isBreak, isFocusLocked, resetIdleTimer]);
 
-  // Track focus time
+  // Track focus time (only when not idle)
   useEffect(() => {
-    if (pomodoroState.isActive && pomodoroState.isTabVisible && !pomodoroState.isBreak) {
+    if (pomodoroState.isActive && pomodoroState.isTabVisible && !pomodoroState.isBreak && !isIdle() && !pomodoroState.isPausedByIdle) {
       const focusInterval = setInterval(() => {
-        setPomodoroState(prev => ({ ...prev, totalFocusTime: prev.totalFocusTime + 1 }));
+        setPomodoroState(prev => ({ 
+          ...prev, 
+          totalFocusTime: prev.totalFocusTime + 1,
+          lastActiveTime: Date.now()
+        }));
       }, 1000);
       
       return () => clearInterval(focusInterval);
     }
-  }, [pomodoroState.isActive, pomodoroState.isTabVisible, pomodoroState.isBreak]);
+  }, [pomodoroState.isActive, pomodoroState.isTabVisible, pomodoroState.isBreak, isIdle, pomodoroState.isPausedByIdle]);
 
-  // Main timer logic
+  // Update idle time in state
   useEffect(() => {
-    if (pomodoroState.isActive && pomodoroState.timeLeft > 0) {
+    const idleUpdateInterval = setInterval(() => {
+      setPomodoroState(prev => ({
+        ...prev,
+        idleTime: Math.floor(getIdleTime() / 1000)
+      }));
+    }, 1000);
+
+    return () => clearInterval(idleUpdateInterval);
+  }, [getIdleTime]);
+
+  // Main timer logic (enhanced with idle pause)
+  useEffect(() => {
+    if (pomodoroState.isActive && pomodoroState.timeLeft > 0 && !pomodoroState.isPausedByIdle) {
       intervalRef.current = setInterval(() => {
         setPomodoroState(prev => {
           if (prev.timeLeft <= 1) {
-            // Timer completed
+            // Timer completed - reset idle timer for next session
+            resetIdleTimer();
+            
             if (prev.isBreak) {
               // Break finished, start new work session
-              playNotificationSound();
+              playNotificationSound(800, 'sine');
               showBrowserNotification('Break over!', 'Time to get back to coding! 💪');
               return {
                 ...prev,
                 isBreak: false,
-                timeLeft: WORK_DURATION
+                timeLeft: WORK_DURATION,
+                isPausedByIdle: false,
+                showIdleWarning: false
               };
             } else {
               // Work session finished
               const newSessionCount = prev.sessionCount + 1;
               const breakDuration = newSessionCount % 4 === 0 ? LONG_BREAK : SHORT_BREAK;
               
-              playNotificationSound();
+              playNotificationSound(1000, 'sine');
               showBrowserNotification(
                 'Pomodoro Complete!', 
-                `Great work! Take a ${breakDuration === LONG_BREAK ? 'long' : 'short'} break. 🎉`
+                `Excellent work! Take a ${breakDuration === LONG_BREAK ? 'long' : 'short'} break. 🎉`
               );
               
               return {
                 ...prev,
                 sessionCount: newSessionCount,
                 isBreak: true,
-                timeLeft: breakDuration
+                timeLeft: breakDuration,
+                isPausedByIdle: false,
+                showIdleWarning: false
               };
             }
           }
@@ -173,10 +356,19 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
         clearInterval(intervalRef.current);
       }
     };
-  }, [pomodoroState.isActive, pomodoroState.timeLeft]);
+  }, [pomodoroState.isActive, pomodoroState.timeLeft, pomodoroState.isPausedByIdle, resetIdleTimer]);
+
+  // Cleanup idle warning timeout
+  useEffect(() => {
+    return () => {
+      if (idleWarningTimeoutRef.current) {
+        clearTimeout(idleWarningTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Utility functions
-  const playNotificationSound = () => {
+  const playNotificationSound = (frequency: number = 800, type: OscillatorType = 'sine') => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
@@ -185,8 +377,8 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       
-      oscillator.frequency.value = 800;
-      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      oscillator.type = type;
       
       gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
@@ -200,46 +392,94 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
 
   const showBrowserNotification = (title: string, body: string) => {
     if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(title, { body, icon: '/favicon.ico' });
+      const notification = new Notification(title, { 
+        body, 
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
+        requireInteraction: true, // Keep notification until user interacts
+        tag: 'pomodoro-notification' // Replace previous notifications
+      });
+      
+      // Auto-close after 10 seconds
+      setTimeout(() => notification.close(), 10000);
     }
   };
 
   const requestNotificationPermission = () => {
-    if ('Notification' in window) {
-      Notification.requestPermission();
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          showBrowserNotification(
+            '🍅 Notifications Enabled!',
+            'You\'ll receive alerts for timer events and focus breaks.'
+          );
+        }
+      });
     }
   };
 
   // Actions
   const startTimer = () => {
-    setPomodoroState(prev => ({ ...prev, isActive: true }));
-    setIsFocusLocked(true);
-    focusStartTime.current = Date.now();
     requestNotificationPermission();
+    resetIdleTimer(); // Reset idle timer when starting
+    setPomodoroState(prev => ({ 
+      ...prev, 
+      isActive: true, 
+      isPausedByIdle: false,
+      lastActiveTime: Date.now(),
+      showIdleWarning: false
+    }));
+    setIsFocusLocked(true);
+    setWasActiveBeforeIdle(false);
+    focusStartTime.current = Date.now();
   };
 
   const pauseTimer = () => {
-    setPomodoroState(prev => ({ ...prev, isActive: false }));
+    setPomodoroState(prev => ({ 
+      ...prev, 
+      isActive: false, 
+      isPausedByIdle: false,
+      showIdleWarning: false
+    }));
     setIsFocusLocked(false);
+    setWasActiveBeforeIdle(false);
+    
+    // Clear warning timeout
+    if (idleWarningTimeoutRef.current) {
+      clearTimeout(idleWarningTimeoutRef.current);
+      idleWarningTimeoutRef.current = null;
+    }
   };
 
   const resetTimer = () => {
-    setPomodoroState({
-      timeLeft: WORK_DURATION,
+    const duration = pomodoroState.isBreak 
+      ? (pomodoroState.sessionCount % 4 === 0 ? LONG_BREAK : SHORT_BREAK)
+      : WORK_DURATION;
+    
+    setPomodoroState(prev => ({
+      ...prev,
+      timeLeft: duration,
       isActive: false,
-      isBreak: false,
-      sessionCount: 0,
-      tabSwitchCount: 0,
-      totalFocusTime: 0,
+      isPausedByIdle: false,
       showFocusWarning: false,
-      isTabVisible: true,
-    });
+      showIdleWarning: false
+    }));
+    
     setIsFocusLocked(false);
+    resetIdleTimer();
+    setWasActiveBeforeIdle(false);
+    
+    // Clear warning timeout
+    if (idleWarningTimeoutRef.current) {
+      clearTimeout(idleWarningTimeoutRef.current);
+      idleWarningTimeoutRef.current = null;
+    }
   };
 
   const requestFocusLock = () => {
     if (pomodoroState.isActive && !pomodoroState.isBreak) {
       setIsFocusLocked(true);
+      resetIdleTimer();
     }
   };
 
@@ -247,62 +487,7 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({ children }) 
     setIsFocusLocked(false);
   };
 
-  const contextValue: PomodoroContextType = {
-    pomodoroState,
-    selectedColor,
-    isHighlightMode: false, // Can be expanded later
-    startTimer,
-    pauseTimer,
-    resetTimer,
-    setSelectedColor,
-    isFocusLocked,
-    requestFocusLock,
-    releaseFocusLock,
-  };
-
-  return (
-    <PomodoroContext.Provider value={contextValue}>
-      {children}
-      {/* Global Focus Warning Overlay */}
-      {pomodoroState.showFocusWarning && (
-        <div className="fixed top-4 right-4 z-[99999] animate-slide-in">
-          <div className="bg-yellow-500 text-white px-4 py-3 rounded-lg shadow-lg border-l-4 border-yellow-600">
-            <div className="flex items-center gap-2">
-              <div className="flex-shrink-0">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div>
-                <p className="font-medium">Stay Focused!</p>
-                <p className="text-sm opacity-90">You switched tabs during your focus session</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Global Focus Lock Indicator */}
-      {isFocusLocked && pomodoroState.isActive && !pomodoroState.isBreak && (
-        <div className="fixed top-4 left-4 z-[99999]">
-          <div className="bg-red-500 text-white px-3 py-2 rounded-lg shadow-lg flex items-center gap-2">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium">🔒 Focus Mode Active</span>
-          </div>
-        </div>
-      )}
-    </PomodoroContext.Provider>
-  );
-};
-
-// Global Focus Stats Component
-export const GlobalFocusStats: React.FC = () => {
-  const { pomodoroState, isFocusLocked } = usePomodoro();
-
-  if (!pomodoroState.isActive && pomodoroState.sessionCount === 0) {
-    return null;
-  }
-
+  // Format time helper
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -311,50 +496,128 @@ export const GlobalFocusStats: React.FC = () => {
 
   const getFocusScore = () => {
     if (pomodoroState.totalFocusTime === 0) return 100;
-    const distractionRatio = (pomodoroState.tabSwitchCount * 30) / pomodoroState.totalFocusTime;
+    const distractionRatio = (pomodoroState.tabSwitchCount * 30 + pomodoroState.idleTime) / pomodoroState.totalFocusTime;
     return Math.max(0, Math.round(100 - (distractionRatio * 100)));
   };
 
+  const contextValue: PomodoroContextType = {
+    pomodoroState,
+    selectedColor,
+    isHighlightMode: false,
+    startTimer,
+    pauseTimer,
+    resetTimer,
+    setSelectedColor,
+    isFocusLocked,
+    requestFocusLock,
+    releaseFocusLock,
+    getRemainingIdleTime: () => Math.max(0, Math.floor(getRemainingTime() / 1000)),
+    getIdleTime: () => Math.floor(getIdleTime() / 1000),
+    isIdle,
+    resetIdleTimer
+  };
+
   return (
-    <div className="fixed bottom-4 right-4 z-[99998]">
-      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px]">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">Focus Session</span>
-          <div className={`w-2 h-2 rounded-full ${pomodoroState.isActive ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-        </div>
-        
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Time Left:</span>
-            <span className={`font-mono font-bold ${pomodoroState.isBreak ? 'text-green-600' : 'text-red-600'}`}>
-              {formatTime(pomodoroState.timeLeft)}
-            </span>
-          </div>
-          
-          <div className="flex justify-between">
-            <span className="text-gray-600">Sessions:</span>
-            <span className="font-medium">{pomodoroState.sessionCount}</span>
-          </div>
-          
-          <div className="flex justify-between">
-            <span className="text-gray-600">Focus Score:</span>
-            <span className="font-medium">{getFocusScore()}%</span>
-          </div>
-          
-          {pomodoroState.tabSwitchCount > 0 && (
-            <div className="flex justify-between">
-              <span className="text-gray-600">Distractions:</span>
-              <span className="text-yellow-600 font-medium">{pomodoroState.tabSwitchCount}</span>
+    <PomodoroContext.Provider value={contextValue}>
+      {children}
+      
+      {/* Enhanced Global Focus Warning Overlay */}
+      {pomodoroState.showFocusWarning && (
+        <div className="fixed top-4 right-4 z-[99999] animate-slide-in">
+          <div className="bg-yellow-500 text-white px-4 py-3 rounded-lg shadow-lg border-l-4 border-yellow-600 max-w-sm">
+            <div className="flex items-start gap-2">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h4 className="font-bold text-sm">
+                  {pomodoroState.isPausedByIdle ? '⏸️ Timer Auto-Paused' : '🚨 Focus Broken!'}
+                </h4>
+                <p className="text-xs mt-1">
+                  {pomodoroState.isPausedByIdle 
+                    ? 'You went idle. Move your mouse or press a key to resume.'
+                    : 'Tab switching detected during active session. This affects your focus score.'
+                  }
+                </p>
+              </div>
             </div>
-          )}
-        </div>
-        
-        {pomodoroState.isBreak && (
-          <div className="mt-2 text-center">
-            <span className="text-xs text-green-600 font-medium">☕ Break Time</span>
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+
+      {/* Idle Warning Overlay */}
+      {pomodoroState.showIdleWarning && !pomodoroState.isPausedByIdle && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[99999] animate-pulse">
+          <div className="bg-orange-500 text-white px-4 py-3 rounded-lg shadow-lg border-l-4 border-orange-600">
+            <div className="flex items-center gap-2">
+              <div className="flex-shrink-0">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-bold text-sm">💤 Idle Warning</h4>
+                <p className="text-xs">Move your mouse or press a key to stay active! Timer will pause in {contextValue.getRemainingIdleTime()}s</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced Mini Status Widget */}
+      {pomodoroState.isActive && (
+        <div className="fixed bottom-14 right-4 z-[9999]">
+          <div className={`bg-white rounded-lg shadow-lg border-2 p-3 min-w-[200px] ${
+            pomodoroState.isPausedByIdle ? 'border-blue-400' :
+            pomodoroState.isBreak ? 'border-green-400' : 'border-red-400'
+          }`}>
+            <div className="flex items-center gap-2 mb-2">
+              <div className={`w-3 h-3 rounded-full ${
+                pomodoroState.isPausedByIdle ? 'bg-blue-500 animate-pulse' :
+                pomodoroState.isBreak ? 'bg-green-500' : 'bg-red-500'
+              }`}></div>
+              <span className="text-xs font-medium text-gray-700">
+                {pomodoroState.isPausedByIdle ? 'PAUSED' :
+                 pomodoroState.isBreak ? 'BREAK' : 'FOCUS'}
+              </span>
+              {isFocusLocked && <span className="text-xs">🔒</span>}
+            </div>
+            
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Time:</span>
+                <span className={`font-mono font-bold ${
+                  pomodoroState.isPausedByIdle ? 'text-blue-600' :
+                  pomodoroState.isBreak ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {formatTime(pomodoroState.timeLeft)}
+                </span>
+              </div>
+              
+              {!pomodoroState.isBreak && !pomodoroState.isPausedByIdle && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Idle in:</span>
+                  <span className="font-mono text-xs text-orange-600">
+                    {formatTime(contextValue.getRemainingIdleTime())}
+                  </span>
+                </div>
+              )}
+              
+              <div className="flex justify-between">
+                <span className="text-gray-600">Sessions:</span>
+                <span className="font-medium">{pomodoroState.sessionCount}</span>
+              </div>
+              
+              <div className="flex justify-between">
+                <span className="text-gray-600">Focus Score:</span>
+                <span className="font-medium">{getFocusScore()}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </PomodoroContext.Provider>
   );
 };
