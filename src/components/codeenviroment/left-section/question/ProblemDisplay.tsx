@@ -3,21 +3,24 @@ import ReactMarkdown from 'react-markdown';
 import { Clock, Star, Zap, ChevronLeft, Bookmark, ThumbsUp, ThumbsDown } from 'lucide-react';
 import HighlightableText from '@/components/ui/HighlightableText';
 
+// Updated interface to match your new JSON format
 interface Problem {
   id: string;
-  title: string;
   slug: string;
-  difficulty: string | null;
-  content: string;
-}
-
-interface Example {
   title: string;
-  input: string;
-  output: string;
-  explanation: string;
+  difficulty: string;
+  description: string;  // Direct string, no parsing needed
+  examples: Array<{
+    input: string;
+    output: string;
+    explanation?: string;
+  }>;
+  constraints: string[];  // Array of constraint strings
+  note?: string | null;
+  follow_up?: string;
 }
 
+// Updated ProblemDisplay component
 interface ProblemDisplayProps {
   problem: Problem | null;
   showBackButton?: boolean;
@@ -32,7 +35,6 @@ const ProblemDisplay: React.FC<ProblemDisplayProps> = ({
   className = ""
 }) => {
   if (!problem) {
-    // Render placeholder if no problem is selected
     return (
       <div className={`flex items-center justify-center h-64 text-gray-500 ${className}`}>
         <div className="text-center">
@@ -46,9 +48,8 @@ const ProblemDisplay: React.FC<ProblemDisplayProps> = ({
     );
   }
 
-  // Difficulty styling logic
-  const getDifficultyConfig = (difficulty: string | null) => {
-    switch (difficulty?.toLowerCase()) {
+  const getDifficultyConfig = (difficulty: string) => {
+    switch (difficulty.toLowerCase()) {
       case 'easy':
         return { icon: <Zap className="w-4 h-4" />, color: 'bg-green-100 text-green-800 border-green-200' };
       case 'medium':
@@ -62,56 +63,16 @@ const ProblemDisplay: React.FC<ProblemDisplayProps> = ({
 
   const difficultyConfig = getDifficultyConfig(problem.difficulty);
 
-  // FIXED: Better content parsing
-  const parseContent = (content: string) => {
-    // Clean up escaped newlines
-    const cleanedContent = content.replace(/\\n/g, '\n');
-    
-    // Split by constraints first
-    const constraintsSplit = cleanedContent.split(/\*\*Constraints:?\*\*/i);
-    const mainContent = constraintsSplit[0];
-    const constraints = constraintsSplit[1] || '';
+function cleanIOString(str: string): string {
+  return str
+    .replace(/^.*=\s*/, '')         // Remove "height = " or similar
+    .replace(/\\([\[\]{}()])/g, '$1') // Unescape \[ \] \{ \} \( \)
+    .replace(/[\[\]]/g, '')         // Remove any remaining brackets
+    .split(',')
+    .map(s => s.trim())
+    .join(', ');
+}
 
-    // Find all examples using a more robust regex
-    const exampleRegex = /\*\*Example\s*(\d+):?\*\*([\s\S]*?)(?=\*\*Example\s*\d+:?\*\*|\*\*Constraints:?\*\*|$)/gi;
-    const examples: Example[] = [];
-    let match;
-    
-    // Extract examples
-    while ((match = exampleRegex.exec(mainContent)) !== null) {
-      const exampleNumber = match[1];
-      const exampleContent = match[2];
-      
-      // Parse individual example components
-      const inputMatch = exampleContent.match(/\*\*Input:?\*\*\s*([\s\S]*?)(?=\*\*Output:?\*\*)/i);
-      const outputMatch = exampleContent.match(/\*\*Output:?\*\*\s*([\s\S]*?)(?=\*\*Explanation:?\*\*)/i);
-      const explanationMatch = exampleContent.match(/\*\*Explanation:?\*\*\s*([\s\S]*?)$/i);
-      
-      examples.push({
-        title: `Example ${exampleNumber}`,
-        input: inputMatch ? inputMatch[1].trim().replace(/\\(.)/g, '$1') : '',
-        output: outputMatch ? outputMatch[1].trim().replace(/\\(.)/g, '$1') : '',
-        explanation: explanationMatch ? explanationMatch[1].trim() : '',
-      });
-    }
-
-    // Get description by removing all examples from main content
-    let description = mainContent;
-    examples.forEach(() => {
-      description = description.replace(exampleRegex, '');
-    });
-    
-    // Clean up any leftover example markers
-    description = description.replace(/\*\*Example\s*\d+:?\*\*[\s\S]*$/gi, '').trim();
-
-    return { 
-      description: description.trim(), 
-      examples, 
-      constraints: constraints.trim() 
-    };
-  };
-
-  const { description, examples, constraints } = parseContent(problem.content);
 
   return (
     <div className={`${className}`}>
@@ -132,9 +93,15 @@ const ProblemDisplay: React.FC<ProblemDisplayProps> = ({
               {problem.difficulty}
             </div>
             <div className="flex items-center gap-2 text-gray-500">
-              <button className="p-1 hover:text-blue-600" title="Bookmark"><Bookmark className="w-4 h-4" /></button>
-              <button className="p-1 hover:text-green-600" title="Like"><ThumbsUp className="w-4 h-4" /></button>
-              <button className="p-1 hover:text-red-600" title="Dislike"><ThumbsDown className="w-4 h-4" /></button>
+              <button className="p-1 hover:text-blue-600" title="Bookmark">
+                <Bookmark className="w-4 h-4" />
+              </button>
+              <button className="p-1 hover:text-green-600" title="Like">
+                <ThumbsUp className="w-4 h-4" />
+              </button>
+              <button className="p-1 hover:text-red-600" title="Dislike">
+                <ThumbsDown className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
@@ -142,43 +109,37 @@ const ProblemDisplay: React.FC<ProblemDisplayProps> = ({
 
       {/* Main Content */}
       <div className="prose prose-gray max-w-none">
-        {/* Problem Description */}
-        {description && (
-          <div className="mb-6">
-                   <HighlightableText 
-          content={description}
-          problemId={problem.id}
-          isMarkdown={true}  
-          className="text-gray-700"
-          onHighlightChange={(highlights) => {
-            console.log(`Problem ${problem.id} has ${highlights.length} highlights`);
-          }}
-        />
-          </div>
-        )}
+        {/* Problem Description - No parsing needed! */}
+        <div className="mb-6">
+          <HighlightableText 
+            content={problem.description}
+            problemId={problem.id}
+            isMarkdown={true}  
+            className="text-gray-700"
+            onHighlightChange={(highlights) => {
+              console.log(`Problem ${problem.id} has ${highlights.length} highlights`);
+            }}
+          />
+        </div>
 
-        {/* Examples */}
-        {examples.map((example, index) => (
+        {/* Examples - Direct mapping from JSON */}
+        {problem.examples.map((example, index) => (
           <div key={index} className="mb-6">
-            <h3 className="font-semibold text-gray-800 mb-3">{example.title}</h3>
+            <h3 className="font-semibold text-gray-800 mb-3">Example {index + 1}</h3>
             <div className="bg-gray-50 p-4 rounded-lg border">
               <div className="space-y-3 text-sm">
-                {example.input && (
-                  <div>
-                    <span className="font-medium text-gray-600">Input:</span>
-                    <pre className="mt-1 bg-gray-200 text-gray-800 px-3 py-2 rounded text-xs overflow-x-auto">
-                      <code>{example.input}</code>
-                    </pre>
-                  </div>
-                )}
-                {example.output && (
-                  <div>
-                    <span className="font-medium text-gray-600">Output:</span>
-                    <pre className="mt-1 bg-gray-200 text-gray-800 px-3 py-2 rounded text-xs overflow-x-auto">
-                      <code>{example.output}</code>
-                    </pre>
-                  </div>
-                )}
+                <div>
+                  <span className="font-medium text-gray-600">Input:</span>
+                  <pre className="mt-1 bg-gray-200 text-gray-800 px-3 py-2 rounded text-xs overflow-x-auto">
+                    <code>{cleanIOString(example.input)}</code>
+                  </pre>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-600">Output:</span>
+                  <pre className="mt-1 bg-gray-200 text-gray-800 px-3 py-2 rounded text-xs overflow-x-auto">
+                    <code>{cleanIOString(example.output)}</code>
+                  </pre>
+                </div>
                 {example.explanation && (
                   <div>
                     <span className="font-medium text-gray-600">Explanation:</span>
@@ -192,14 +153,36 @@ const ProblemDisplay: React.FC<ProblemDisplayProps> = ({
           </div>
         ))}
         
-        {/* Constraints */}
-        {constraints && (
+        {/* Constraints - Direct mapping from array */}
+        {problem.constraints && problem.constraints.length > 0 && (
           <div className="mt-8">
             <h3 className="font-semibold text-gray-800 mb-3">Constraints</h3>
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <div className="prose prose-sm text-gray-700">
-                <ReactMarkdown>{constraints}</ReactMarkdown>
-              </div>
+              <ul className="text-gray-700 space-y-1">
+                {problem.constraints.map((constraint, index) => (
+                  <li key={index} className="text-sm">
+                    <ReactMarkdown>{constraint}</ReactMarkdown>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Follow-up question if exists */}
+        {problem.follow_up && (
+          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h4 className="font-medium text-yellow-800 mb-2">Follow-up</h4>
+            <p className="text-sm text-yellow-700"><ReactMarkdown>{problem.follow_up}</ReactMarkdown></p>
+          </div>
+        )}
+
+        {/* Note if exists */}
+        {problem.note && (
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h4 className="font-medium text-blue-800 mb-2">Note</h4>
+            <div className="text-sm text-blue-700">
+              <ReactMarkdown>{problem.note}</ReactMarkdown>
             </div>
           </div>
         )}

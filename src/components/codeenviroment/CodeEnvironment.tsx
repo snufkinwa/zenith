@@ -6,29 +6,40 @@ import ProblemList from "./left-section/question/ProblemList";
 import ProblemDisplay from "./left-section/question/ProblemDisplay";
 import BottomModal from "./BottomModal";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { ChevronLeft, BookOpen } from "lucide-react";
+import { ChevronLeft, BookOpen, ChevronUp } from "lucide-react";
+import { cleanInput, buildPythonScript, extractFunctionName } from '@/utils/codeBuilder';
 
 interface Problem {
   id: string;
-  title: string;
   slug: string;
-  difficulty: string | null;
-  content: string;
+  title: string;
+  difficulty: string;
+  description: string;
+  examples: Array<{
+    input: string;
+    output: string;
+    explanation?: string;
+  }>;
+  constraints: string[];
+  note?: string | null;
+  follow_up?: string;
 }
 
-interface LanguageOption {
-  language: string;
-  version: string;
+interface TestResult {
+  testCase: number;
+  input: string;
+  expected: string;
+  actual: string;
+  passed: boolean;
+  executionTime?: number;
+  error?: string;
 }
 
-const languageOptions: { [key: string]: LanguageOption } = {
-  python: { language: "python", version: "3.10.0" },
-  java: { language: "java", version: "15.0.2" },
-  cpp: { language: "cpp", version: "10.2.0" },
-  javascript: { language: "javascript", version: "18.15.0" },
-};
+interface CodeEnvironmentProps {
+  problems: Problem[];
+}
 
-const CodeEnvironment: React.FC<{ problems: Problem[] }> = ({ problems }) => {
+const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -37,34 +48,51 @@ const CodeEnvironment: React.FC<{ problems: Problem[] }> = ({ problems }) => {
   const [output, setOutput] = useState("");
   const [consoleOutput, setConsoleOutput] = useState("");
   const [errors, setErrors] = useState("");
-  const [language, setLanguage] = useState("python");
   const [loading, setLoading] = useState(false);
   const [testLoading, setTestLoading] = useState(false);
+  const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isProblemPanelCollapsed, setIsProblemPanelCollapsed] = useState(false);
+  const [isTerminalCollapsed, setIsTerminalCollapsed] = useState(false);
 
-  // Handle URL parameter for problem selection
   useEffect(() => {
-    const problemId = searchParams.get('problem');
-    
-    if (problemId && problems.length > 0) {
-      // Find problem by ID
-      const problemFromUrl = problems.find(p => p.id === problemId);
-      if (problemFromUrl) {
-        setSelectedProblem(problemFromUrl);
-        return;
+    const problemSlug = searchParams.get('problem');
+
+    if (problemSlug && problems.length > 0) {
+      // Find problem by slug
+      const matchedProblem = problems.find(p => p.slug === problemSlug);
+      if (matchedProblem) {
+        setSelectedProblem(matchedProblem);
       }
-    }
-    
-    // Fallback: select first problem if none selected and no URL param
-    if (!selectedProblem && problems.length > 0) {
+    } else if (problems.length > 0 && !problemSlug) {
+      // Only set first problem if no URL param at all
       const firstProblem = problems[0];
       setSelectedProblem(firstProblem);
-      // Update URL to reflect the selected problem
+      
+      // Update URL
       const newUrl = new URL(window.location.href);
-      newUrl.searchParams.set('problem', firstProblem.id);
+      newUrl.searchParams.set('problem', firstProblem.slug);
       router.replace(newUrl.pathname + newUrl.search, { scroll: false });
     }
-  }, [searchParams, problems, selectedProblem, router]);
+  }, [searchParams, problems, router]); // REMOVED selectedProblem from dependencies
+
+  // Helper to make API requests
+  const makeApiRequest = async (data: { language: string; version: string; files: { content: string; }[] | { content: string; }[]; }) => {
+    const res = await fetch("/api/compile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  };
+
+  // Helper to update console output
+  const updateConsole = (setter: { (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (arg0: (prev: any) => string): void; }, message: string, append = true) => {
+    if (append) {
+      setter((prev) => `${prev}\n${message}`);
+    } else {
+      setter(message);
+    }
+  };
 
   const runCode = async () => {
     setLoading(true);
@@ -72,46 +100,45 @@ const CodeEnvironment: React.FC<{ problems: Problem[] }> = ({ problems }) => {
     setConsoleOutput("");
     setErrors("");
 
-    const languageOption = languageOptions[language];
     const requestData = {
-      language: languageOption.language,
-      version: languageOption.version,
-      files: [
-        {
-          content: input,
-        },
-      ],
+      language: "python",
+      version: "3.10.0",
+      files: [{ content: input }],
     };
 
     try {
-      const res = await fetch("/api/compile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestData),
-      });
-
-      const result = await res.json();
+      const result = await makeApiRequest(requestData);
 
       if (result?.run?.output) {
         setOutput(result.run.output);
-        setConsoleOutput(`Code executed successfully at ${new Date().toLocaleTimeString()}\nLanguage: ${language}\n${result.run.output}`);
-        setErrors("");
+        setConsoleOutput(
+          `Code executed successfully at ${new Date().toLocaleTimeString()}\nLanguage: Python\n${result.run.output}`
+        );
+        setErrors(""); // Clear errors on successful run
       } else {
         setOutput("No output returned.");
         setConsoleOutput("No output returned.");
-        setErrors("");
+        setErrors(""); // Clear errors if no output but no explicit error
       }
 
-      // Handle compilation errors
+      let hasError = false;
       if (result?.compile?.stderr) {
+        updateConsole(setConsoleOutput, `Compilation Error:\n${result.compile.stderr}`);
         setErrors(result.compile.stderr);
-        setConsoleOutput(prev => `${prev}\n\nCompilation Error:\n${result.compile.stderr}`);
+        hasError = true;
+      }
+      if (result?.run?.stderr) {
+        updateConsole(setConsoleOutput, `Runtime Error:\n${result.run.stderr}`);
+        setErrors(result.run.stderr);
+        hasError = true;
       }
 
-      // Handle runtime errors
-      if (result?.run?.stderr) {
-        setErrors(result.run.stderr);
-        setConsoleOutput(prev => `${prev}\n\nRuntime Error:\n${result.run.stderr}`);
+      if (!hasError && !result?.run?.output) {
+          // This case handles when there's no output and no explicit error, still an issue.
+          const msg = "Execution completed, but no output or error was returned.";
+          setOutput(msg);
+          setConsoleOutput(msg);
+          setErrors(msg);
       }
 
     } catch (error) {
@@ -124,35 +151,116 @@ const CodeEnvironment: React.FC<{ problems: Problem[] }> = ({ problems }) => {
     }
   };
 
-  const runTests = async () => {
-    setTestLoading(true);
-    try {
-      // Mock test implementation - replace with actual test logic
-      const testResults = "Test 1: PASSED\nTest 2: PASSED\nTest 3: FAILED - Expected 5, got 4\nOverall: 2/3 tests passed";
-      
-      setConsoleOutput(testResults);
-      setOutput(testResults);
-      setErrors("");
-    } catch (error) {
-      const errorMessage = `Test execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      setErrors(errorMessage);
-      setConsoleOutput(errorMessage);
-    } finally {
-      setTestLoading(false);
+  const runTests = async (
+    customTestCases: Array<{ input: string; expected?: string; isCustom?: boolean }> = []
+  ) => {
+    if (!selectedProblem || !input.trim()) {
+      const errorMsg = "Please write some code and select a problem before running tests.";
+      setErrors(errorMsg);
+      setConsoleOutput(errorMsg);
+      return;
     }
+
+    setTestLoading(true);
+    setTestResults([]);
+    updateConsole(setConsoleOutput, "Running test cases...\n", false);
+    setErrors("");
+
+    const baseCases = selectedProblem.examples.map((ex, idx) => ({
+      id: idx + 1,
+      input: ex.input,
+      expected: ex.output,
+      isCustom: false,
+    }));
+
+    const customCases = customTestCases.filter((tc) => tc.isCustom && tc.input.trim());
+
+    const allTestCases = [...baseCases, ...customCases];
+    if (allTestCases.length === 0) {
+      updateConsole(setConsoleOutput, "No test cases available for this problem.");
+      return;
+    }
+
+    const functionName = extractFunctionName(input);
+    const results: TestResult[] = [];
+
+    for (let i = 0; i < allTestCases.length; i++) {
+      const testCase = allTestCases[i];
+      updateConsole(setConsoleOutput, `Running Test Case ${i + 1}...`);
+
+      const cleaned = cleanInput(testCase.input);
+      const script = buildPythonScript(input, functionName, cleaned);
+
+      const testResult: TestResult = {
+        testCase: i + 1,
+        input: testCase.input,
+        expected: testCase.expected || "",
+        actual: "",
+        passed: false,
+        executionTime: 0,
+      };
+
+      try {
+        const startTime = Date.now();
+        const response = await makeApiRequest({
+          language: "python",
+          version: "3.10.0",
+          files: [{ content: script }],
+        });
+
+        testResult.executionTime = Date.now() - startTime;
+
+        const output = response?.run?.output?.trim();
+        const error = response?.run?.stderr || response?.compile?.stderr;
+
+        if (output) {
+          testResult.actual = output;
+          testResult.passed = output.replace(/\s+/g, "") === (testCase.expected || "").replace(/\s+/g, "");
+        } else {
+          testResult.actual = "Error occurred";
+          testResult.error = error || "No output returned";
+        }
+      } catch (err) {
+        testResult.actual = "Execution failed";
+        testResult.error = err instanceof Error ? err.message : "Unknown error";
+      }
+
+      const status = testResult.passed ? "✅ PASSED" : "❌ FAILED";
+      const execTime = testResult.executionTime ?? 0;
+      const timing = execTime < 1000
+        ? `${execTime}ms`
+        : `${(execTime / 1000).toFixed(2)}s`;
+
+      updateConsole(
+        setConsoleOutput,
+        `Test Case ${i + 1}: ${status} (${timing})\n` +
+        `Input: ${testCase.input}\n` +
+        `Expected: ${testCase.expected}\n` +
+        `Actual: ${testResult.actual}\n` +
+        (testResult.error ? `Error: ${testResult.error}\n` : "") +
+        "\n"
+      );
+
+      results.push(testResult);
+    }
+
+    setTestResults(results);
+    setTestLoading(false);
   };
 
+ 
+
   const handleSelectProblem = (problem: Problem) => {
-    setSelectedProblem(problem);
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set('problem', problem.slug);
+    router.replace(newUrl.pathname + newUrl.search, { scroll: false });
+    
+    // Clear editor/terminal state
     setInput("");
     setOutput("");
     setConsoleOutput("");
     setErrors("");
-    
-    // Update URL to reflect the selected problem
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.set('problem', problem.id);
-    router.replace(newUrl.pathname + newUrl.search, { scroll: false });
+    setTestResults([]);
   };
 
   return (
@@ -207,47 +315,60 @@ const CodeEnvironment: React.FC<{ problems: Problem[] }> = ({ problems }) => {
               className="p-3 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-md transition-colors mb-4"
               title="Show problem panel"
             >
-              <BookOpen size={18} />
+              <BookOpen size={16} />
             </button>
-            
-            <div className="transform rotate-90 text-xs text-gray-500 whitespace-nowrap origin-center mt-8">
-              Problems
-            </div>
           </div>
         )}
 
         {/* Right Panel - Code Editor and Terminal */}
-        <Panel minSize={30}>
-          <div className="h-full flex flex-col bg-gray-50 relative">
-            {/* Editor Section - Fixed 60% height */}
-            <div className="h-3/5 bg-white border-l border-gray-200">
-              <Editor 
-                input={input} 
-                setInput={setInput} 
-                setLanguage={setLanguage}
-                runCode={runCode}
-                loading={loading}
+        <Panel minSize={30} defaultSize={50}>
+          <div className="h-full flex flex-col bg-gray-50">
+            {/* Top Section - Code Editor */}
+            <div className={`${isTerminalCollapsed ? 'h-full' : 'flex-1'} flex flex-col`}>
+              <Editor
+                input={input}
+                setInput={setInput}
+                problemSlug={selectedProblem?.slug}
               />
             </div>
             
-            {/* Simple Divider */}
-            <div className="h-0.5 bg-gray-300"></div>
+            {/* Terminal Section - Collapsible */}
+            {!isTerminalCollapsed && (
+              <div className="h-80 border-t border-gray-300 flex flex-col">
+                <Terminal
+                  output={output}
+                  consoleOutput={consoleOutput}
+                  errors={errors}
+                  runCode={runCode}
+                  runTestCases={runTests}
+                  loading={loading}
+                  testLoading={testLoading}
+                  testResults={testResults}
+                  isCollapsed={isTerminalCollapsed}
+                  onToggleCollapse={() => setIsTerminalCollapsed(true)}
+                  selectedProblem={selectedProblem}
+                />
+              </div>
+            )}
             
-            {/* Terminal Section - Fixed 40% height */}
-            <div className="h-2/5 bg-white border-l border-gray-200">
-              <Terminal 
-                output={output}
-                consoleOutput={consoleOutput}
-                errors={errors}
-                runCode={runCode}
-                runTestCases={runTests}
-                loading={loading}
-                testLoading={testLoading}
-              />
-            </div>
+            {/* Collapsed Terminal Button */}
+            {isTerminalCollapsed && (
+              <div className="h-10 border-t border-gray-300 bg-gray-100 flex items-center justify-between px-4">
+                <span className="text-sm text-gray-600">Terminal</span>
+                <button
+                  onClick={() => setIsTerminalCollapsed(false)}
+                  className="flex items-center gap-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-sm transition-colors"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                  Show
+                </button>
+              </div>
+            )}
           </div>
         </Panel>
       </PanelGroup>
+
+      {/* Bottom Modal Component */}
       <BottomModal />
     </div>
   );

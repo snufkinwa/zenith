@@ -1,169 +1,98 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
-import { java } from '@codemirror/lang-java';
-import { cpp } from '@codemirror/lang-cpp';
-import { javascript } from '@codemirror/lang-javascript';
-import { Play, Settings, Code } from 'lucide-react';
+import { Code } from 'lucide-react';
 
 interface EditorProps {
   input: string;
   setInput: (input: string) => void;
-  setLanguage: (language: string) => void;
-  runCode: () => Promise<void>;
-  loading: boolean;
+  problemSlug?: string; // Add this prop to know which problem is selected
 }
 
-const Editor: React.FC<EditorProps> = ({ input, setInput, setLanguage, runCode, loading }) => {
-  const [selectedLanguage, setSelectedLanguage] = useState('python');
+const Editor: React.FC<EditorProps> = ({ input, setInput, problemSlug }) => {
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [templatesLoaded, setTemplatesLoaded] = useState(false);
+
+  // Load templates on mount
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const response = await fetch('/data/templates.json');
+        const templateData = await response.json();
+        setTemplates(templateData);
+        setTemplatesLoaded(true);
+        console.log('Templates loaded:', templateData.length, 'templates');
+      } catch (error) {
+        console.error('Error loading templates:', error);
+        setTemplatesLoaded(true);
+      }
+    };
+    loadTemplates();
+  }, []);
 
   const handleChange = useCallback((value: string) => {
     setInput(value);
   }, [setInput]);
 
-  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLanguage = event.target.value;
-    setSelectedLanguage(newLanguage);
-    setLanguage(newLanguage);
-  };
-
-  const getLanguageExtension = () => {
-    switch (selectedLanguage) {
-      case 'python': return python();
-      case 'java': return java();
-      case 'cpp': return cpp();
-      case 'javascript': return javascript();
-      default: return python();
+  const getTemplateForProblem = (slug: string): string => {
+    const template = templates.find(t => t.slug === slug);
+    if (template) {
+      // Template is already perfect - just return it
+      return template.template;
     }
+    return getDefaultTemplate();
   };
 
-  const getLanguageTemplate = (language: string) => {
-    switch (language) {
-      case 'python':
-        return `# Welcome to the code editor!
-# Write your Python solution here
+  const getDefaultTemplate = () => {
+    return `class Solution:
+    def solve(self):
+        # Write your code here
+        pass
 
-def solution():
-    # Your code here
-    pass
-
-# Test your solution
 if __name__ == "__main__":
-    result = solution()
-    print(result)`;
-      
-      case 'java':
-        return `// Welcome to the code editor!
-// Write your Java solution here
-
-public class Solution {
-    public static void main(String[] args) {
-        Solution sol = new Solution();
-        // Test your solution
-        System.out.println("Hello World");
-    }
-    
-    // Your solution method here
-}`;
-      
-      case 'cpp':
-        return `// Welcome to the code editor!
-// Write your C++ solution here
-
-#include <iostream>
-#include <vector>
-using namespace std;
-
-class Solution {
-public:
-    // Your solution method here
-};
-
-int main() {
-    Solution sol;
-    // Test your solution
-    cout << "Hello World" << endl;
-    return 0;
-}`;
-      
-      case 'javascript':
-        return `// Welcome to the code editor!
-// Write your JavaScript solution here
-
-function solution() {
-    // Your code here
-}
-
-// Test your solution
-console.log("Hello World");`;
-      
-      default:
-        return '';
-    }
+    sol = Solution()
+    print(sol.solve())`;
   };
 
-  const handleLanguageChangeWithTemplate = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLanguage = event.target.value;
-    setSelectedLanguage(newLanguage);
-    setLanguage(newLanguage);
-    
-    // If editor is empty, provide template
-    if (!input.trim()) {
-      setInput(getLanguageTemplate(newLanguage));
+  // Load template when problem changes
+  useEffect(() => {
+    if (!templatesLoaded) return;
+
+    if (problemSlug) {
+      // Load template for specific problem
+      const template = getTemplateForProblem(problemSlug);
+      setInput(template);
+      console.log('Loaded template for problem:', problemSlug);
+    } else if (!input) {
+      // Load default template only if input is empty
+      setInput(getDefaultTemplate());
     }
-  };
+  }, [problemSlug, templatesLoaded, templates]);
 
   return (
     <div className="h-full flex flex-col">
-      {/* Editor Header */}
+      {/* Editor Header - Simplified for Python only */}
       <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <Code className="w-5 h-5 text-gray-600" />
           <h3 className="font-semibold text-gray-900">Code Editor</h3>
-          
-          <div className="flex items-center gap-2">
-            <Settings className="w-4 h-4 text-gray-500" />
-            <select 
-              value={selectedLanguage}
-              onChange={handleLanguageChangeWithTemplate}
-              className="text-sm border border-gray-300 rounded-md px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="python">Python</option>
-              <option value="java">Java</option>
-              <option value="cpp">C++</option>
-              <option value="javascript">JavaScript</option>
-            </select>
+        </div>
+        {/* Python Language Indicator */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-md text-sm font-medium">
+            <span>🐍</span>
+            <span>Python</span>
           </div>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <button
-            onClick={runCode}
-            disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-md transition-colors text-sm font-medium"
-          >
-            {loading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Running...
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4" />
-                Run Code
-              </>
-            )}
-          </button>
-        </div>
       </div>
-
+      
       {/* Code Editor */}
       <div className="flex-1">
         <CodeMirror
           value={input}
           height="100%"
           basicSetup={{
-            lineNumbers: true,
+            lineNumbers: false,
             foldGutter: true,
             highlightActiveLine: true,
             autocompletion: true,
@@ -173,10 +102,9 @@ console.log("Hello World");`;
             bracketMatching: true,
             searchKeymap: true
           }}
-          extensions={[getLanguageExtension()]}
+          extensions={[python()]} // Only Python extension
           onChange={(value) => handleChange(value)}
           theme="light"
-          placeholder={`Start coding in ${selectedLanguage}...`}
         />
       </div>
     </div>

@@ -2,12 +2,21 @@ import React, { useEffect, useState, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import { Search, ChevronDown, Clock, Star, Zap, Filter } from "lucide-react";
 
+// Updated interface to match your new JSON format
 interface Problem {
   id: string;
-  title: string;
   slug: string;
-  difficulty: string | null;
-  content: string;
+  title: string;
+  difficulty: string;
+  description: string;
+  examples: Array<{
+    input: string;
+    output: string;
+    explanation?: string;
+  }>;
+  constraints: string[];
+  note?: string | null;
+  follow_up?: string;
 }
 
 interface ProblemListProps {
@@ -28,14 +37,9 @@ const ProblemList: React.FC<ProblemListProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [displayLimit, setDisplayLimit] = useState(showSimilarOnly ? 5 : 10);
 
-  // Function to extract clean preview text from problem content
-  const getCleanPreview = (content: string, maxLength: number = 120) => {
-    // Clean up escaped newlines and get main description before examples
-    const cleaned = content.replace(/\\n/g, '\n');
-    const beforeExample = cleaned.split(/\*\*Example/i)[0];
-    const beforeConstraints = beforeExample.split(/\*\*Constraints/i)[0];
-    
-    return beforeConstraints.trim().substring(0, maxLength);
+  // Function to get clean preview text from description (no parsing needed!)
+  const getCleanPreview = (description: string, maxLength: number = 120) => {
+    return description.trim().substring(0, maxLength);
   };
 
   // Extract keywords from text for similarity matching
@@ -60,7 +64,7 @@ const ProblemList: React.FC<ProblemListProps> = ({
   const getSimilarProblems = (currentProblem: Problem | null, allProblems: Problem[]) => {
     if (!currentProblem) return allProblems.slice(0, 10);
 
-    const keywords = extractKeywords(currentProblem.title + " " + currentProblem.content);
+    const keywords = extractKeywords(currentProblem.title + " " + currentProblem.description);
     const currentDifficulty = currentProblem.difficulty?.toLowerCase();
 
     return allProblems
@@ -89,10 +93,10 @@ const ProblemList: React.FC<ProblemListProps> = ({
           }
         });
 
-        // Common keywords in content get lower score
-        const contentKeywords = extractKeywords(problem.content);
+        // Common keywords in description get lower score
+        const descriptionKeywords = extractKeywords(problem.description);
         keywords.forEach(keyword => {
-          if (contentKeywords.includes(keyword)) {
+          if (descriptionKeywords.includes(keyword)) {
             score += 5;
           }
         });
@@ -117,7 +121,7 @@ const ProblemList: React.FC<ProblemListProps> = ({
     if (searchQuery.trim()) {
       filtered = filtered.filter(problem =>
         problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        problem.content.toLowerCase().includes(searchQuery.toLowerCase())
+        problem.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -135,14 +139,14 @@ const ProblemList: React.FC<ProblemListProps> = ({
   }, [problemsToFilter, searchQuery, difficultyFilter, isExpanded, displayLimit]);
 
   // Auto-select first problem on mount
-  useEffect(() => {
-    if (!showSimilarOnly && problems.length > 0 && !selectedProblem) {
-      const randomProblem = problems[Math.floor(Math.random() * Math.min(problems.length, 20))];
-      onSelectProblem(randomProblem);
-    }
-  }, [problems, onSelectProblem, selectedProblem, showSimilarOnly]);
+useEffect(() => {
+  // Only log when problems load, don't auto-select anything
+  if (problems.length > 0) {
+    console.log(`Loaded ${problems.length} problems`);
+  }
+}, [problems]);
 
-  const getDifficultyIcon = (difficulty: string | null) => {
+  const getDifficultyIcon = (difficulty: string) => {
     switch (difficulty?.toLowerCase()) {
       case 'easy':
         return <Zap className="w-3 h-3 text-green-500" />;
@@ -155,7 +159,7 @@ const ProblemList: React.FC<ProblemListProps> = ({
     }
   };
 
-  const getDifficultyColor = (difficulty: string | null) => {
+  const getDifficultyColor = (difficulty: string) => {
     switch (difficulty?.toLowerCase()) {
       case 'easy':
         return 'bg-green-100 text-green-700 border-green-200';
@@ -181,115 +185,89 @@ const ProblemList: React.FC<ProblemListProps> = ({
       </div>
 
       {/* Search and Filter Controls */}
-      {!showSimilarOnly && (
-        <div className="space-y-3">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search problems..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-            />
-          </div>
-
-          {/* Difficulty Filter */}
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-400" />
-            <select
-              value={difficultyFilter}
-              onChange={(e) => setDifficultyFilter(e.target.value)}
-              className="text-sm border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Difficulties</option>
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
-          </div>
+      <div className="space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search problems..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
         </div>
-      )}
+
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-gray-500" />
+          <select
+            value={difficultyFilter}
+            onChange={(e) => setDifficultyFilter(e.target.value)}
+            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="all">All Difficulties</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+      </div>
 
       {/* Problems List */}
       <div className="space-y-2">
-        {filteredProblems.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No problems found</p>
-          </div>
-        ) : (
-          filteredProblems.map((problem) => (
-            <div
-              key={problem.id}
-              onClick={() => onSelectProblem(problem)}
-              className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
-                selectedProblem?.id === problem.id
-                  ? 'border-blue-500 bg-blue-50 shadow-sm'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              {/* Problem Header */}
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-gray-900 text-sm leading-tight">
-                    {problem.title}
-                  </h3>
-                </div>
-                
-                {problem.difficulty && (
-                  <div className="flex items-center gap-1 flex-shrink-0">
+        {filteredProblems.map((problem) => (
+          <div
+            key={problem.id}
+            onClick={() => onSelectProblem(problem)}
+            className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 hover:shadow-md ${
+              selectedProblem?.id === problem.id
+                ? 'border-blue-300 bg-blue-50 shadow-sm'
+                : 'border-gray-200 hover:border-gray-300 bg-white'
+            }`}
+          >
+            {/* Problem Header */}
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-medium text-gray-900 truncate">
+                  {problem.title}
+                </h3>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getDifficultyColor(problem.difficulty)}`}>
                     {getDifficultyIcon(problem.difficulty)}
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${getDifficultyColor(problem.difficulty)}`}>
-                      {problem.difficulty}
-                    </span>
-                  </div>
-                )}
+                    {problem.difficulty}
+                  </span>
+                </div>
               </div>
-              
-              {/* Problem Preview */}
-              <div className="text-xs text-gray-600 leading-relaxed prose prose-xs max-w-none">
-                <ReactMarkdown
-                  components={{
-                    // Customize markdown rendering for compact preview
-                    p: ({ children }) => <span className="block mb-1">{children}</span>,
-                    strong: ({ children }) => <span className="font-medium text-gray-800">{children}</span>,
-                    code: ({ children }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">{children}</code>,
-                    em: ({ children }) => <span className="italic">{children}</span>,
-                    // Remove other elements that don't work well in previews
-                    h1: ({ children }) => <span className="font-medium">{children}</span>,
-                    h2: ({ children }) => <span className="font-medium">{children}</span>,
-                    h3: ({ children }) => <span className="font-medium">{children}</span>,
-                    ul: ({ children }) => <span>{children}</span>,
-                    li: ({ children }) => <span>{children}</span>,
-                  }}
-                >
-                  {getCleanPreview(problem.content, selectedProblem?.id === problem.id ? 300 : 150)}
+            </div>
+
+            {/* Problem Preview */}
+            <div className="text-sm text-gray-600">
+              <div className="line-clamp-2">
+                <ReactMarkdown>
+                  {getCleanPreview(problem.description, selectedProblem?.id === problem.id ? 300 : 150)}
                 </ReactMarkdown>
               </div>
-
-              {/* Tags/Keywords Preview (for selected item) */}
-              {selectedProblem?.id === problem.id && (
-                <div className="mt-3 pt-2 border-t border-blue-200">
-                  <div className="flex flex-wrap gap-1">
-                    {extractKeywords(problem.title + " " + problem.content)
-                      .slice(0, 5)
-                      .map((keyword, idx) => (
-                        <span 
-                          key={idx}
-                          className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full"
-                        >
-                          {keyword}
-                        </span>
-                      ))
-                    }
-                  </div>
-                </div>
-              )}
             </div>
-          ))
-        )}
+
+            {/* Tags/Keywords Preview (for selected item) */}
+            {selectedProblem?.id === problem.id && (
+              <div className="mt-3 pt-2 border-t border-blue-200">
+                <div className="flex flex-wrap gap-1">
+                  {extractKeywords(problem.title + " " + problem.description)
+                    .slice(0, 5)
+                    .map((keyword, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full"
+                      >
+                        {keyword}
+                      </span>
+                    ))
+                  }
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Load More Button */}

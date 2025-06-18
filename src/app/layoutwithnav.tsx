@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import PlatformNav from '@/components/platform-nav';
 import { PomodoroProvider } from '@/contexts/PomodoroContext'; // Add this import
 import { ChevronLeft, ChevronRight, Menu } from 'lucide-react';
+import Logo from '@/components/landingpage/ui/logo';
 
 interface LayoutWithNavProps {
   children: React.ReactNode;
@@ -28,7 +29,7 @@ const LayoutWithNav: React.FC<LayoutWithNavProps> = ({ children }) => {
   }
 
   return (
-    <PomodoroProvider> {/* Wrap everything in PomodoroProvider */}
+    <PomodoroProvider> 
       <div className="h-screen flex flex-row overflow-hidden">
         {/* Sidebar */}
         <aside 
@@ -39,8 +40,8 @@ const LayoutWithNav: React.FC<LayoutWithNavProps> = ({ children }) => {
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
             {!isNavCollapsed && (
-              <div className="text-lg font-bold">
-                𝖹 𝖤 𝖭 𝖨 𝖳 𝖧
+              <div className="text-lg font-bold w-12">
+                <Logo />
               </div>
             )}
             <button

@@ -5,10 +5,9 @@ import styles from "./page.module.css";
 
 export default function LoginPage() {
     return (
-    <main className={styles.main}>
+<div className="h-full w-full flex items-center justify-center bg-gray-50">
      
         <Dashboard />
-  
-    </main>
+</div>
     )
 }

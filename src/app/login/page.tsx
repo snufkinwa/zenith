@@ -1,12 +1,11 @@
 "use client"
 
 import Login from "@/components/login";
-import styles from "./loginpage.module.css";
 import { login, signup, signInWithProvider } from './actions';
 
 export default function LoginPage() {
     return (
-        <main className={styles.main}>
+        <main className="h-full w-full flex items-center justify-center bg-gray-50">
             <Login login={login} signup={signup} signInWithProvider={signInWithProvider} />
         </main>
     );
