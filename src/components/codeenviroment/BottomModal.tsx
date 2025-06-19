@@ -10,7 +10,6 @@ import PomodoroModal from './modals/PomodoroModal';
 import CreateProblemModal from './modals/CreateProblemModal';
 import { createCustomProblem, NewProblemData } from '@/utils/customProblems';
 
-// Define the Problem interface to match your CodeEnvironment
 interface Problem {
   id: string;
   slug: string;
@@ -83,15 +82,14 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
       }
     } catch (error) {
       console.error('Error creating problem:', error);
-      throw error; // Re-throw so the modal can handle it
+      throw error; 
     }
   };
   const problemContext = selectedProblem ? {
     title: selectedProblem.title,
     description: selectedProblem.description,
     difficulty: selectedProblem.difficulty,
-    tags: [] as string[], // You can add tags if they exist in your problem data
-    // Add any other relevant problem information
+    tags: [] as string[], 
     examples: selectedProblem.examples,
     constraints: selectedProblem.constraints
   } : undefined;

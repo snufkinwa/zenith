@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import PlatformNav from '@/components/platform-nav';
 import { PomodoroProvider } from '@/contexts/PomodoroContext'; // Add this import
 import { ChevronLeft, ChevronRight, Menu } from 'lucide-react';
-import Logo from '@/components/landingpage/ui/logo';
+import Logo from '@/components/ui/logo';
 
 interface LayoutWithNavProps {
   children: React.ReactNode;

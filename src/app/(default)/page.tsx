@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
-import HeroSection from "@/container/landing-page/hero-section";
-
+import ZenithLandingPage from "@/components/landingpage/landingpage";
 export default function Home() {
   return (
 
-        <HeroSection />
+        <ZenithLandingPage />
 
   );
 }

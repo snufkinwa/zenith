@@ -1,4 +1,3 @@
-// src/app/problems/page.tsx
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -30,7 +29,7 @@ export default function ProblemsPage() {
     // Load problems and user progress
     const loadData = async () => {
       try {
-        setProblems(problemsData as Problem[]);
+        setProblems(problemsData as unknown as Problem[]);
         
         // Load user progress from localStorage or API
         const savedProgress = localStorage.getItem('problemProgress');

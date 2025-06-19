@@ -39,14 +39,7 @@ const PlatformNav: React.FC<PlatformNavProps> = ({ isCollapsed = false }) => {
     },
   ];
 
-  const bottomItems = [
-    {
-      name: 'Profile',
-      href: '/profile',
-      icon: User,
-      active: pathname === '/profile'
-    },
-  ];
+
 
   const NavItem = ({ item, showLabel = true }: { item: any; showLabel?: boolean }) => (
     <Link
@@ -79,10 +72,7 @@ const PlatformNav: React.FC<PlatformNavProps> = ({ isCollapsed = false }) => {
       {/* Bottom Navigation */}
       <div className="px-3 py-4 border-t border-gray-700">
         <div className="space-y-1">
-          {bottomItems.map((item) => (
-            <NavItem key={item.name} item={item} />
-          ))}
-          
+        
           {/* Logout Button */}
           <button
             onClick={() => {

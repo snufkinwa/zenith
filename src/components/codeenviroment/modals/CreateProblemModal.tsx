@@ -177,7 +177,7 @@ const CreateProblemModal: React.FC<CreateProblemModalProps> = ({
               </span>
             </div>
             <p className="text-xs text-blue-700 mt-1">
-              Perfect for CodePath exercises, interview prep, or custom practice problems
+              Perfect for coding exercises, interview prep, or custom practice problems
             </p>
           </div>
 

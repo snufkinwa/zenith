@@ -1,16 +1,8 @@
-// src/app/beta/page.tsx
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
 import CodeEnvironment from '@/components/codeenviroment/CodeEnvironment';
-
-interface Problem {
-  id: string;
-  title: string;
-  slug: string;
-  difficulty: string | null;
-  content: string;
-}
+import type { Problem } from '@/components/codeenviroment/CodeEnvironment';
 
 function BetaPageContent() {
   const [problems, setProblems] = useState<Problem[]>([]);
