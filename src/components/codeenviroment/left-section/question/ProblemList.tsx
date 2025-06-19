@@ -1,8 +1,15 @@
-import React, { useEffect, useState, useMemo } from "react";
-import ReactMarkdown from "react-markdown";
-import { Search, ChevronDown, Clock, Star, Zap, Filter } from "lucide-react";
+'use client';
 
-// Updated interface to match your new JSON format
+import React, { useState, useMemo } from 'react';
+import { Search, Filter, TrendingUp, Building2, Star, ChevronDown, X } from 'lucide-react';
+import CompanyLogo from '@/components/ui/CompanyLogo';
+
+interface Company {
+  name: string;
+  slug: string;
+  frequency: number;
+}
+
 interface Problem {
   id: string;
   slug: string;
@@ -15,273 +22,430 @@ interface Problem {
     explanation?: string;
   }>;
   constraints: string[];
+  companies?: Company[];
   note?: string | null;
   follow_up?: string;
+  isCustom?: boolean;
+  source?: string;
+  createdAt?: string;
 }
 
-interface ProblemListProps {
+
+interface EnhancedProblemListProps {
   problems: Problem[];
   selectedProblem: Problem | null;
   onSelectProblem: (problem: Problem) => void;
-  showSimilarOnly?: boolean;
 }
 
-const ProblemList: React.FC<ProblemListProps> = ({
+interface FilterState {
+  difficulty: string[];
+  companies: string[];
+  minFrequency: number;
+  searchTerm: string;
+}
+
+const ProblemList: React.FC<EnhancedProblemListProps> = ({
   problems,
   selectedProblem,
-  onSelectProblem,
-  showSimilarOnly = false,
+  onSelectProblem
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [displayLimit, setDisplayLimit] = useState(showSimilarOnly ? 5 : 10);
+  const [filters, setFilters] = useState<FilterState>({
+    difficulty: [],
+    companies: [],
+    minFrequency: 0,
+    searchTerm: ''
+  });
+  
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<'title' | 'difficulty' | 'frequency' | 'companies'>('title');
 
-  // Function to get clean preview text from description (no parsing needed!)
-  const getCleanPreview = (description: string, maxLength: number = 120) => {
-    return description.trim().substring(0, maxLength);
-  };
-
-  // Extract keywords from text for similarity matching
-  const extractKeywords = (text: string) => {
-    const commonWords = new Set([
-      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 
-      'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 
-      'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'cannot', 'you', 
-      'your', 'we', 'our', 'they', 'their', 'them', 'this', 'that', 'these', 'those',
-      'given', 'return', 'example', 'input', 'output', 'explanation', 'constraints'
-    ]);
-
-    return text
-      .toLowerCase()
-      .replace(/[^\w\s]/g, ' ')
-      .split(/\s+/)
-      .filter(word => word.length > 2 && !commonWords.has(word))
-      .slice(0, 10);
-  };
-
-  // Function to find similar problems
-  const getSimilarProblems = (currentProblem: Problem | null, allProblems: Problem[]) => {
-    if (!currentProblem) return allProblems.slice(0, 10);
-
-    const keywords = extractKeywords(currentProblem.title + " " + currentProblem.description);
-    const currentDifficulty = currentProblem.difficulty?.toLowerCase();
-
-    return allProblems
-      .filter(p => p.id !== currentProblem.id)
-      .map(problem => {
-        let score = 0;
-        
-        // Same difficulty gets higher score
-        if (problem.difficulty?.toLowerCase() === currentDifficulty) {
-          score += 30;
+  // Get all unique companies with their total frequencies
+  const allCompanies = useMemo(() => {
+    const companyMap = new Map<string, { name: string; totalFrequency: number; problemCount: number }>();
+    
+    problems.forEach(problem => {
+      problem.companies?.forEach(company => {
+        const existing = companyMap.get(company.slug);
+        if (existing) {
+          existing.totalFrequency += company.frequency;
+          existing.problemCount += 1;
+        } else {
+          companyMap.set(company.slug, {
+            name: company.name,
+            totalFrequency: company.frequency,
+            problemCount: 1
+          });
         }
+      });
+    });
+
+    return Array.from(companyMap.entries())
+      .map(([slug, data]) => ({ slug, ...data }))
+      .sort((a, b) => b.totalFrequency - a.totalFrequency);
+  }, [problems]);
+
+  // Filter and sort problems
+  const filteredProblems = useMemo(() => {
+    let filtered = problems.filter(problem => {
+      // Search term filter
+      if (filters.searchTerm) {
+        const searchLower = filters.searchTerm.toLowerCase();
+        const matchesTitle = problem.title.toLowerCase().includes(searchLower);
+        const matchesDescription = problem.description.toLowerCase().includes(searchLower);
+        const matchesCompany = problem.companies?.some(c => 
+          c.name.toLowerCase().includes(searchLower)
+        );
         
-        // Adjacent difficulty gets medium score
-        const difficulties = ['easy', 'medium', 'hard'];
-        const currentIdx = difficulties.indexOf(currentDifficulty || '');
-        const problemIdx = difficulties.indexOf(problem.difficulty?.toLowerCase() || '');
-        if (Math.abs(currentIdx - problemIdx) === 1) {
-          score += 15;
+        if (!matchesTitle && !matchesDescription && !matchesCompany) {
+          return false;
         }
+      }
 
-        // Common keywords in title get high score
-        const problemKeywords = extractKeywords(problem.title);
-        keywords.forEach(keyword => {
-          if (problemKeywords.includes(keyword)) {
-            score += 20;
-          }
-        });
+      // Difficulty filter
+      if (filters.difficulty.length > 0) {
+        if (!filters.difficulty.includes(problem.difficulty)) {
+          return false;
+        }
+      }
 
-        // Common keywords in description get lower score
-        const descriptionKeywords = extractKeywords(problem.description);
-        keywords.forEach(keyword => {
-          if (descriptionKeywords.includes(keyword)) {
-            score += 5;
-          }
-        });
+      // Company filter
+      if (filters.companies.length > 0) {
+        const problemCompanies = problem.companies?.map(c => c.slug) || [];
+        if (!filters.companies.some(company => problemCompanies.includes(company))) {
+          return false;
+        }
+      }
 
-        return { problem, score };
-      })
-      .sort((a, b) => b.score - a.score)
-      .slice(0, showSimilarOnly ? 15 : 25)
-      .map(item => item.problem);
-  };
+      // Minimum frequency filter
+      if (filters.minFrequency > 0) {
+        const maxFrequency = Math.max(...(problem.companies?.map(c => c.frequency) || [0]));
+        if (maxFrequency < filters.minFrequency) {
+          return false;
+        }
+      }
 
-  // Get the problems to display based on mode
-  const problemsToFilter = showSimilarOnly && selectedProblem 
-    ? getSimilarProblems(selectedProblem, problems)
-    : problems;
+      return true;
+    });
 
-  // Filtered and limited problems list
-  const { filteredProblems, totalCount } = useMemo(() => {
-    let filtered = problemsToFilter;
+    // Sort problems
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'difficulty':
+          const difficultyOrder = { 'Easy': 1, 'Medium': 2, 'Hard': 3 };
+          return difficultyOrder[a.difficulty as keyof typeof difficultyOrder] - 
+                 difficultyOrder[b.difficulty as keyof typeof difficultyOrder];
+        
+        case 'frequency':
+          const aMaxFreq = Math.max(...(a.companies?.map(c => c.frequency) || [0]));
+          const bMaxFreq = Math.max(...(b.companies?.map(c => c.frequency) || [0]));
+          return bMaxFreq - aMaxFreq;
+        
+        case 'companies':
+          const aCompanyCount = a.companies?.length || 0;
+          const bCompanyCount = b.companies?.length || 0;
+          return bCompanyCount - aCompanyCount;
+        
+        default:
+          return a.title.localeCompare(b.title);
+      }
+    });
 
-    // Filter by search query
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(problem =>
-        problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        problem.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Filter by difficulty
-    if (difficultyFilter !== "all") {
-      filtered = filtered.filter(problem => 
-        problem.difficulty?.toLowerCase() === difficultyFilter.toLowerCase()
-      );
-    }
-
-    return {
-      filteredProblems: isExpanded ? filtered : filtered.slice(0, displayLimit),
-      totalCount: filtered.length
-    };
-  }, [problemsToFilter, searchQuery, difficultyFilter, isExpanded, displayLimit]);
-
-  // Auto-select first problem on mount
-useEffect(() => {
-  // Only log when problems load, don't auto-select anything
-  if (problems.length > 0) {
-    console.log(`Loaded ${problems.length} problems`);
-  }
-}, [problems]);
-
-  const getDifficultyIcon = (difficulty: string) => {
-    switch (difficulty?.toLowerCase()) {
-      case 'easy':
-        return <Zap className="w-3 h-3 text-green-500" />;
-      case 'medium':
-        return <Clock className="w-3 h-3 text-yellow-500" />;
-      case 'hard':
-        return <Star className="w-3 h-3 text-red-500" />;
-      default:
-        return null;
-    }
-  };
+    return filtered;
+  }, [problems, filters, sortBy]);
 
   const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty?.toLowerCase()) {
-      case 'easy':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'hard':
-        return 'bg-red-100 text-red-700 border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+    switch (difficulty) {
+      case 'Easy': return 'text-green-600 bg-green-50 border-green-200';
+      case 'Medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'Hard': return 'text-red-600 bg-red-50 border-red-200';
+      default: return 'text-gray-600 bg-gray-50 border-gray-200';
     }
+  };
+
+  const getTopCompanies = (companies: Company[], limit = 3) => {
+    return companies
+      .sort((a, b) => b.frequency - a.frequency)
+      .slice(0, limit);
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      difficulty: [],
+      companies: [],
+      minFrequency: 0,
+      searchTerm: ''
+    });
+  };
+
+  const removeFilter = (type: keyof FilterState, value: string | number) => {
+    setFilters(prev => {
+      if (type === 'difficulty' || type === 'companies') {
+        return {
+          ...prev,
+          [type]: prev[type].filter(item => item !== value)
+        };
+      }
+      return prev;
+    });
   };
 
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">
-          {showSimilarOnly ? 'Similar Problems' : 'Problems'}
-        </h2>
-        <span className="text-sm text-gray-500">
-          {totalCount} problem{totalCount !== 1 ? 's' : ''}
-        </span>
-      </div>
-
-      {/* Search and Filter Controls */}
-      <div className="space-y-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search problems..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        <h3 className="text-lg font-semibold">Problems ({filteredProblems.length})</h3>
+        <button
+          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+        >
+          <Filter size={14} />
+          Filters
+          <ChevronDown 
+            size={14} 
+            className={`transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`} 
           />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-gray-500" />
-          <select
-            value={difficultyFilter}
-            onChange={(e) => setDifficultyFilter(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="all">All Difficulties</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-        </div>
+        </button>
       </div>
 
-      {/* Problems List */}
-      <div className="space-y-2">
-        {filteredProblems.map((problem) => (
-          <div
-            key={problem.id}
-            onClick={() => onSelectProblem(problem)}
-            className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 hover:shadow-md ${
-              selectedProblem?.id === problem.id
-                ? 'border-blue-300 bg-blue-50 shadow-sm'
-                : 'border-gray-200 hover:border-gray-300 bg-white'
-            }`}
-          >
-            {/* Problem Header */}
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-900 truncate">
-                  {problem.title}
-                </h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${getDifficultyColor(problem.difficulty)}`}>
-                    {getDifficultyIcon(problem.difficulty)}
-                    {problem.difficulty}
-                  </span>
-                </div>
-              </div>
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+        <input
+          type="text"
+          placeholder="Search problems, companies, or keywords..."
+          value={filters.searchTerm}
+          onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* Advanced Filters */}
+      {showAdvancedFilters && (
+        <div className="p-4 bg-gray-50 rounded-lg space-y-4">
+          {/* Sort and Difficulty */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Sort By */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="title">Title (A-Z)</option>
+                <option value="difficulty">Difficulty</option>
+                <option value="frequency">Max Frequency</option>
+                <option value="companies">Company Count</option>
+              </select>
             </div>
 
-            {/* Problem Preview */}
-            <div className="text-sm text-gray-600">
-              <div className="line-clamp-2">
-                <ReactMarkdown>
-                  {getCleanPreview(problem.description, selectedProblem?.id === problem.id ? 300 : 150)}
-                </ReactMarkdown>
+            {/* Difficulty Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+              <div className="flex gap-2">
+                {['Easy', 'Medium', 'Hard'].map(diff => (
+                  <button
+                    key={diff}
+                    onClick={() => {
+                      const isSelected = filters.difficulty.includes(diff);
+                      setFilters(prev => ({
+                        ...prev,
+                        difficulty: isSelected 
+                          ? prev.difficulty.filter(d => d !== diff)
+                          : [...prev.difficulty, diff]
+                      }));
+                    }}
+                    className={`px-3 py-1 text-xs rounded-md border transition-colors ${
+                      filters.difficulty.includes(diff)
+                        ? getDifficultyColor(diff)
+                        : 'text-gray-600 bg-white border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {diff}
+                  </button>
+                ))}
               </div>
             </div>
-
-            {/* Tags/Keywords Preview (for selected item) */}
-            {selectedProblem?.id === problem.id && (
-              <div className="mt-3 pt-2 border-t border-blue-200">
-                <div className="flex flex-wrap gap-1">
-                  {extractKeywords(problem.title + " " + problem.description)
-                    .slice(0, 5)
-                    .map((keyword, idx) => (
-                      <span 
-                        key={idx}
-                        className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full"
-                      >
-                        {keyword}
-                      </span>
-                    ))
-                  }
-                </div>
-              </div>
-            )}
           </div>
-        ))}
-      </div>
 
-      {/* Load More Button */}
-      {!isExpanded && filteredProblems.length < totalCount && (
-        <div className="text-center pt-2">
+          {/* Company Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Top Companies ({allCompanies.length})
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-40 overflow-y-auto">
+              {allCompanies.slice(0, 20).map(company => (
+                <button
+                  key={company.slug}
+                  onClick={() => {
+                    const isSelected = filters.companies.includes(company.slug);
+                    setFilters(prev => ({
+                      ...prev,
+                      companies: isSelected 
+                        ? prev.companies.filter(c => c !== company.slug)
+                        : [...prev.companies, company.slug]
+                    }));
+                  }}
+                  className={`p-2 text-xs rounded-md border text-left transition-colors ${
+                    filters.companies.includes(company.slug)
+                      ? 'bg-blue-100 text-blue-800 border-blue-200'
+                      : 'text-gray-600 bg-white border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <CompanyLogo 
+                      companySlug={company.slug} 
+                      companyName={company.name}
+                      size={20}
+                    />
+                    <span className="font-medium truncate">{company.name}</span>
+                  </div>
+                  <div className="text-xs opacity-75 ml-6">
+                    {company.problemCount} problems, {company.totalFrequency} freq
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Frequency Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Minimum Frequency: {filters.minFrequency}
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={filters.minFrequency}
+              onChange={(e) => setFilters(prev => ({ ...prev, minFrequency: parseInt(e.target.value) }))}
+              className="w-full"
+            />
+          </div>
+
+          {/* Clear Filters */}
           <button
-            onClick={() => setDisplayLimit(prev => Math.min(prev + 10, totalCount))}
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 mx-auto"
+            onClick={clearFilters}
+            className="w-full px-3 py-2 text-sm bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
           >
-            <span>Show more problems</span>
-            <ChevronDown className="w-4 h-4" />
+            Clear All Filters
           </button>
         </div>
       )}
+
+      {/* Active Filters */}
+      {(filters.difficulty.length > 0 || filters.companies.length > 0 || filters.minFrequency > 0) && (
+        <div className="flex flex-wrap gap-2">
+          {filters.difficulty.map(diff => (
+            <span key={diff} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-md">
+              {diff}
+              <button onClick={() => removeFilter('difficulty', diff)}>
+                <X size={12} />
+              </button>
+            </span>
+          ))}
+          {filters.companies.map(companySlug => {
+            const company = allCompanies.find(c => c.slug === companySlug);
+            return (
+              <span key={companySlug} className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-md">
+                {company?.name}
+                <button onClick={() => removeFilter('companies', companySlug)}>
+                  <X size={12} />
+                </button>
+              </span>
+            );
+          })}
+          {filters.minFrequency > 0 && (
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-md">
+              Min Freq: {filters.minFrequency}
+              <button onClick={() => setFilters(prev => ({ ...prev, minFrequency: 0 }))}>
+                <X size={12} />
+              </button>
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Problem List */}
+      <div className="space-y-3 max-h-96 overflow-y-auto">
+        {filteredProblems.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <p className="font-medium">No problems found</p>
+            <p className="text-sm">Try adjusting your filters</p>
+          </div>
+        ) : (
+          filteredProblems.map(problem => {
+            const isSelected = selectedProblem?.id === problem.id;
+            const topCompanies = getTopCompanies(problem.companies || []);
+            const maxFrequency = Math.max(...(problem.companies?.map(c => c.frequency) || [0]));
+
+            return (
+              <div
+                key={problem.id}
+                onClick={() => onSelectProblem(problem)}
+                className={`p-3 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                  isSelected
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
+                }`}
+              >
+                {/* Problem Header */}
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900 mb-1">{problem.title}</h4>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 text-xs rounded-md border ${getDifficultyColor(problem.difficulty)}`}>
+                        {problem.difficulty}
+                      </span>
+                      {maxFrequency > 0 && (
+                        <span className="flex items-center gap-1 text-xs text-gray-600">
+                          <TrendingUp size={12} />
+                          {maxFrequency}
+                        </span>
+                      )}
+                      {problem.companies && problem.companies.length > 0 && (
+                        <span className="flex items-center gap-1 text-xs text-gray-600">
+                          <Building2 size={12} />
+                          {problem.companies.length}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Top Companies */}
+                {topCompanies.length > 0 && (
+                  <div className="mt-2">
+                    <div className="flex flex-wrap gap-2">
+                      {topCompanies.map(company => (
+                        <div
+                          key={company.slug}
+                          className="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-50 text-gray-700 text-xs rounded-md border"
+                        >
+                          <CompanyLogo 
+                            companySlug={company.slug} 
+                            companyName={company.name}
+                            size={16}
+                            variant="circle"
+                          />
+                          <span className="font-medium">{company.name}</span>
+                          <span className="text-gray-500">({company.frequency})</span>
+                        </div>
+                      ))}
+                      {problem.companies && problem.companies.length > 3 && (
+                        <span className="text-xs text-gray-500 self-center">
+                          +{problem.companies.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 };

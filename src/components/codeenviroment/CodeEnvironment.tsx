@@ -1,13 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Editor from "./right-section/Editor";
 import Terminal from "./terminal";
 import ProblemList from "./left-section/question/ProblemList";
 import ProblemDisplay from "./left-section/question/ProblemDisplay";
+import { getCustomProblems, type CustomProblem } from "@/utils/customProblems";
 import BottomModal from "./BottomModal";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { ChevronLeft, BookOpen, ChevronUp } from "lucide-react";
-import { cleanInput, buildPythonScript, extractFunctionName } from '@/utils/codeBuilder';
+import { cleanInput, buildPythonScript, extractFunctionName, cleanDisplayText } from '@/utils/codeBuilder';
+
+
+interface Company {
+  name: string;
+  slug: string;
+  frequency: number;
+}
 
 interface Problem {
   id: string;
@@ -21,8 +29,12 @@ interface Problem {
     explanation?: string;
   }>;
   constraints: string[];
+  companies?: Company[];
   note?: string | null;
   follow_up?: string;
+  isCustom?: boolean; 
+  source?: string;   
+  createdAt?: string; 
 }
 
 interface TestResult {
@@ -39,7 +51,7 @@ interface CodeEnvironmentProps {
   problems: Problem[];
 }
 
-const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
+const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems:defaultProblems }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -48,24 +60,66 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
   const [output, setOutput] = useState("");
   const [consoleOutput, setConsoleOutput] = useState("");
   const [errors, setErrors] = useState("");
+  const [customProblems, setCustomProblems]=useState<Problem[]>([])
   const [loading, setLoading] = useState(false);
   const [testLoading, setTestLoading] = useState(false);
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isProblemPanelCollapsed, setIsProblemPanelCollapsed] = useState(false);
   const [isTerminalCollapsed, setIsTerminalCollapsed] = useState(false);
 
-  useEffect(() => {
+  const allProblems = useMemo(() => {
+    return [...defaultProblems, ...customProblems];
+  }, [defaultProblems, customProblems]);
+
+   useEffect(() => {
+    const loadCustomProblems = () => {
+      try {
+        const custom = getCustomProblems();
+        // Convert custom problems to match Problem interface
+        const converted = custom.map(cp => ({
+          ...cp,
+          companies: cp.companies || []
+        }));
+        setCustomProblems(converted);
+      } catch (error) {
+        console.error('Error loading custom problems:', error);
+      }
+    };
+
+    loadCustomProblems();
+  }, []);
+
+  // Handle new problem creation
+  const handleProblemCreated = (newProblem: Problem) => {
+    setCustomProblems(prev => [...prev, newProblem]);
+    
+    // Automatically select the new problem
+    setSelectedProblem(newProblem);
+    
+    // Update URL to reflect the new problem
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set('problem', newProblem.slug);
+    router.replace(newUrl.pathname + newUrl.search, { scroll: false });
+    
+    // Clear editor state for new problem
+    setInput('');
+    setOutput('');
+    setConsoleOutput('');
+    setErrors('');
+    setTestResults([]);
+  };
+
+ useEffect(() => {
     const problemSlug = searchParams.get('problem');
 
-    if (problemSlug && problems.length > 0) {
-      // Find problem by slug
-      const matchedProblem = problems.find(p => p.slug === problemSlug);
+    if (problemSlug && allProblems.length > 0) {
+      const matchedProblem = allProblems.find(p => p.slug === problemSlug);
       if (matchedProblem) {
         setSelectedProblem(matchedProblem);
       }
-    } else if (problems.length > 0 && !problemSlug) {
+    } else if (allProblems.length > 0 && !problemSlug) {
       // Only set first problem if no URL param at all
-      const firstProblem = problems[0];
+      const firstProblem = allProblems[0];
       setSelectedProblem(firstProblem);
       
       // Update URL
@@ -73,7 +127,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
       newUrl.searchParams.set('problem', firstProblem.slug);
       router.replace(newUrl.pathname + newUrl.search, { scroll: false });
     }
-  }, [searchParams, problems, router]); // REMOVED selectedProblem from dependencies
+  }, [searchParams, allProblems, router]); // Use allProblems instead of problems
 
   // Helper to make API requests
   const makeApiRequest = async (data: { language: string; version: string; files: { content: string; }[] | { content: string; }[]; }) => {
@@ -189,18 +243,18 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
       updateConsole(setConsoleOutput, `Running Test Case ${i + 1}...`);
 
       const cleaned = cleanInput(testCase.input);
-      const script = buildPythonScript(input, functionName, cleaned);
+      const script = buildPythonScript(input, cleaned);
 
       const testResult: TestResult = {
-        testCase: i + 1,
-        input: testCase.input,
-        expected: testCase.expected || "",
-        actual: "",
-        passed: false,
-        executionTime: 0,
+      testCase: i + 1,
+      input: cleanDisplayText(testCase.input),    
+      expected: cleanDisplayText(testCase.expected || ""), 
+      actual: "",
+      passed: false,
+      executionTime: 0,
       };
 
-      try {
+    try {
         const startTime = Date.now();
         const response = await makeApiRequest({
           language: "python",
@@ -215,7 +269,9 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
 
         if (output) {
           testResult.actual = output;
-          testResult.passed = output.replace(/\s+/g, "") === (testCase.expected || "").replace(/\s+/g, "");
+          const cleanActual = output.replace(/\s+/g, "");
+          const cleanExpected = cleanDisplayText(testCase.expected || "").replace(/\s+/g, "");
+          testResult.passed = cleanActual === cleanExpected;
         } else {
           testResult.actual = "Error occurred";
           testResult.error = error || "No output returned";
@@ -225,28 +281,17 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
         testResult.error = err instanceof Error ? err.message : "Unknown error";
       }
 
+      // Add to results
+      results.push(testResult);
+      
       const status = testResult.passed ? "✅ PASSED" : "❌ FAILED";
       const execTime = testResult.executionTime ?? 0;
-      const timing = execTime < 1000
-        ? `${execTime}ms`
-        : `${(execTime / 1000).toFixed(2)}s`;
-
-      updateConsole(
-        setConsoleOutput,
-        `Test Case ${i + 1}: ${status} (${timing})\n` +
-        `Input: ${testCase.input}\n` +
-        `Expected: ${testCase.expected}\n` +
-        `Actual: ${testResult.actual}\n` +
-        (testResult.error ? `Error: ${testResult.error}\n` : "") +
-        "\n"
-      );
-
-      results.push(testResult);
+      updateConsole(setConsoleOutput, `Test Case ${i + 1}: ${status} (${execTime}ms)`);
     }
 
-    setTestResults(results);
-    setTestLoading(false);
-  };
+        setTestResults(results);
+        setTestLoading(false);
+      };
 
  
 
@@ -256,10 +301,10 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
     router.replace(newUrl.pathname + newUrl.search, { scroll: false });
     
     // Clear editor/terminal state
-    setInput("");
-    setOutput("");
-    setConsoleOutput("");
-    setErrors("");
+    setInput('');
+    setOutput('');
+    setConsoleOutput('');
+    setErrors('');
     setTestResults([]);
   };
 
@@ -293,7 +338,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
                     {/* Problem List Component */}
                     <div className="mt-8 border-t pt-6">
                       <ProblemList
-                        problems={problems}
+                        problems={allProblems}
                         selectedProblem={selectedProblem}
                         onSelectProblem={handleSelectProblem}
                       />
@@ -334,7 +379,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
             
             {/* Terminal Section - Collapsible */}
             {!isTerminalCollapsed && (
-              <div className="h-80 border-t border-gray-300 flex flex-col">
+              <div className="h-96 border-t border-gray-300 flex flex-col">
                 <Terminal
                   output={output}
                   consoleOutput={consoleOutput}
@@ -369,7 +414,10 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems }) => {
       </PanelGroup>
 
       {/* Bottom Modal Component */}
-      <BottomModal />
+      <BottomModal 
+      selectedProblem={selectedProblem}
+      onProblemCreated={handleProblemCreated}
+      />
     </div>
   );
 };

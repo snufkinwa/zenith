@@ -195,332 +195,306 @@ const Terminal: React.FC<TerminalProps> = ({
   return (
     <div className="h-full flex flex-col bg-white border-t border-gray-200">
       {/* Header with Collapse Button */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200 min-h-[48px]">
-        <div className="flex items-center space-x-1">
-          <button
-            onClick={() => setActiveTab("testcases")}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              activeTab === "testcases" 
-                ? 'bg-white text-blue-600 shadow-sm border border-gray-200' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            Test Cases
-          </button>
-          <button
-            onClick={() => setActiveTab("results")}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              activeTab === "results" 
-                ? 'bg-white text-blue-600 shadow-sm border border-gray-200' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            Test Results
-            {testResults.length > 0 && (
-              <span className={`ml-1 text-xs rounded-full px-1.5 py-0.5 min-w-[1.25rem] h-4 flex items-center justify-center ${
-                testResults.every(r => r.passed) 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-red-500 text-white'
-              }`}>
-                {testResults.filter(r => r.passed).length}/{testResults.length}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("output")}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              activeTab === "output" 
-                ? 'bg-white text-blue-600 shadow-sm border border-gray-200' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            Output
-          </button>
-          <button
-            onClick={() => setActiveTab("console")}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              activeTab === "console" 
-                ? 'bg-white text-blue-600 shadow-sm border border-gray-200' 
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            Console
-            {consoleMessages.length > 0 && (
-              <span className="ml-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[1.25rem] h-4 flex items-center justify-center">
-                {consoleMessages.length}
-              </span>
-            )}
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Run Buttons */}
-          <button
-            onClick={runCode}
-            disabled={loading}
-            className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-md transition-colors text-sm"
-          >
-            {loading ? (
-              <>
-                <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
-                Running
-              </>
-            ) : (
-              <>
-                <Play className="w-3 h-3" />
-                Run
-              </>
-            )}
-          </button>
-
-          <button
-            onClick={handleRunTests}
-            disabled={testLoading}
-            className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-md transition-colors text-sm"
-          >
-            {testLoading ? (
-              <>
-                <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
-                Testing
-              </>
-            ) : (
-              <>
-                <CheckCircle className="w-3 h-3" />
-                Test
-              </>
-            )}
-          </button>
-
-          {/* Collapse Button */}
-          {onToggleCollapse && (
-            <button
-              onClick={onToggleCollapse}
-              className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
-              title="Collapse terminal"
-            >
-              <ChevronDown className="w-4 h-4" />
-            </button>
+    <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200 min-h-[48px]">
+      <div className="flex items-center space-x-1">
+        <button
+          onClick={() => setActiveTab("testcases")}
+          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+            activeTab === "testcases"
+              ? 'bg-white text-blue-600 shadow-sm border border-gray-200'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+          }`}
+        >
+          Test Cases
+          {testResults.length > 0 && (
+            <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-medium ${
+              testResults.every(r => r.passed)
+                ? 'bg-green-100 text-green-700 border border-green-200'
+                : 'bg-orange-100 text-orange-700 border border-orange-200'
+            }`}>
+              {testResults.filter(r => r.passed).length}/{testResults.length}
+            </span>
           )}
-        </div>
+        </button>
+        
+        <button
+          onClick={() => setActiveTab("output")}
+          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+            activeTab === "output"
+              ? 'bg-white text-blue-600 shadow-sm border border-gray-200'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+          }`}
+        >
+          Output
+        </button>
+        
+        <button
+          onClick={() => setActiveTab("console")}
+          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+            activeTab === "console"
+              ? 'bg-white text-blue-600 shadow-sm border border-gray-200'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+          }`}
+        >
+          Console
+          {consoleMessages.length > 0 && (
+            <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 border border-gray-300 font-medium">
+              {consoleMessages.length}
+            </span>
+          )}
+        </button>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-hidden">
-        {activeTab === "testcases" && (
-          <div className="h-full flex">
-            {/* Test Case Tabs */}
-            <div className="w-1/4 bg-gray-50 border-r border-gray-200 overflow-y-auto">
-              <div className="p-2">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-gray-700">Cases</span>
-                  <button
-                    onClick={addCustomTestCase}
-                    className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded"
-                    title="Add custom test case"
+      <div className="flex items-center gap-2">
+        {/* Run Buttons */}
+        <button
+          onClick={runCode}
+          disabled={loading}
+          className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white rounded-md transition-colors text-sm"
+        >
+          {loading ? (
+            <>
+              <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
+              Running
+            </>
+          ) : (
+            <>
+              <Play className="w-3 h-3" />
+              Run
+            </>
+          )}
+        </button>
+
+        <button
+          onClick={handleRunTests}
+          disabled={testLoading}
+          className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-md transition-colors text-sm"
+        >
+          {testLoading ? (
+            <>
+              <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
+              Testing
+            </>
+          ) : (
+            <>
+              <CheckCircle className="w-3 h-3" />
+              Test
+            </>
+          )}
+        </button>
+
+        {/* Collapse Button */}
+        {onToggleCollapse && (
+          <button
+            onClick={onToggleCollapse}
+            className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
+            title="Collapse terminal"
+          >
+            <ChevronDown className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+    </div>
+
+    {/* Content - Combined Test Cases Tab */}
+    <div className="flex-1 overflow-hidden">
+      {activeTab === "testcases" && (
+        <div className="h-full flex">
+          {/* Test Case List */}
+          <div className="w-1/3 bg-gray-50 border-r border-gray-200 overflow-y-auto">
+            <div className="p-3">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-gray-700">Test Cases</span>
+                <button
+                  onClick={addCustomTestCase}
+                  className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded"
+                  title="Add custom test case"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              
+              {allTestCases.map((testCase, index) => {
+                const displayIndex = testCase.isCustom ? 'Custom' : `Case ${index + 1}`;
+                const testResult = testResults.find(r => r.testCase === testCase.id);
+                
+                return (
+                  <div
+                    key={testCase.id}
+                    className={`p-3 mb-2 rounded cursor-pointer transition-colors border ${
+                      selectedTestCase === testCase.id
+                        ? 'bg-blue-100 border-blue-300'
+                        : 'hover:bg-gray-100 border-gray-200'
+                    }`}
+                    onClick={() => setSelectedTestCase(testCase.id)}
                   >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-                {allTestCases.map((testCase, index) => {
-                  // Calculate display index for problem test cases
-                  const displayIndex = testCase.isCustom ? 'Custom' : `Case ${index + 1}`;
-                  
-                  return (
-                    <div
-                      key={testCase.id}
-                      className={`p-2 mb-1 rounded cursor-pointer transition-colors ${
-                        selectedTestCase === testCase.id
-                          ? 'bg-blue-100 border border-blue-300'
-                          : 'hover:bg-gray-100'
-                      }`}
-                      onClick={() => setSelectedTestCase(testCase.id)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">
-                          {displayIndex}
-                        </span>
-                        {testCase.isCustom && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeTestCase(testCase.id);
-                            }}
-                            className="p-0.5 text-gray-400 hover:text-red-500"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{displayIndex}</span>
+                        {testResult && (
+                          testResult.passed ? (
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <AlertCircle className="w-4 h-4 text-red-500" />
+                          )
                         )}
                       </div>
+                      {testCase.isCustom && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeTestCase(testCase.id);
+                          }}
+                          className="p-0.5 text-gray-400 hover:text-red-500"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Test Case Details */}
-            <div className="flex-1 p-4 overflow-y-auto">
-              {selectedTest && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Input:
-                    </label>
-                    {selectedTest.isCustom ? (
-                      <textarea
-                        value={selectedTest.input}
-                        onChange={(e) => updateTestCase(selectedTest.id, 'input', e.target.value)}
-                        className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        placeholder="Enter your input..."
-                      />
-                    ) : (
-                      <div className="bg-gray-100 p-3 rounded-md border">
-                        <code className="text-sm">{selectedTest.input}</code>
+                    
+                    {testResult && (
+                      <div className="mt-2 text-xs">
+                        <span className={`px-2 py-1 rounded font-medium ${
+                          testResult.passed 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {testResult.passed ? 'PASSED' : 'FAILED'}
+                        </span>
+                        {testResult.executionTime && (
+                          <span className="ml-2 text-gray-500">
+                            {testResult.executionTime < 1000 
+                              ? `${testResult.executionTime}ms` 
+                              : `${(testResult.executionTime/1000).toFixed(2)}s`
+                            }
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
-
-                  {selectedTest.expected && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Expected Output:
-                      </label>
-                      {selectedTest.isCustom ? (
-                        <textarea
-                          value={selectedTest.expected}
-                          onChange={(e) => updateTestCase(selectedTest.id, 'expected', e.target.value)}
-                          className="w-full h-16 px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                          placeholder="Enter expected output..."
-                        />
-                      ) : (
-                        <div className="bg-gray-100 p-3 rounded-md border">
-                          <code className="text-sm">{selectedTest.expected}</code>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-              
-                </div>
-              )}
+                );
+              })}
             </div>
           </div>
-        )}
 
-        {activeTab === "results" && (
-          <div className="h-full overflow-auto p-4">
-            <div className="flex items-center gap-2 mb-4">
-              <CheckCircle className="w-5 h-5 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">Test Results</h3>
-              {testResults.length > 0 && (
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  testResults.every(r => r.passed) 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {testResults.filter(r => r.passed).length}/{testResults.length} Passed
-                </span>
-              )}
-            </div>
+          {/* Test Case Details & Results */}
+          <div className="flex-1 p-4 overflow-y-auto">
+            {selectedTest ? (
+              <div className="space-y-4">
+                {/* Input Section */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Input:
+                  </label>
+                  {selectedTest.isCustom ? (
+                    <textarea
+                      value={selectedTest.input}
+                      onChange={(e) => updateTestCase(selectedTest.id, 'input', e.target.value)}
+                      className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      placeholder="Enter your input..."
+                    />
+                  ) : (
+                    <div className="bg-gray-100 p-3 rounded-md border">
+                      <code className="text-sm">{selectedTest.input}</code>
+                    </div>
+                  )}
+                </div>
 
-            {testResults.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <CheckCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No test results yet.</p>
-                <p className="text-sm">Run tests to see detailed results here.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {testResults.map((result, index) => (
-                  <div
-                    key={index}
-                    className={`p-4 rounded-lg border-l-4 ${
-                      result.passed
+                {/* Expected Output Section */}
+                {selectedTest.expected && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Expected Output:
+                    </label>
+                    {selectedTest.isCustom ? (
+                      <textarea
+                        value={selectedTest.expected}
+                        onChange={(e) => updateTestCase(selectedTest.id, 'expected', e.target.value)}
+                        className="w-full h-16 px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        placeholder="Enter expected output..."
+                      />
+                    ) : (
+                      <div className="bg-gray-100 p-3 rounded-md border">
+                        <code className="text-sm">{selectedTest.expected}</code>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Test Result Section (if available) */}
+                {(() => {
+                  const testResult = testResults.find(r => r.testCase === selectedTest.id);
+                  if (!testResult) return null;
+                  
+                  return (
+                    <div className={`p-4 rounded-lg border-l-4 ${
+                      testResult.passed
                         ? 'bg-green-50 border-green-400'
                         : 'bg-red-50 border-red-400'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        {result.passed ? (
+                    }`}>
+                      <div className="flex items-center gap-2 mb-3">
+                        {testResult.passed ? (
                           <CheckCircle className="w-5 h-5 text-green-500" />
                         ) : (
                           <AlertCircle className="w-5 h-5 text-red-500" />
                         )}
-                        <span className="font-medium">
-                          Test Case {result.testCase}
-                        </span>
+                        <span className="font-medium">Test Result</span>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          result.passed 
+                          testResult.passed 
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-red-100 text-red-800'
                         }`}>
-                          {result.passed ? 'PASSED' : 'FAILED'}
+                          {testResult.passed ? 'PASSED' : 'FAILED'}
                         </span>
                       </div>
-                      {result.executionTime && (
-                        <span className="text-xs text-gray-500">
-                          {result.executionTime < 1000 
-                            ? `${result.executionTime}ms` 
-                            : `${(result.executionTime/1000).toFixed(2)}s`
-                          }
-                        </span>
-                      )}
-                    </div>
 
-                    <div className="space-y-2 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-700">Input:</span>
-                        <div className="bg-gray-100 p-2 rounded mt-1 font-mono text-xs">
-                          {result.input}
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <span className="font-medium text-gray-700">Expected:</span>
-                        <div className="bg-gray-100 p-2 rounded mt-1 font-mono text-xs">
-                          {result.expected}
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <span className="font-medium text-gray-700">Actual:</span>
-                        <div className={`p-2 rounded mt-1 font-mono text-xs ${
-                          result.passed ? 'bg-green-100' : 'bg-red-100'
-                        }`}>
-                          {result.actual}
-                        </div>
-                      </div>
-
-                      {result.error && (
+                      <div className="space-y-2 text-sm">
                         <div>
-                          <span className="font-medium text-red-700">Error:</span>
-                          <div className="bg-red-100 p-2 rounded mt-1 font-mono text-xs text-red-800">
-                            {result.error}
+                          <span className="font-medium text-gray-700">Actual Output:</span>
+                          <div className={`p-2 rounded mt-1 font-mono text-xs ${
+                            testResult.passed ? 'bg-green-100' : 'bg-red-100'
+                          }`}>
+                            {testResult.actual}
                           </div>
                         </div>
-                      )}
+
+                        {testResult.error && (
+                          <div>
+                            <span className="font-medium text-red-700">Error:</span>
+                            <div className="bg-red-100 p-2 rounded mt-1 font-mono text-xs text-red-800">
+                              {testResult.error}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })()}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>Select a test case to view details</p>
               </div>
             )}
           </div>
-        )}
+        </div>
+      )}
 
-        {activeTab === "output" && (
-          <div className="h-full overflow-auto p-4">
-            <div className="flex items-center gap-2 mb-4">
-              <TerminalIcon className="w-5 h-5 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">Program Output</h3>
-            </div>
-            
-            <div className="bg-gray-900 text-green-400 font-mono text-sm rounded-lg p-4 h-full overflow-auto">
-              <pre className="whitespace-pre-wrap break-words">
-                {output || 'Run your code to see results.'}
-              </pre>
-            </div>
+      {/* Output */}
+      {activeTab === "output" && (
+        <div className="h-full overflow-auto p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <TerminalIcon className="w-5 h-5 text-gray-600" />
+            <h3 className="font-semibold text-gray-900">Program Output</h3>
           </div>
-        )}
+          
+          <div className="bg-gray-900 text-green-400 font-mono text-sm rounded-lg p-4 h-full overflow-auto">
+            <pre className="whitespace-pre-wrap break-words">
+              {output || 'Run your code to see results.'}
+            </pre>
+          </div>
+        </div>
+      )}
 
         {activeTab === "console" && (
           <div className="h-full overflow-auto p-4 space-y-3">

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Play, Pause, RotateCcw, Timer, AlertTriangle, Coffee, Target } from 'lucide-react';
-import { usePomodoro } from '../../contexts/PomodoroContext'; // Adjust import path as needed
+import { usePomodoro } from '@/contexts/PomodoroContext'; // Adjust import path as needed
 
 interface PomodoroTimerProps {
   onSessionComplete?: () => void;

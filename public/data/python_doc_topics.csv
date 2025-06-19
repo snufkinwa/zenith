@@ -1,0 +1,76 @@
+topic,url
+zip,https://docs.python.org/3/library/functions.html#zip
+map,https://docs.python.org/3/library/functions.html#map
+filter,https://docs.python.org/3/library/functions.html#filter
+enumerate,https://docs.python.org/3/library/functions.html#enumerate
+sorted,https://docs.python.org/3/library/functions.html#sorted
+abs,https://docs.python.org/3/library/functions.html#abs
+round,https://docs.python.org/3/library/functions.html#round
+all,https://docs.python.org/3/library/functions.html#all
+any,https://docs.python.org/3/library/functions.html#any
+len,https://docs.python.org/3/library/functions.html#len
+min,https://docs.python.org/3/library/functions.html#min
+max,https://docs.python.org/3/library/functions.html#max
+sum,https://docs.python.org/3/library/functions.html#sum
+range,https://docs.python.org/3/library/functions.html#range
+print,https://docs.python.org/3/library/functions.html#print
+input,https://docs.python.org/3/library/functions.html#input
+recursion,https://realpython.com/python-thinking-recursively/
+list comprehension,https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
+dict comprehension,https://www.programiz.com/python-programming/dictionary-comprehension
+set comprehension,https://www.programiz.com/python-programming/set-comprehension
+time complexity,https://wiki.python.org/moin/TimeComplexity
+lambda,https://docs.python.org/3/tutorial/controlflow.html#lambda-expressions
+generator,https://docs.python.org/3/howto/functional.html#generators
+exception handling,https://docs.python.org/3/tutorial/errors.html
+context manager,https://docs.python.org/3/reference/datamodel.html#context-managers
+decorator,https://realpython.com/primer-on-python-decorators/
+iterator,https://docs.python.org/3/glossary.html#term-iterator
+class,https://docs.python.org/3/tutorial/classes.html
+inheritance,https://docs.python.org/3/tutorial/classes.html#inheritance
+polymorphism,https://realpython.com/polymorphism-in-python/
+encapsulation,https://www.geeksforgeeks.org/encapsulation-in-python/
+abstraction,https://realpython.com/python-interface/
+function scope,https://docs.python.org/3/tutorial/classes.html#python-scopes-and-namespaces
+global nonlocal,https://docs.python.org/3/reference/simple_stmts.html#the-global-statement
+list vs tuple,https://www.geeksforgeeks.org/difference-between-list-and-tuple-in-python/
+dict,https://docs.python.org/3/library/stdtypes.html#mapping-types-dict
+set,https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset
+frozenset,https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset
+list,https://docs.python.org/3/tutorial/datastructures.html#more-on-lists
+tuple,https://docs.python.org/3/tutorial/datastructures.html#tuples-and-sequences
+string methods,https://docs.python.org/3/library/stdtypes.html#string-methods
+math module,https://docs.python.org/3/library/math.html
+time module,https://docs.python.org/3/library/time.html
+datetime module,https://docs.python.org/3/library/datetime.html
+collections module,https://docs.python.org/3/library/collections.html
+collections deque,https://docs.python.org/3/library/collections.html#collections.deque
+collections Counter,https://docs.python.org/3/library/collections.html#collections.Counter
+collections defaultdict,https://docs.python.org/3/library/collections.html#collections.defaultdict
+heapq module,https://docs.python.org/3/library/heapq.html
+binary search,https://www.geeksforgeeks.org/binary-search/
+two pointers,https://www.geeksforgeeks.org/two-pointers-technique/
+sliding window,https://www.geeksforgeeks.org/window-sliding-technique/
+prefix sum,https://www.geeksforgeeks.org/prefix-sum-array-implementation-applications-competitive-programming/
+bfs,https://www.geeksforgeeks.org/breadth-first-search-bfs-for-a-graph/
+dfs,https://www.geeksforgeeks.org/depth-first-search-dfs-for-a-graph/
+dynamic programming,https://www.geeksforgeeks.org/introduction-to-dynamic-programming-data-structures-and-algorithm-tutorials/
+backtracking,https://www.geeksforgeeks.org/backtracking-algorithms/
+greedy algorithms,https://www.geeksforgeeks.org/greedy-algorithms/
+trie,https://www.geeksforgeeks.org/trie-data-structure/
+union find,https://www.geeksforgeeks.org/union-find/
+topological sort,https://www.geeksforgeeks.org/topological-sorting/
+bit manipulation,https://wiki.python.org/moin/BitwiseOperators
+graph theory intro,https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/
+tree data structure,https://www.geeksforgeeks.org/tree-data-structure/
+linked list,https://www.geeksforgeeks.org/linked-list-set-1-introduction/
+stack,https://www.geeksforgeeks.org/stack-data-structure-introduction-applications/
+queue,https://www.geeksforgeeks.org/queue-data-structure/
+sorting algorithms,https://www.geeksforgeeks.org/sorting-algorithms/
+searching algorithms,https://www.geeksforgeeks.org/searching-algorithms/
+python interview questions,https://www.geeksforgeeks.org/python-interview-questions/
+competitive programming intro,https://www.geeksforgeeks.org/competitive-programming-a-complete-guide/
+big o notation,https://www.geeksforgeeks.org/understanding-time-complexity-simple-examples/
+object oriented design principles,https://www.geeksforgeeks.org/solid-principles-object-oriented-design/
+pytest,https://docs.pytest.org/en/stable/
+unittest,https://docs.python.org/3/library/unittest.html

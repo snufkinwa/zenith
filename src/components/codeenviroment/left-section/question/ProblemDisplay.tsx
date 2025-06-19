@@ -3,24 +3,29 @@ import ReactMarkdown from 'react-markdown';
 import { Clock, Star, Zap, ChevronLeft, Bookmark, ThumbsUp, ThumbsDown } from 'lucide-react';
 import HighlightableText from '@/components/ui/HighlightableText';
 
-// Updated interface to match your new JSON format
+interface Company {
+  name: string;
+  slug: string;
+  frequency: number;
+}
+
 interface Problem {
   id: string;
   slug: string;
   title: string;
   difficulty: string;
-  description: string;  // Direct string, no parsing needed
+  description: string;
   examples: Array<{
     input: string;
     output: string;
     explanation?: string;
   }>;
-  constraints: string[];  // Array of constraint strings
+  constraints: string[];
+  companies?: Company[];
   note?: string | null;
   follow_up?: string;
 }
 
-// Updated ProblemDisplay component
 interface ProblemDisplayProps {
   problem: Problem | null;
   showBackButton?: boolean;
@@ -64,14 +69,21 @@ const ProblemDisplay: React.FC<ProblemDisplayProps> = ({
   const difficultyConfig = getDifficultyConfig(problem.difficulty);
 
 function cleanIOString(str: string): string {
-  return str
-    .replace(/^.*=\s*/, '')         // Remove "height = " or similar
-    .replace(/\\([\[\]{}()])/g, '$1') // Unescape \[ \] \{ \} \( \)
-    .replace(/[\[\]]/g, '')         // Remove any remaining brackets
-    .split(',')
-    .map(s => s.trim())
-    .join(', ');
-}
+    if (!str) return '';
+    
+    try {
+      return str
+        // Unescape backslashes before brackets and parentheses
+        .replace(/\\([\[\]{}()])/g, '$1')
+        // Clean up spacing around commas
+        .replace(/,\s*/g, ', ')
+        // Remove extra whitespace
+        .trim();
+    } catch (error) {
+      console.warn('Error cleaning IO string:', error);
+      return str;
+    }
+  }
 
 
   return (
@@ -109,7 +121,7 @@ function cleanIOString(str: string): string {
 
       {/* Main Content */}
       <div className="prose prose-gray max-w-none">
-        {/* Problem Description - No parsing needed! */}
+        {/* Problem Description */}
         <div className="mb-6">
           <HighlightableText 
             content={problem.description}

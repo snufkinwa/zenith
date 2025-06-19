@@ -1,7 +1,5 @@
-// src/components/platform-nav/index.tsx
 "use client";
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -48,12 +46,6 @@ const PlatformNav: React.FC<PlatformNavProps> = ({ isCollapsed = false }) => {
       icon: User,
       active: pathname === '/profile'
     },
-    {
-      name: 'Settings',
-      href: '/settings',
-      icon: Settings,
-      active: pathname === '/settings'
-    }
   ];
 
   const NavItem = ({ item, showLabel = true }: { item: any; showLabel?: boolean }) => (

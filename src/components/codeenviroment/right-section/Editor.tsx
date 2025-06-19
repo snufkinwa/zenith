@@ -59,15 +59,13 @@ if __name__ == "__main__":
     if (!templatesLoaded) return;
 
     if (problemSlug) {
-      // Load template for specific problem
       const template = getTemplateForProblem(problemSlug);
       setInput(template);
       console.log('Loaded template for problem:', problemSlug);
     } else if (!input) {
-      // Load default template only if input is empty
       setInput(getDefaultTemplate());
     }
-  }, [problemSlug, templatesLoaded, templates]);
+  }, [problemSlug, templatesLoaded, getTemplateForProblem, setInput, getDefaultTemplate, input]);
 
   return (
     <div className="h-full flex flex-col">

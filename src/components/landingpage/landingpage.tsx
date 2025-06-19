@@ -29,7 +29,7 @@ import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Badg
 
 export default function ZenithLanding() {
   const [scrollY, setScrollY] = useState(0)
-  const [currentTestimonial, setCurrentTestimonial] = useState(0)
+
   const [activeTab, setActiveTab] = useState('ai')
 
   useEffect(() => {
@@ -38,12 +38,7 @@ export default function ZenithLanding() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+
 
   useEffect(() => {
   const link = document.createElement('link')
@@ -51,24 +46,6 @@ export default function ZenithLanding() {
   link.rel = 'stylesheet'
   document.head.appendChild(link)
 }, [])
-
-  const testimonials = [
-    {
-      text: "Zenith transformed my coding interview prep. The AI feedback is incredibly insightful.",
-      author: "Sarah Chen",
-      role: "Software Engineer at Google"
-    },
-    {
-      text: "The best coding platform I've used. Complex challenges that actually prepare you for real work.",
-      author: "Marcus Johnson",
-      role: "Senior Developer at Meta"
-    },
-    {
-      text: "Love the visual thinking tools. Finally a platform that gets how developers actually think.",
-      author: "Priya Patel",
-      role: "Tech Lead at Stripe"
-    }
-  ]
 
   return (
     <div className="h-full w-full  text-white">
@@ -114,10 +91,10 @@ export default function ZenithLanding() {
 
         <div className="max-w-2xl mx-auto mb-12 space-y-4">
           <p className="text-gray-300 text-xl">
-            Master complex algorithms, receive intelligent feedback, and accelerate your software engineering career.
+            Master algorithms, receive intelligent feedback, and accelerate your software engineering career.
           </p>
           <p className="text-gray-400 text-lg">
-            Join thousands of developers already using Zenith to level up their coding skills.
+            Join developers using Zenith to level up their coding skills.
           </p>
         </div>
 
@@ -137,17 +114,17 @@ export default function ZenithLanding() {
         </div>
 
         {/* Simple stats */}
-        <div className="grid grid-cols-3 gap-12  text-center">
+        <div className="grid grid-cols-3 gap-12 text-center">
           <div>
-            <div className="text-3xl font-bold text-[#33cc99]">1000+</div>
-            <div className="text-gray-400">Challenges</div>
+            <div className="text-3xl font-bold text-[#33cc99]">75+</div>
+            <div className="text-gray-400">Hand-Picked Problems</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-[#33cc99]">50K+</div>
-            <div className="text-gray-400">Users</div>
+            <div className="text-3xl font-bold text-[#33cc99]">1</div>
+            <div className="text-gray-400">Student Helped</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-[#33cc99]">AI-Powered</div>
+        <div className="text-3xl font-bold text-[#33cc99]">AI-Powered</div>
             <div className="text-gray-400">Feedback</div>
           </div>
         </div>
@@ -315,53 +292,6 @@ export default function ZenithLanding() {
                   </CardDescription>
                 </CardHeader>
               </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="relative z-10 py-24 px-4 ">
-        {/* Diagonal grid pattern for testimonials */}
-        <div className="absolute inset-0 opacity-5 ">
-          <div
-            style={{
-              backgroundImage: `
-                linear-gradient(45deg, rgba(18, 77, 255, 0.3) 1px, transparent 1px),
-                linear-gradient(-45deg, rgba(18, 77, 255, 0.3) 1px, transparent 1px)
-              `,
-              backgroundSize: "20px 20px",
-            }}
-          />
-        </div>
-        
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl font-bold mb-16 text-[#33cc99] font-['Staatliches']">
-            What Developers Say
-          </h2>
-          
-          <Card className="bg-gray-900/50 border-gray-800">
-            <CardContent className="p-8">
-              <div className="mb-6 text-2xl text-[#33cc99]">★★★★★</div>
-              <blockquote className="text-xl text-gray-200 mb-6">
-                &quot;{testimonials[currentTestimonial].text}&quot;
-              </blockquote>
-              <div className="text-center">
-                <div className="font-semibold text-white">{testimonials[currentTestimonial].author}</div>
-                <div className="text-gray-400 text-sm">{testimonials[currentTestimonial].role}</div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <div className="flex justify-center gap-2 mt-6">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentTestimonial ? 'bg-[#33cc99] w-8' : 'bg-gray-600'
-                }`}
-                onClick={() => setCurrentTestimonial(index)}
-              />
             ))}
           </div>
         </div>
