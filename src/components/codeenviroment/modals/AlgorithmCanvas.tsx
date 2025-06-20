@@ -1,4 +1,3 @@
-// src/components/codeenviroment/modals/AlgorithmCanvas.tsx
 'use client';
 
 import React, { useRef } from 'react';

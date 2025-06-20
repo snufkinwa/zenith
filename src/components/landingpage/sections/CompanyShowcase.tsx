@@ -5,12 +5,12 @@ import { Building2, TrendingUp, Star, ArrowRight } from 'lucide-react';
 
 const CompanySection = () => {
   const companies = [
-    { name: 'Google', logo: 'https://logo.clearbit.com/google.com', problems: 45, frequency: 237 },
-    { name: 'Amazon', logo: 'https://logo.clearbit.com/amazon.com', problems: 38, frequency: 201 },
-    { name: 'Meta', logo: 'https://logo.clearbit.com/meta.com', problems: 32, frequency: 175 },
-    { name: 'Microsoft', logo: 'https://logo.clearbit.com/microsoft.com', problems: 29, frequency: 157 },
-    { name: 'Apple', logo: 'https://logo.clearbit.com/apple.com', problems: 24, frequency: 142 },
-    { name: 'Netflix', logo: 'https://logo.clearbit.com/netflix.com', problems: 18, frequency: 98 },
+    { name: 'Google', logo: './logos/google.svg', problems: 45, frequency: 237 },
+    { name: 'Amazon', logo: './logos/amazon.svg', problems: 38, frequency: 201 },
+    { name: 'Meta', logo: './logos/meta.svg', problems: 32, frequency: 175 },
+    { name: 'Microsoft', logo: './logos/microsoft.svg', problems: 29, frequency: 157 },
+    { name: 'Apple', logo: './logos/apple.svg', problems: 24, frequency: 142 },
+    { name: 'Netflix', logo: './logos/netflix.svg', problems: 18, frequency: 98 },
   ];
 
   const stats = [
@@ -84,7 +84,7 @@ const CompanySection = () => {
                 <img
                   src={company.logo}
                   alt={`${company.name} logo`}
-                  className="w-10 h-10 object-contain filter brightness-90 group-hover:brightness-100 transition-all"
+                  className="w-12 h-12 object-contain filter brightness-90 group-hover:brightness-100 transition-all"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                     (e.currentTarget.nextElementSibling as HTMLElement)!.style.display = 'flex';

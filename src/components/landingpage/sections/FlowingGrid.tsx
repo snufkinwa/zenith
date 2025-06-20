@@ -1,4 +1,3 @@
-// src/components/landingpage/sections/FlowingGrid.tsx
 'use client';
 
 import React from 'react';

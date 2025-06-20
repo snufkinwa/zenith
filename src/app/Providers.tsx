@@ -1,10 +1,11 @@
-// Providers.tsx
 "use client";
 
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from 'next-themes';
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { createBrowserClient } from "@supabase/ssr";
 import { useState } from "react";
+import { MovexProvider } from 'movex-react';
+import movexConfig from '../movex.config';
 
 interface Props {
   children: React.ReactNode;
@@ -18,11 +19,13 @@ const [supabaseClient] = useState(() =>
   )
 );
 
-  return (
+  return (      
+  <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
     <SessionContextProvider supabaseClient={supabaseClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <MovexProvider movexDefinition={movexConfig} endpointUrl="localhost:3333">
         {children}
-      </ThemeProvider>
-    </SessionContextProvider>
+       </MovexProvider>
+    </SessionContextProvider> 
+    </ThemeProvider>
   );
 }

@@ -1,4 +1,3 @@
-// src/components/codeenviroment/modals/CanvasModal.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';

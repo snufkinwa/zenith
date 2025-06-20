@@ -1,4 +1,3 @@
-// src/components/canvas/CanvasToolbar.tsx
 import React from 'react';
 import { PenTool, Square, Circle, Type, Trash2, Undo, Redo } from 'lucide-react';
 import { ToolType } from '@/types/canvas';

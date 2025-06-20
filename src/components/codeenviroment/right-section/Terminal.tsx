@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Play, Terminal as TerminalIcon, AlertCircle, CheckCircle, Clock, Bug, ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
-
+import { useTheme } from './ThemeContext';
 
 interface TestCase {
   id: number;
@@ -69,6 +69,9 @@ const Terminal: React.FC<TerminalProps> = ({
   const [customTestCases, setCustomTestCases] = useState<TestCase[]>([]);
   const [selectedTestCase, setSelectedTestCase] = useState<number>(1);
 
+   // Use centralized theme
+  const { getThemeClasses } = useTheme();
+  const themeClasses = getThemeClasses();
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
   if (typeof window !== 'undefined') {
@@ -214,49 +217,49 @@ useEffect(() => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-white border-t border-gray-200">
+    <div className={`h-full flex flex-col ${themeClasses.terminalBg} ${themeClasses.borderColor} border-t`}>
       {/* Header with Collapse Button */}
-    <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200 min-h-[48px]">
+   <div className={`flex items-center justify-between px-4 py-2 ${themeClasses.terminalHeaderBg} ${themeClasses.terminalHeaderBorder} border-b min-h-[48px]`}>
       <div className="flex items-center space-x-1">
-        <button
-          onClick={() => setActiveTab("testcases")}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-            activeTab === "testcases"
-              ? 'bg-white text-blue-600 shadow-sm border border-gray-200'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
-        >
-          Test Cases
-          {testResults.length > 0 && (
-            <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-medium ${
-              testResults.every(r => r.passed)
-                ? 'bg-green-100 text-green-700 border border-green-200'
-                : 'bg-orange-100 text-orange-700 border border-orange-200'
-            }`}>
-              {testResults.filter(r => r.passed).length}/{testResults.length}
-            </span>
-          )}
-        </button>
-        
-        <button
-          onClick={() => setActiveTab("output")}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-            activeTab === "output"
-              ? 'bg-white text-blue-600 shadow-sm border border-gray-200'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
-        >
-          Output
-        </button>
-        
-        <button
-          onClick={() => setActiveTab("console")}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-            activeTab === "console"
-              ? 'bg-white text-blue-600 shadow-sm border border-gray-200'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
-        >
+      <button
+            onClick={() => setActiveTab("testcases")}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+              activeTab === "testcases"
+                ? themeClasses.terminalTabActive
+                : themeClasses.terminalTabInactive
+            }`}
+          >
+            Test Cases
+            {testResults.length > 0 && (
+              <span className={`ml-2 text-xs px-2 py-0.5 rounded-full font-medium ${
+                testResults.every(r => r.passed)
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
+              }`}>
+                {testResults.filter(r => r.passed).length}/{testResults.length}
+              </span>
+            )}
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("output")}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+              activeTab === "output"
+                ? themeClasses.terminalTabActive
+                : themeClasses.terminalTabInactive
+            }`}
+          >
+            Output
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("console")}
+            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+              activeTab === "console"
+                ? themeClasses.terminalTabActive
+                : themeClasses.terminalTabInactive
+            }`}
+          >
           Console
           {consoleMessages.length > 0 && (
             <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-600 border border-gray-300 font-medium">
@@ -317,20 +320,20 @@ useEffect(() => {
       </div>
     </div>
 
-    {/* Content - Combined Test Cases Tab */}
+    {/* Content Area */}
     <div className="flex-1 overflow-hidden">
       {activeTab === "testcases" && (
         <div className="h-full flex">
           {/* Test Case List */}
-          <div className="w-1/3 bg-gray-50 border-r border-gray-200 overflow-y-auto">
-            <div className="p-3">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-gray-700">Test Cases</span>
-                <button
-                  onClick={addCustomTestCase}
-                  className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded"
-                  title="Add custom test case"
-                >
+            <div className={`w-80 ${themeClasses.terminalHeaderBg} ${themeClasses.terminalHeaderBorder} border-r overflow-auto`}>
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className={`font-semibold ${themeClasses.terminalHeaderText}`}>Test Cases</h3>
+                  <button
+                    onClick={addCustomTestCase}
+                    className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+                    title="Add custom test case"
+                  >
                   <Plus className="w-4 h-4" />
                 </button>
               </div>
@@ -344,14 +347,14 @@ useEffect(() => {
                     key={testCase.id}
                     className={`p-3 mb-2 rounded cursor-pointer transition-colors border ${
                       selectedTestCase === testCase.id
-                        ? 'bg-blue-100 border-blue-300'
-                        : 'hover:bg-gray-100 border-gray-200'
+                        ? `${themeClasses.terminalInputBg} ${themeClasses.terminalInputBorder} border-2`
+                            : `${themeClasses.terminalHeaderBg} ${themeClasses.terminalHeaderBorder} hover:${themeClasses.terminalInputBg}`
                     }`}
                     onClick={() => setSelectedTestCase(testCase.id)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">{displayIndex}</span>
+                         <span className={`text-sm font-medium ${themeClasses.terminalText}`}>{displayIndex}</span>
                         {testResult && (
                           testResult.passed ? (
                             <CheckCircle className="w-4 h-4 text-green-500" />
@@ -407,18 +410,18 @@ useEffect(() => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Input:
                   </label>
-                  {selectedTest.isCustom ? (
-                    <textarea
-                      value={selectedTest.input}
-                      onChange={(e) => updateTestCase(selectedTest.id, 'input', e.target.value)}
-                      className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                      placeholder="Enter your input..."
-                    />
-                  ) : (
-                    <div className="bg-gray-100 p-3 rounded-md border">
-                      <code className="text-sm">{selectedTest.input}</code>
-                    </div>
-                  )}
+           {selectedTest.isCustom ? (
+                      <textarea
+                        value={selectedTest.input}
+                        onChange={(e) => updateTestCase(selectedTest.id, 'input', e.target.value)}
+                        className={`w-full h-24 p-3 rounded-md border font-mono text-sm resize-none ${themeClasses.terminalInputBg} ${themeClasses.terminalInputBorder} ${themeClasses.terminalInputText}`}
+                        placeholder="Enter test input..."
+                      />
+                    ) : (
+                      <div className={`w-full h-24 p-3 rounded-md border font-mono text-sm overflow-auto ${themeClasses.terminalInputBg} ${themeClasses.terminalInputBorder} ${themeClasses.terminalInputText}`}>
+                        {selectedTest.input}
+                      </div>
+                    )}
                 </div>
 
                 {/* Expected Output Section */}
@@ -427,22 +430,22 @@ useEffect(() => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Expected Output:
                     </label>
-                    {selectedTest.isCustom ? (
+                 {selectedTest.isCustom ? (
                       <textarea
-                        value={selectedTest.expected}
+                        value={selectedTest.expected || ''}
                         onChange={(e) => updateTestCase(selectedTest.id, 'expected', e.target.value)}
-                        className="w-full h-16 px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        className={`w-full h-24 p-3 rounded-md border font-mono text-sm resize-none ${themeClasses.terminalInputBg} ${themeClasses.terminalInputBorder} ${themeClasses.terminalInputText}`}
                         placeholder="Enter expected output..."
                       />
                     ) : (
-                      <div className="bg-gray-100 p-3 rounded-md border">
-                        <code className="text-sm">{selectedTest.expected}</code>
+                      <div className={`w-full h-24 p-3 rounded-md border font-mono text-sm overflow-auto ${themeClasses.terminalInputBg} ${themeClasses.terminalInputBorder} ${themeClasses.terminalInputText}`}>
+                        {selectedTest.expected}
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Test Result Section (if available) */}
+                {/* Test Result */}
                 {(() => {
                   const testResult = testResults.find(r => r.testCase === selectedTest.id);
                   if (!testResult) return null;
@@ -520,12 +523,12 @@ useEffect(() => {
         {activeTab === "console" && (
           <div className="h-full overflow-auto p-4 space-y-3">
             <div className="flex items-center gap-2 mb-4">
-              <Bug className="w-5 h-5 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">Console Output & Errors</h3>
+               <Bug className={`w-5 h-5 ${themeClasses.iconColor}`} />
+              <h3 className={`font-semibold ${themeClasses.terminalHeaderText}`}>Console Output & Errors</h3>
             </div>
             
             {consoleMessages.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+                     <div className={`text-center py-8 ${themeClasses.terminalTabInactive}`}>
                 <TerminalIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>No console output yet.</p>
                 <p className="text-sm">Run your code to see detailed logs and errors.</p>

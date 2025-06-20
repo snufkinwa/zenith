@@ -1,4 +1,3 @@
-// src/hooks/useCanvasRenderer.ts
 import { useCallback, useEffect } from 'react';
 import { CanvasElement } from '@/types/canvas';
 import { drawElement, drawSelection } from '@/utils/canvasDrawing';

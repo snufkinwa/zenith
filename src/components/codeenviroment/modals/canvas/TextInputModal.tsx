@@ -1,4 +1,3 @@
-// src/components/canvas/TextInputModal.tsx
 import React from 'react';
 import { Point } from '@/types/canvas';
 

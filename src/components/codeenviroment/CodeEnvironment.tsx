@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Editor from "./right-section/Editor";
-import Terminal from "./terminal";
+import ThemedCodingPanel from "./right-section/ThemedCodingPanel";
 import ProblemList from "./left-section/question/ProblemList";
 import ProblemDisplay from "./left-section/question/ProblemDisplay";
 import { getCustomProblems, type CustomProblem } from "@/utils/customProblems";
@@ -9,6 +8,7 @@ import BottomModal from "./BottomModal";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { ChevronLeft, BookOpen, ChevronUp } from "lucide-react";
 import { cleanInput, buildPythonScript, extractFunctionName, cleanDisplayText } from '@/utils/codeBuilder';
+import { ThemeProvider } from "./right-section/ThemeContext";
 
 
 interface Company {
@@ -54,6 +54,7 @@ interface CodeEnvironmentProps {
 const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems:defaultProblems }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
+
   
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
   const [input, setInput] = useState("");
@@ -319,7 +320,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems:defaultProbl
                 {/* Collapse Button */}
                 <button
                   onClick={() => setIsProblemPanelCollapsed(true)}
-                  className="absolute top-4 right-4 z-10 p-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                  className="absolute top-4 right-4 z-10 p-2 bg-gray-100 text-black hover:bg-gray-200 rounded-md transition-colors"
                   title="Hide problem panel - Focus on coding"
                 >
                   <ChevronLeft size={16} />
@@ -365,51 +366,24 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems:defaultProbl
           </div>
         )}
 
-        {/* Right Panel - Code Editor and Terminal */}
         <Panel minSize={30} defaultSize={50}>
-          <div className="h-full flex flex-col ">
-            {/* Top Section - Code Editor */}
-            <div className={`${isTerminalCollapsed ? 'h-full' : 'flex-1'} flex flex-col`}>
-              <Editor
-                input={input}
-                setInput={setInput}
-                problemSlug={selectedProblem?.slug}
-              />
-            </div>
-            
-            {/* Terminal Section - Collapsible */}
-            {!isTerminalCollapsed && (
-              <div className="h-96 border-t border-gray-300 flex flex-col">
-                <Terminal
-                  output={output}
-                  consoleOutput={consoleOutput}
-                  errors={errors}
-                  runCode={runCode}
-                  runTestCases={runTests}
-                  loading={loading}
-                  testLoading={testLoading}
-                  testResults={testResults}
-                  isCollapsed={isTerminalCollapsed}
-                  onToggleCollapse={() => setIsTerminalCollapsed(true)}
-                  selectedProblem={selectedProblem}
-                />
-              </div>
-            )}
-            
-            {/* Collapsed Terminal Button */}
-            {isTerminalCollapsed && (
-              <div className="h-10 border-t border-gray-300 flex items-center justify-between px-4">
-                <span className="text-sm text-gray-600">Terminal</span>
-                <button
-                  onClick={() => setIsTerminalCollapsed(false)}
-                  className="flex items-center gap-2 px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-sm transition-colors"
-                >
-                  <ChevronUp className="w-4 h-4" />
-                  Show
-                </button>
-              </div>
-            )}
-          </div>
+          <ThemeProvider>
+            <ThemedCodingPanel
+              input={input}
+              setInput={setInput}
+              selectedProblem={selectedProblem}
+              output={output}
+              consoleOutput={consoleOutput}
+              errors={errors}
+              runCode={runCode}
+              runTests={runTests}
+              loading={loading}
+              testLoading={testLoading}
+              testResults={testResults}
+              isTerminalCollapsed={isTerminalCollapsed}
+              setIsTerminalCollapsed={setIsTerminalCollapsed}
+            />
+          </ThemeProvider>
         </Panel>
       </PanelGroup>
 

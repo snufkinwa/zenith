@@ -1,4 +1,3 @@
-// src/types/canvas.ts
 export interface Point {
   x: number;
   y: number;

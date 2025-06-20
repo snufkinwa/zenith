@@ -144,14 +144,14 @@ const DraggableModal: React.FC<ModalProps> = ({
         <div className="flex items-center gap-1">
           <button
             onClick={toggleMaximize}
-            className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+            className="p-1.5 hover:bg-gray-200 rounded text-black transition-colors"
             title={isMaximized ? "Restore" : "Maximize"}
           >
             {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-gray-200 rounded transition-colors"
+            className="p-1.5 hover:bg-gray-200 rounded text-black transition-colors"
             title="Close"
           >
             <X size={14} />

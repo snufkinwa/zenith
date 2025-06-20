@@ -1,4 +1,3 @@
-// src/hooks/useCanvasState.ts
 import { useState, useCallback } from 'react';
 import { CanvasElement, ToolType } from '@/types/canvas';
 import { DEFAULT_CANVAS_STATE } from '@/constants/canvas';
