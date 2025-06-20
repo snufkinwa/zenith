@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, Terminal as TerminalIcon, AlertCircle, CheckCircle, Clock, Bug, ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
 
 
@@ -68,6 +68,27 @@ const Terminal: React.FC<TerminalProps> = ({
   const [activeTab, setActiveTab] = useState<string>("testcases");
   const [customTestCases, setCustomTestCases] = useState<TestCase[]>([]);
   const [selectedTestCase, setSelectedTestCase] = useState<number>(1);
+
+
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('editor-theme') === 'dark';
+  }
+  return false;
+});
+
+useEffect(() => {
+  const handleStorageChange = (e: StorageEvent) => {
+    if (e.key === 'editor-theme') {
+      setIsDarkMode(e.newValue === 'dark');
+    }
+  };
+  
+  window.addEventListener('storage', handleStorageChange);
+  return () => window.removeEventListener('storage', handleStorageChange);
+}, []);
+
+
 
   function sanitizeForTerminal(raw: string): string {
     return raw

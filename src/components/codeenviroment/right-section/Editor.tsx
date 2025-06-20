@@ -1,17 +1,27 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
-import { Code } from 'lucide-react';
+import { Code, Moon, Sun } from 'lucide-react';
+import { tokyoNight } from '@uiw/codemirror-theme-tokyo-night';
+import { tokyoNightDay } from '@uiw/codemirror-theme-tokyo-night-day';
 
 interface EditorProps {
   input: string;
   setInput: (input: string) => void;
-  problemSlug?: string; // Add this prop to know which problem is selected
+  problemSlug?: string;
 }
 
 const Editor: React.FC<EditorProps> = ({ input, setInput, problemSlug }) => {
   const [templates, setTemplates] = useState<any[]>([]);
   const [templatesLoaded, setTemplatesLoaded] = useState(false);
+  const [hasLoadedTemplate, setHasLoadedTemplate] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('editor-theme') === 'dark';
+    }
+    return false;
+  });
+  const lastProblemSlugRef = useRef<string | undefined>(undefined);
 
   // Load templates on mount
   useEffect(() => {
@@ -30,20 +40,43 @@ const Editor: React.FC<EditorProps> = ({ input, setInput, problemSlug }) => {
     loadTemplates();
   }, []);
 
+  // Load theme preference from localStorage and listen for changes
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'editor-theme') {
+        setIsDarkMode(e.newValue === 'dark');
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   const handleChange = useCallback((value: string) => {
     setInput(value);
   }, [setInput]);
 
-  const getTemplateForProblem = (slug: string): string => {
+  const toggleTheme = useCallback(() => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    localStorage.setItem('editor-theme', newMode ? 'dark' : 'light');
+    
+    // Trigger storage event for other components
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'editor-theme',
+      newValue: newMode ? 'dark' : 'light',
+    }));
+  }, [isDarkMode]);
+
+  const getTemplateForProblem = useCallback((slug: string): string => {
     const template = templates.find(t => t.slug === slug);
     if (template) {
-      // Template is already perfect - just return it
       return template.template;
     }
     return getDefaultTemplate();
-  };
+  }, [templates]);
 
-  const getDefaultTemplate = () => {
+  const getDefaultTemplate = useCallback(() => {
     return `class Solution:
     def solve(self):
         # Write your code here
@@ -52,43 +85,76 @@ const Editor: React.FC<EditorProps> = ({ input, setInput, problemSlug }) => {
 if __name__ == "__main__":
     sol = Solution()
     print(sol.solve())`;
-  };
+  }, []);
 
   // Load template when problem changes
   useEffect(() => {
     if (!templatesLoaded) return;
 
-    if (problemSlug) {
-      const template = getTemplateForProblem(problemSlug);
-      setInput(template);
-      console.log('Loaded template for problem:', problemSlug);
-    } else if (!input) {
-      setInput(getDefaultTemplate());
+    // Check if the problem has actually changed
+    const problemChanged = problemSlug !== lastProblemSlugRef.current;
+    if (problemChanged) {
+      lastProblemSlugRef.current = problemSlug;
+      if (problemSlug) {
+        const template = getTemplateForProblem(problemSlug);
+        setInput(template);
+        setHasLoadedTemplate(true);
+        console.log('Loaded template for problem:', problemSlug);
+      } else if (!hasLoadedTemplate) {
+        // Only set default template if no template has been loaded yet
+        setInput(getDefaultTemplate());
+        setHasLoadedTemplate(true);
+      }
     }
-  }, [problemSlug, templatesLoaded, getTemplateForProblem, setInput, getDefaultTemplate, input]);
+  }, [problemSlug, templatesLoaded, getTemplateForProblem, setInput, getDefaultTemplate, hasLoadedTemplate]);
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Editor Header - Simplified for Python only */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
+    <div className={`h-full flex flex-col ${isDarkMode ? 'bg-[#1a1b26]' : 'bg-[#d5d6db]'}`}>
+      {/* Editor Header */}
+      <div className={`flex items-center justify-between px-4 py-3 border-b ${
+        isDarkMode 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-gray-50 border-gray-200'
+      }`}>
         <div className="flex items-center gap-3">
-          <Code className="w-5 h-5 text-gray-600" />
-          <h3 className="font-semibold text-gray-900">Code Editor</h3>
+          <Code className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />
+          <h3 className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+            Code Editor
+          </h3>
         </div>
-        {/* Python Language Indicator */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-md text-sm font-medium">
+        
+        <div className="flex items-center gap-3">
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-md transition-colors ${
+              isDarkMode
+                ? 'bg-[#414868] hover:bg-[#4a5574] text-gray-300'
+                : 'bg-[#c4c8da] hover:bg-[#b6bbd0] text-[#33467c]'
+            }`}
+            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+          
+          {/* Python Language Indicator */}
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium ${
+            isDarkMode
+              ? 'bg-blue-900 text-blue-200'
+              : 'bg-blue-100 text-blue-800'
+          }`}>
             <span>🐍</span>
             <span>Python</span>
           </div>
         </div>
       </div>
-      
+
       {/* Code Editor */}
-      <div className="flex-1">
+      <div className={`flex-1 ${isDarkMode ? 'bg-[#1a1b26]' : 'bg-[#e1e2e7]'}`}>
         <CodeMirror
           value={input}
           height="100%"
+          width="100%"
           basicSetup={{
             lineNumbers: false,
             foldGutter: true,
@@ -98,11 +164,13 @@ if __name__ == "__main__":
             history: true,
             indentOnInput: true,
             bracketMatching: true,
-            searchKeymap: true
+            searchKeymap: true,
+            tabSize: 4
           }}
-          extensions={[python()]} // Only Python extension
-          onChange={(value) => handleChange(value)}
-          theme="light"
+          extensions={[python()]}
+          onChange={handleChange}
+          theme={isDarkMode ? tokyoNight : tokyoNightDay}
+          editable={true}
         />
       </div>
     </div>

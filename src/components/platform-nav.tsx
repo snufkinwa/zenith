@@ -5,10 +5,9 @@ import { usePathname } from 'next/navigation';
 import { 
   Home, 
   Code, 
-  Settings, 
-  User, 
   LogOut,
   BookOpen,
+  Video,
 } from 'lucide-react';
 
 interface PlatformNavProps {
@@ -37,6 +36,12 @@ const PlatformNav: React.FC<PlatformNavProps> = ({ isCollapsed = false }) => {
       icon: Code,
       active: pathname.startsWith('/beta')
     },
+    {
+      name: 'Mock Interview', 
+      href: '/mock-interview',
+      icon: Video,
+      active: pathname.startsWith('mock-interview')
+    }
   ];
 
 
@@ -74,19 +79,18 @@ const PlatformNav: React.FC<PlatformNavProps> = ({ isCollapsed = false }) => {
         <div className="space-y-1">
         
           {/* Logout Button */}
-          <button
-            onClick={() => {
-              // Handle logout logic
-              window.location.href = '/login';
-            }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-gray-300 hover:bg-red-600 hover:text-white ${
-              isCollapsed ? 'justify-center' : ''
-            }`}
-            title={isCollapsed ? 'Logout' : ''}
-          >
-            <LogOut size={20} />
-            {!isCollapsed && <span className="font-medium">Logout</span>}
-          </button>
+<form action="/auth/signout" method="post" className="w-full">
+  <button
+    type="submit"
+    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-gray-300 hover:bg-red-600 hover:text-white ${
+      isCollapsed ? 'justify-center' : ''
+    }`}
+    title={isCollapsed ? 'Logout' : ''}
+  >
+    <LogOut size={20} />
+    {!isCollapsed && <span className="font-medium">Logout</span>}
+  </button>
+</form>
         </div>
       </div>
     </nav>

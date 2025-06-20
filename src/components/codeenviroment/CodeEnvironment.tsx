@@ -367,7 +367,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems:defaultProbl
 
         {/* Right Panel - Code Editor and Terminal */}
         <Panel minSize={30} defaultSize={50}>
-          <div className="h-full flex flex-col bg-gray-50">
+          <div className="h-full flex flex-col ">
             {/* Top Section - Code Editor */}
             <div className={`${isTerminalCollapsed ? 'h-full' : 'flex-1'} flex flex-col`}>
               <Editor
@@ -398,7 +398,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ problems:defaultProbl
             
             {/* Collapsed Terminal Button */}
             {isTerminalCollapsed && (
-              <div className="h-10 border-t border-gray-300 bg-gray-100 flex items-center justify-between px-4">
+              <div className="h-10 border-t border-gray-300 flex items-center justify-between px-4">
                 <span className="text-sm text-gray-600">Terminal</span>
                 <button
                   onClick={() => setIsTerminalCollapsed(false)}

@@ -1,50 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ZenithLogo from '../ui/logo';
+import { ArrowLeft } from 'lucide-react';
 
 interface LoginProps {
-  login: (formData: FormData) => Promise<void>;
-  signup: (formData: FormData) => Promise<void>;
   signInWithProvider: (provider: 'github' | 'discord' | 'google') => Promise<void>;
 }
 
-const Login: React.FC<LoginProps> = ({ login, signup, signInWithProvider }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
+const Login: React.FC<LoginProps> = ({ signInWithProvider }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loadingProvider, setLoadingProvider] = useState<string | null>(null);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsLoading(true);
-    setError('');
-    
-    const formData = new FormData(event.currentTarget);
-    
-    try {
-      if (isSignUp) {
-        await signup(formData);
-      } else {
-        await login(formData);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setError(error instanceof Error ? error.message : 'An error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Firefox detection for input styling fixes
+  const [isFirefox, setIsFirefox] = useState(false);
+
+  useEffect(() => {
+    setIsFirefox(navigator.userAgent.toLowerCase().indexOf('firefox') > -1);
+  }, []);
 
   const handleOAuthSignIn = async (provider: 'github' | 'discord' | 'google') => {
     setIsLoading(true);
+    setLoadingProvider(provider);
     setError('');
     
     try {
       await signInWithProvider(provider);
     } catch (error) {
       console.error('Error signing in with provider:', error);
-      setError(error instanceof Error ? error.message : 'OAuth sign-in failed');
+      setError(error instanceof Error ? error.message : `${provider} sign-in failed`);
+    } finally {
       setIsLoading(false);
+      setLoadingProvider(null);
     }
+  };
+
+  const handleBackToMain = () => {
+    window.location.href = '/';
   };
 
   const getProviderIcon = (provider: string) => {
@@ -75,110 +66,126 @@ const Login: React.FC<LoginProps> = ({ login, signup, signInWithProvider }) => {
     }
   };
 
+  const getProviderName = (provider: string) => {
+    switch (provider) {
+      case 'github': return 'GitHub';
+      case 'discord': return 'Discord';
+      case 'google': return 'Google';
+      default: return provider;
+    }
+  };
+
+  const getProviderColor = (provider: string) => {
+    switch (provider) {
+      case 'github': return 'hover:bg-gray-700 focus:ring-gray-500';
+      case 'discord': return 'hover:bg-indigo-600 focus:ring-indigo-500';
+      case 'google': return 'hover:bg-red-600 focus:ring-red-500';
+      default: return 'hover:bg-gray-600 focus:ring-gray-500';
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-black relative">
+      {/* Gradient overlay with reduced opacity */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#33cc99]/30 to-[#124dff]/30"></div>
+      {/* Firefox-specific styles */}
+      <style jsx>{`
+        @supports (-moz-appearance: none) {
+          .firefox-fix {
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+          }
+        }
+      `}</style>
+      
+      {/* Back to Main Site Button */}
+      <button
+        onClick={handleBackToMain}
+        className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-lg border border-white/20 text-white hover:bg-white/20 transition-all duration-200 group"
+      >
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
+        <span className="font-medium">Back to Home</span>
+      </button>
+      
       <div className="w-full max-w-md">
         <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2 tracking-wider">
-              𝖹 𝖤 𝖭 𝖨 𝖳 𝖧
-            </h1>
-            <p className="text-gray-300 text-lg">
-              {isSignUp ? 'Create your account' : 'Welcome back'}
+          <div className="text-center justify-center mb-8 flex-column">
+          <div className="flex justify-center mb-4">
+             <ZenithLogo />
+            </div>
+            <p className="text-white text-lg mb-4 font-semibold">
+              Welcome to the future of coding
+            </p>
+            <p className="text-white/80 text-sm">
+              Sign in with your preferred account to get started
             </p>
           </div>
 
           {error && (
-            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 mb-6 text-red-200 text-sm">
-              {error}
+            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6 text-red-200 text-sm">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-red-300" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                {error}
+              </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
-                required
+          <div className="space-y-4">
+            {(['github', 'google', 'discord'] as const).map((provider) => (
+              <button
+                key={provider}
+                type="button"
+                className={`w-full flex items-center justify-center gap-3 px-6 py-4 
+                  bg-white/5 border border-white/20 rounded-xl text-white font-medium
+                  transition-all duration-200 transform hover:scale-[1.02] hover:bg-white/10
+                  focus:outline-none focus:ring-2 focus:ring-[#33cc99]/50 focus:border-transparent
+                  disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
+                  ${getProviderColor(provider)} firefox-fix`}
+                onClick={() => handleOAuthSignIn(provider)}
                 disabled={isLoading}
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 disabled:opacity-50"
-                required
-                disabled={isLoading}
-              />
+              >
+                {loadingProvider === provider ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  getProviderIcon(provider)
+                )}
+                <span className="text-lg">
+                  {loadingProvider === provider 
+                    ? `Connecting to ${getProviderName(provider)}...`
+                    : `Continue with ${getProviderName(provider)}`
+                  }
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-white/20">
+            <div className="text-center text-white/70 text-sm">
+              <p>
+                By signing in, you agree to our{' '}
+                <a href="#" className="text-[#33cc99] hover:text-[#33cc99]/80 underline">
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a href="#" className="text-[#33cc99] hover:text-[#33cc99]/80 underline">
+                  Privacy Policy
+                </a>
+              </p>
             </div>
-            
-            <button 
-              type="submit" 
-              className="w-full bg-gradient-to-r from-purple-600 to-violet-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:from-purple-700 hover:to-violet-800 transition-all duration-200 disabled:opacity-50"
-              disabled={isLoading}
-            >
-              {isLoading ? (isSignUp ? 'Signing up...' : 'Signing in...') : (isSignUp ? 'Sign Up' : 'Sign In')}
-            </button>
-          </form>
-
-          <div className="flex items-center my-6">
-            <div className="flex-grow border-t border-white/20"></div>
-            <span className="mx-4 text-gray-400 text-sm">or continue with</span>
-            <div className="flex-grow border-t border-white/20"></div>
           </div>
 
-          <div className="flex justify-center space-x-4 mb-6">
-            <button
-              type="button"
-              className="bg-white/10 border border-white/20 rounded-lg p-3 hover:bg-white/20 transition-all duration-200"
-              onClick={() => handleOAuthSignIn('github')}
-              disabled={isLoading}
-              aria-label="Sign in with GitHub"
-            >
-              {getProviderIcon('github')}
-            </button>
-            <button
-              type="button"
-              className="bg-white/10 border border-white/20 rounded-lg p-3 hover:bg-white/20 transition-all duration-200"
-              onClick={() => handleOAuthSignIn('discord')}
-              disabled={isLoading}
-              aria-label="Sign in with Discord"
-            >
-              {getProviderIcon('discord')}
-            </button>
-            <button
-              type="button"
-              className="bg-white/10 border border-white/20 rounded-lg p-3 hover:bg-white/20 transition-all duration-200"
-              onClick={() => handleOAuthSignIn('google')}
-              disabled={isLoading}
-              aria-label="Sign in with Google"
-            >
-              {getProviderIcon('google')}
-            </button>
-          </div>
-
-          <div className="text-center">
-            <button
-              type="button"
-              className="text-purple-300 hover:underline focus:outline-none"
-              onClick={() => setIsSignUp((prev) => !prev)}
-              disabled={isLoading}
-            >
-              {isSignUp
-                ? 'Already have an account? Sign In'
-                : "Don't have an account? Sign Up"}
-            </button>
+          {/* Powered by indicator */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-white/50">
+              Secure authentication powered by OAuth 2.0
+            </p>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Login;

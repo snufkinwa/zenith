@@ -13,7 +13,6 @@
     "@codemirror/lang-java": "^6.0.1",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-python": "^6.1.6",
-    "@excalidraw/excalidraw": "^0.18.0",
     "@headlessui/react": "^2.2.4",
     "@langchain/community": "^0.3.46",
     "@langchain/core": "^0.3.59",
@@ -25,7 +24,7 @@
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.0",
     "@tavily/core": "^0.5.7",
-    "@uiw/codemirror-theme-tokyo-night": "^4.23.0",
+    "@uiw/codemirror-theme-tokyo-night": "^4.23.13",
     "@uiw/codemirror-theme-tokyo-night-day": "^4.23.0",
     "@uiw/react-codemirror": "^4.23.0",
     "axios": "^1.7.3",
@@ -45,8 +44,7 @@
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.0.22",
     "recharts": "^2.12.7",
-    "tailwindcss-animate": "^1.0.7",
-    "tldraw": "^3.13.1"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/node": "^20",

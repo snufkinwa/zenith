@@ -12,8 +12,7 @@
 
 @layer base {
   :root {
---background: 0 0% 100%;
-
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -276,4 +275,185 @@
 /* Optional: Add a subtle glow effect */
 .flowing-grid-glow path {
   filter: drop-shadow(0 0 2px currentColor);
+}
+
+/* ========================================
+   FIREFOX INPUT/TEXTAREA DARK MODE FIX
+   ======================================== */
+
+/* Force light background for all inputs and textareas in Firefox */
+input,
+textarea,
+select {
+  background-color: white !important;
+  color: black !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Specifically target Firefox with @-moz-document */
+@-moz-document url-prefix() {
+  input,
+  textarea,
+  select {
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid #d1d5db !important;
+  }
+  
+  /* Fix for login form inputs specifically */
+  input[type="email"],
+  input[type="password"] {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  
+  /* Fix for modal inputs */
+  .bg-white input,
+  .bg-white textarea {
+    background-color: white !important;
+    color: black !important;
+  }
+}
+
+/* ========================================
+   FIREFOX SPECIFIC FORM CONTROL FIXES
+   ======================================== */
+
+/* Firefox-specific input styling */
+@supports (-moz-appearance: none) {
+  input {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  textarea {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  /* Prevent Firefox from applying dark mode to form controls */
+  input:-moz-autofill {
+    background-color: white !important;
+    color: black !important;
+  }
+}
+
+/* ========================================
+   LOGO LOADING FIXES FOR FIREFOX
+   ======================================== */
+
+/* Ensure SVG logos render properly in Firefox */
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix for company logos using Clearbit */
+img[src*="clearbit.com"] {
+  display: inline-block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+}
+
+/* Fallback for failed logo loads */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* ========================================
+   FIREFOX SCROLLBAR STYLING
+   ======================================== */
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+/* ========================================
+   FIREFOX PLACEHOLDER FIXES
+   ======================================== */
+
+/* Ensure placeholder text is visible in Firefox */
+::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+::-moz-placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* ========================================
+   FIREFOX BUTTON & FOCUS FIXES
+   ======================================== */
+
+/* Fix button rendering in Firefox */
+button {
+  -moz-appearance: none !important;
+  background-image: none !important;
+}
+
+/* Fix focus outline in Firefox */
+*:focus {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+
+/* ========================================
+   FIREFOX SPECIFIC LOGIN FORM FIXES
+   ======================================== */
+
+/* Login page specific fixes for Firefox */
+.login-input {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+@-moz-document url-prefix() {
+  .login-input {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+  }
+  
+  .login-input::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+}
+
+/* ========================================
+   GENERAL FIREFOX COMPATIBILITY
+   ======================================== */
+
+/* Ensure proper box-sizing in Firefox */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Fix for gradient backgrounds in Firefox */
+.bg-gradient-to-br {
+  background-attachment: fixed;
+}
+
+/* Fix for backdrop-blur in Firefox */
+@supports not (backdrop-filter: blur(1px)) {
+  .backdrop-blur-md {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  .backdrop-blur-sm {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+  }
 }

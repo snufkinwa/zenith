@@ -1,12 +1,24 @@
-"use client"
-
-import Login from "@/components/login";
-import { login, signup, signInWithProvider } from './actions';
+import { Suspense } from 'react';
+import LoginContent from './LoginContent';
 
 export default function LoginPage() {
-    return (
-        <main className="h-full w-full flex items-center justify-center bg-gray-50">
-            <Login login={login} signup={signup} signInWithProvider={signInWithProvider} />
-        </main>
-    );
+  return (
+    <div className="absolute inset-0 bg-gradient-to-br from-[#33cc99]/30 to-[#124dff]/30">
+      <Suspense fallback={<LoginLoadingFallback />}>
+        <LoginContent />
+      </Suspense>
+    </div>
+  );
 }
+
+function LoginLoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-white text-center">
+        <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+        <p>Loading...</p>
+      </div>
+    </div>
+  );
+}
+

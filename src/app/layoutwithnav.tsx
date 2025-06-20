@@ -62,12 +62,6 @@ const LayoutWithNav: React.FC<LayoutWithNavProps> = ({ children }) => {
             <PlatformNav isCollapsed={isNavCollapsed} />
           </div>
 
-          {/* Collapse Indicator */}
-          {isNavCollapsed && (
-            <div className="p-2 text-center border-t border-gray-700 flex-shrink-0">
-              <Menu size={16} className="mx-auto text-gray-400" />
-            </div>
-          )}
         </aside>
 
         {/* Main Content */}
