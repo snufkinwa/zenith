@@ -46,7 +46,7 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
             className={`p-2 rounded ${
               currentTool === tool 
                 ? 'bg-blue-100 text-blue-600' 
-                : 'hover:bg-gray-100'
+                : 'hover:bg-gray-100 text-gray-600'
             }`}
             title={title}
           >

@@ -109,7 +109,7 @@ const AIHintsModal: React.FC<AIHintsModalProps> = ({
       <div className="p-4 h-full flex flex-col">
         {/* Show current problem context if available */}
         {problemContext && (
-          <div className="mb-3 p-2 bg-gray-50 rounded-md text-xs">
+          <div className="mb-3 p-2 bg-gray-50 rounded-md text-xs text-gray-700 flex items-center gap-2">
             <strong>Current Problem:</strong> {problemContext.title || 'Unknown'}
             {problemContext.difficulty && (
               <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 rounded">
