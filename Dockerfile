@@ -1,5 +1,5 @@
 # === Stage 1: Build ===
-FROM node:16-alpine AS builder
+FROM node:18-alpine AS builder
 
 ENV NODE_ENV=build
 WORKDIR /home/node
@@ -15,7 +15,7 @@ COPY . .
 RUN npx movex build
 
 # === Stage 2: Runtime ===
-FROM node:16-alpine
+FROM node:18-alpine
 
 ENV NODE_ENV=production
 WORKDIR /home/node
