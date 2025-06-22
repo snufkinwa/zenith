@@ -38,19 +38,23 @@ const ThemedCodingPanel: React.FC<{
   const themeClasses = getThemeClasses();
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {/* Top Section - Code Editor */}
-      <div className={`${isTerminalCollapsed ? 'h-full' : 'flex-1'} flex flex-col`}>
+      <div
+        className={`${isTerminalCollapsed ? 'h-full' : 'flex-1'} flex flex-col`}
+      >
         <Editor
           input={input}
           setInput={setInput}
           problemSlug={selectedProblem?.slug}
         />
       </div>
-      
+
       {/* Terminal Section - Collapsible */}
       {!isTerminalCollapsed && (
-        <div className={`h-96 flex flex-col ${themeClasses.borderColor} border-t`}>
+        <div
+          className={`flex h-96 flex-col ${themeClasses.borderColor} border-t`}
+        >
           <Terminal
             output={output}
             consoleOutput={consoleOutput}
@@ -66,16 +70,20 @@ const ThemedCodingPanel: React.FC<{
           />
         </div>
       )}
-      
+
       {/* Collapsed Terminal Button - Now Themed */}
       {isTerminalCollapsed && (
-        <div className={`h-10 border-t ${themeClasses.borderColor} flex items-center justify-between px-4 ${themeClasses.terminalHeaderBg}`}>
-          <span className={`text-sm ${themeClasses.terminalHeaderText}`}>Terminal</span>
+        <div
+          className={`h-10 border-t ${themeClasses.borderColor} flex items-center justify-between px-4 ${themeClasses.terminalHeaderBg}`}
+        >
+          <span className={`text-sm ${themeClasses.terminalHeaderText}`}>
+            Terminal
+          </span>
           <button
             onClick={() => setIsTerminalCollapsed(false)}
-            className={`flex items-center gap-2 px-3 py-1 rounded text-sm transition-colors ${themeClasses.terminalTabInactive}`}
+            className={`flex items-center gap-2 rounded px-3 py-1 text-sm transition-colors ${themeClasses.terminalTabInactive}`}
           >
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className="h-4 w-4" />
             Show
           </button>
         </div>

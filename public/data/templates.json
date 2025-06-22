@@ -2,7 +2,7 @@
   {
     "id": "1",
     "slug": "two-sum",
-    "template": "class Solution:\n    def twoSum(nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.twoSum())"
+    "template": "class Solution:\n    def twoSum(self, nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.twoSum())"
   },
   {
     "id": "2",
@@ -12,37 +12,37 @@
   {
     "id": "3",
     "slug": "longest-substring-without-repeating-characters",
-    "template": "class Solution:\n    def length_of_longest_substring(s: str) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.length_of_longest_substring())"
+    "template": "class Solution:\n    def length_of_longest_substring(self, s: str) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.length_of_longest_substring())"
   },
   {
     "id": "4",
     "slug": "median-of-two-sorted-arrays",
-    "template": "class Solution:\n    def findMedianSortedArrays(nums1, nums2):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findMedianSortedArrays())"
+    "template": "class Solution:\n    def findMedianSortedArrays(self, nums1, nums2):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findMedianSortedArrays())"
   },
   {
     "id": "5",
     "slug": "longest-palindromic-substring",
-    "template": "class Solution:\n    def longest_palindromic_substring(s: str) -> str:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.longest_palindromic_substring())"
+    "template": "class Solution:\n    def longest_palindromic_substring(self, s: str) -> str:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.longest_palindromic_substring())"
   },
   {
     "id": "11",
     "slug": "container-with-most-water",
-    "template": "class Solution:\n    def max_area(height):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.max_area())"
+    "template": "class Solution:\n    def max_area(self, height):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.max_area())"
   },
   {
     "id": "15",
     "slug": "3sum",
-    "template": "class Solution:\n    def threeSum(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.threeSum())"
+    "template": "class Solution:\n    def threeSum(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.threeSum())"
   },
   {
     "id": "16",
     "slug": "3sum-closest",
-    "template": "class Solution:\n    def threeSumClosest(nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.threeSumClosest())"
+    "template": "class Solution:\n    def threeSumClosest(self, nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.threeSumClosest())"
   },
   {
     "id": "17",
     "slug": "letter-combinations-of-a-phone-number",
-    "template": "class Solution:\n    def letter_combinations(digits: str):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.letter_combinations())"
+    "template": "class Solution:\n    def letter_combinations(self, digits: str):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.letter_combinations())"
   },
   {
     "id": "19",
@@ -57,7 +57,7 @@
   {
     "id": "22",
     "slug": "generate-parentheses",
-    "template": "class Solution:\n    def generate_parenthesis(n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.generate_parenthesis())"
+    "template": "class Solution:\n    def generate_parenthesis(self, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.generate_parenthesis())"
   },
   {
     "id": "23",
@@ -67,7 +67,7 @@
   {
     "id": "24",
     "slug": "swap-nodes-in-pairs",
-    "template": "def solution(...):\n    # Write your code here\n    pass"
+    "template": "def solution(self, ...):\n    # Write your code here\n    pass"
   },
   {
     "id": "25",
@@ -77,82 +77,82 @@
   {
     "id": "30",
     "slug": "substring-with-concatenation-of-all-words",
-    "template": "class Solution:\n    def findSubstring(s, words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findSubstring())"
+    "template": "class Solution:\n    def findSubstring(self, s, words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findSubstring())"
   },
   {
     "id": "33",
     "slug": "search-in-rotated-sorted-array",
-    "template": "class Solution:\n    def search(nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.search())"
+    "template": "class Solution:\n    def search(self, nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.search())"
   },
   {
     "id": "37",
     "slug": "sudoku-solver",
-    "template": "class Solution:\n    def isValid(board, row, col, c):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.isValid())"
+    "template": "class Solution:\n    def isValid(self, board, row, col, c):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.isValid())"
   },
   {
     "id": "39",
     "slug": "combination-sum",
-    "template": "class Solution:\n    def combinationSum(candidates, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combinationSum())"
+    "template": "class Solution:\n    def combinationSum(self, candidates, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combinationSum())"
   },
   {
     "id": "40",
     "slug": "combination-sum-ii",
-    "template": "class Solution:\n    def combinationSum2(candidates, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combinationSum2())"
+    "template": "class Solution:\n    def combinationSum2(self, candidates, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combinationSum2())"
   },
   {
     "id": "41",
     "slug": "first-missing-positive",
-    "template": "class Solution:\n    def firstMissingPositive(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.firstMissingPositive())"
+    "template": "class Solution:\n    def firstMissingPositive(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.firstMissingPositive())"
   },
   {
     "id": "42",
     "slug": "trapping-rain-water",
-    "template": "class Solution:\n    def trap(height):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.trap())"
+    "template": "class Solution:\n    def trap(self, height):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.trap())"
   },
   {
     "id": "46",
     "slug": "permutations",
-    "template": "class Solution:\n    def permute(nums: List[int]) -> List[List[int]]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.permute())"
+    "template": "class Solution:\n    def permute(self, nums: List[int]) -> List[List[int]]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.permute())"
   },
   {
     "id": "47",
     "slug": "permutations-ii",
-    "template": "class Solution:\n    def permuteUnique(nums: List[int]) -> List[List[int]]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.permuteUnique())"
+    "template": "class Solution:\n    def permuteUnique(self, nums: List[int]) -> List[List[int]]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.permuteUnique())"
   },
   {
     "id": "48",
     "slug": "rotate-image",
-    "template": "class Solution:\n    def rotate(matrix):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.rotate())"
+    "template": "class Solution:\n    def rotate(self, matrix):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.rotate())"
   },
   {
     "id": "51",
     "slug": "n-queens",
-    "template": "class Solution:\n    def solveNQueens(n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.solveNQueens())"
+    "template": "class Solution:\n    def solveNQueens(self, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.solveNQueens())"
   },
   {
     "id": "53",
     "slug": "maximum-subarray",
-    "template": "class Solution:\n    def maxSubArray(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxSubArray())"
+    "template": "class Solution:\n    def maxSubArray(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxSubArray())"
   },
   {
     "id": "54",
     "slug": "spiral-matrix",
-    "template": "class Solution:\n    def spiralOrder(matrix):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.spiralOrder())"
+    "template": "class Solution:\n    def spiralOrder(self, matrix):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.spiralOrder())"
   },
   {
     "id": "55",
     "slug": "jump-game",
-    "template": "class Solution:\n    def canJump(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.canJump())"
+    "template": "class Solution:\n    def canJump(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.canJump())"
   },
   {
     "id": "56",
     "slug": "merge-intervals",
-    "template": "class Solution:\n    def merge(intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.merge())"
+    "template": "class Solution:\n    def merge(self, intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.merge())"
   },
   {
     "id": "57",
     "slug": "insert-interval",
-    "template": "class Solution:\n    def insert(intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.insert())"
+    "template": "class Solution:\n    def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.insert())"
   },
   {
     "id": "61",
@@ -162,52 +162,52 @@
   {
     "id": "62",
     "slug": "unique-paths",
-    "template": "class Solution:\n    def uniquePaths(m, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.uniquePaths())"
+    "template": "class Solution:\n    def uniquePaths(self, m, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.uniquePaths())"
   },
   {
     "id": "70",
     "slug": "climbing-stairs",
-    "template": "class Solution:\n    def climbStairs(n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.climbStairs())"
+    "template": "class Solution:\n    def climbStairs(self, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.climbStairs())"
   },
   {
     "id": "73",
     "slug": "set-matrix-zeroes",
-    "template": "class Solution:\n    def setZeroes(matrix):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.setZeroes())"
+    "template": "class Solution:\n    def setZeroes(self, matrix):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.setZeroes())"
   },
   {
     "id": "74",
     "slug": "search-a-2d-matrix",
-    "template": "class Solution:\n    def searchMatrix(matrix, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.searchMatrix())"
+    "template": "class Solution:\n    def searchMatrix(self, matrix, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.searchMatrix())"
   },
   {
     "id": "75",
     "slug": "sort-colors",
-    "template": "def solution(...):\n    # Write your code here\n    pass"
+    "template": "def solution(self, ...):\n    # Write your code here\n    pass"
   },
   {
     "id": "76",
     "slug": "minimum-window-substring",
-    "template": "class Solution:\n    def min_window(s, t):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.min_window())"
+    "template": "class Solution:\n    def min_window(self, s, t):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.min_window())"
   },
   {
     "id": "77",
     "slug": "combinations",
-    "template": "class Solution:\n    def combine(n: int, k: int) -> List[List[int]]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combine())"
+    "template": "class Solution:\n    def combine(self, n: int, k: int) -> List[List[int]]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combine())"
   },
   {
     "id": "78",
     "slug": "subsets",
-    "template": "class Solution:\n    def subsets(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.subsets())"
+    "template": "class Solution:\n    def subsets(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.subsets())"
   },
   {
     "id": "79",
     "slug": "word-search",
-    "template": "class Solution:\n    def exist(board, word):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.exist())"
+    "template": "class Solution:\n    def exist(self, board, word):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.exist())"
   },
   {
     "id": "81",
     "slug": "search-in-rotated-sorted-array-ii",
-    "template": "class Solution:\n    def search(nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.search())"
+    "template": "class Solution:\n    def search(self, nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.search())"
   },
   {
     "id": "83",
@@ -217,12 +217,12 @@
   {
     "id": "90",
     "slug": "subsets-ii",
-    "template": "class Solution:\n    def subsetsWithDup(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.subsetsWithDup())"
+    "template": "class Solution:\n    def subsetsWithDup(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.subsetsWithDup())"
   },
   {
     "id": "91",
     "slug": "decode-ways",
-    "template": "class Solution:\n    def numDecodings(s: str) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.numDecodings())"
+    "template": "class Solution:\n    def numDecodings(self, s: str) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.numDecodings())"
   },
   {
     "id": "92",
@@ -252,7 +252,7 @@
   {
     "id": "104",
     "slug": "maximum-depth-of-binary-tree",
-    "template": "class Solution:\n    def maxDepth(root):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxDepth())"
+    "template": "class Solution:\n    def maxDepth(self, root):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxDepth())"
   },
   {
     "id": "105",
@@ -267,7 +267,7 @@
   {
     "id": "111",
     "slug": "minimum-depth-of-binary-tree",
-    "template": "class Solution:\n    def minDepth(root):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.minDepth())"
+    "template": "class Solution:\n    def minDepth(self, root):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.minDepth())"
   },
   {
     "id": "112",
@@ -282,7 +282,7 @@
   {
     "id": "121",
     "slug": "best-time-to-buy-and-sell-stock",
-    "template": "class Solution:\n    def maxProfit(prices):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxProfit())"
+    "template": "class Solution:\n    def maxProfit(self, prices):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxProfit())"
   },
   {
     "id": "124",
@@ -292,32 +292,32 @@
   {
     "id": "128",
     "slug": "longest-consecutive-sequence",
-    "template": "class Solution:\n    def longest_consecutive(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.longest_consecutive())"
+    "template": "class Solution:\n    def longest_consecutive(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.longest_consecutive())"
   },
   {
     "id": "131",
     "slug": "palindrome-partitioning",
-    "template": "class Solution:\n    def isPalindrome(s, start, end):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.isPalindrome())"
+    "template": "class Solution:\n    def isPalindrome(self, s, start, end):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.isPalindrome())"
   },
   {
     "id": "134",
     "slug": "gas-station",
-    "template": "class Solution:\n    def can_complete_circuit(gas, cost):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.can_complete_circuit())"
+    "template": "class Solution:\n    def can_complete_circuit(self, gas, cost):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.can_complete_circuit())"
   },
   {
     "id": "136",
     "slug": "single-number",
-    "template": "class Solution:\n    def singleNumber(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.singleNumber())"
+    "template": "class Solution:\n    def singleNumber(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.singleNumber())"
   },
   {
     "id": "139",
     "slug": "word-break",
-    "template": "class Solution:\n    def word_break(s, word_dict):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.word_break())"
+    "template": "class Solution:\n    def word_break(self, s, word_dict):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.word_break())"
   },
   {
     "id": "141",
     "slug": "linked-list-cycle",
-    "template": "class Solution:\n    def hasCycle(head):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.hasCycle())"
+    "template": "class Solution:\n    def hasCycle(self, head):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.hasCycle())"
   },
   {
     "id": "142",
@@ -337,27 +337,27 @@
   {
     "id": "152",
     "slug": "maximum-product-subarray",
-    "template": "class Solution:\n    def maxProduct(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxProduct())"
+    "template": "class Solution:\n    def maxProduct(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxProduct())"
   },
   {
     "id": "153",
     "slug": "find-minimum-in-rotated-sorted-array",
-    "template": "class Solution:\n    def find_min(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.find_min())"
+    "template": "class Solution:\n    def find_min(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.find_min())"
   },
   {
     "id": "162",
     "slug": "find-peak-element",
-    "template": "class Solution:\n    def findPeakElement(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findPeakElement())"
+    "template": "class Solution:\n    def findPeakElement(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findPeakElement())"
   },
   {
     "id": "169",
     "slug": "majority-element",
-    "template": "class Solution:\n    def majority_element(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.majority_element())"
+    "template": "class Solution:\n    def majority_element(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.majority_element())"
   },
   {
     "id": "198",
     "slug": "house-robber",
-    "template": "class Solution:\n    def rob(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.rob())"
+    "template": "class Solution:\n    def rob(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.rob())"
   },
   {
     "id": "199",
@@ -367,7 +367,7 @@
   {
     "id": "200",
     "slug": "number-of-islands",
-    "template": "class Solution:\n    def dfs(grid, i, j):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.dfs())"
+    "template": "class Solution:\n    def dfs(self, grid, i, j):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.dfs())"
   },
   {
     "id": "203",
@@ -382,7 +382,7 @@
   {
     "id": "207",
     "slug": "course-schedule",
-    "template": "class Solution:\n    def canFinish(numCourses, prerequisites):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.canFinish())"
+    "template": "class Solution:\n    def canFinish(self, numCourses, prerequisites):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.canFinish())"
   },
   {
     "id": "208",
@@ -392,37 +392,37 @@
   {
     "id": "209",
     "slug": "minimum-size-subarray-sum",
-    "template": "class Solution:\n    def minSubArrayLen(target: int, nums: List[int]) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.minSubArrayLen())"
+    "template": "class Solution:\n    def minSubArrayLen(self, target: int, nums: List[int]) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.minSubArrayLen())"
   },
   {
     "id": "210",
     "slug": "course-schedule-ii",
-    "template": "class Solution:\n    def findOrder(numCourses, prerequisites):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findOrder())"
+    "template": "class Solution:\n    def findOrder(self, numCourses, prerequisites):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findOrder())"
   },
   {
     "id": "212",
     "slug": "word-search-ii",
-    "template": "class Solution:\n    def findWords(board, words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findWords())"
+    "template": "class Solution:\n    def findWords(self, board, words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findWords())"
   },
   {
     "id": "213",
     "slug": "house-robber-ii",
-    "template": "class Solution:\n    def rob(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.rob())"
+    "template": "class Solution:\n    def rob(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.rob())"
   },
   {
     "id": "215",
     "slug": "kth-largest-element-in-an-array",
-    "template": "def solution(...):\n    # Write your code here\n    pass"
+    "template": "def solution(self, ...):\n    # Write your code here\n    pass"
   },
   {
     "id": "216",
     "slug": "combination-sum-iii",
-    "template": "class Solution:\n    def combinationSum3(k, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combinationSum3())"
+    "template": "class Solution:\n    def combinationSum3(self, k, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combinationSum3())"
   },
   {
     "id": "217",
     "slug": "contains-duplicate",
-    "template": "class Solution:\n    def containsDuplicate(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.containsDuplicate())"
+    "template": "class Solution:\n    def containsDuplicate(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.containsDuplicate())"
   },
   {
     "id": "226",
@@ -452,32 +452,32 @@
   {
     "id": "238",
     "slug": "product-of-array-except-self",
-    "template": "class Solution:\n    def productExceptSelf(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.productExceptSelf())"
+    "template": "class Solution:\n    def productExceptSelf(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.productExceptSelf())"
   },
   {
     "id": "239",
     "slug": "sliding-window-maximum",
-    "template": "class Solution:\n    def maxSlidingWindow(nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxSlidingWindow())"
+    "template": "class Solution:\n    def maxSlidingWindow(self, nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxSlidingWindow())"
   },
   {
     "id": "240",
     "slug": "search-a-2d-matrix-ii",
-    "template": "class Solution:\n    def searchMatrix(matrix, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.searchMatrix())"
+    "template": "class Solution:\n    def searchMatrix(self, matrix, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.searchMatrix())"
   },
   {
     "id": "252",
     "slug": "meeting-rooms",
-    "template": "class Solution:\n    def can_attend_meetings(intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.can_attend_meetings())"
+    "template": "class Solution:\n    def can_attend_meetings(self, intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.can_attend_meetings())"
   },
   {
     "id": "253",
     "slug": "meeting-rooms-ii",
-    "template": "class Solution:\n    def minMeetingRooms(intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.minMeetingRooms())"
+    "template": "class Solution:\n    def minMeetingRooms(self, intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.minMeetingRooms())"
   },
   {
     "id": "254",
     "slug": "factor-combinations",
-    "template": "class Solution:\n    def getFactors(n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.getFactors())"
+    "template": "class Solution:\n    def getFactors(self, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.getFactors())"
   },
   {
     "id": "257",
@@ -487,27 +487,27 @@
   {
     "id": "261",
     "slug": "graph-valid-tree",
-    "template": "class Solution:\n    def isTree(n: int, edges: List[List[int]]) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.isTree())"
+    "template": "class Solution:\n    def isTree(self, n: int, edges: List[List[int]]) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.isTree())"
   },
   {
     "id": "268",
     "slug": "missing-number",
-    "template": "class Solution:\n    def missingNumber(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.missingNumber())"
+    "template": "class Solution:\n    def missingNumber(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.missingNumber())"
   },
   {
     "id": "269",
     "slug": "alien-dictionary",
-    "template": "class Solution:\n    def alienOrder(words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.alienOrder())"
+    "template": "class Solution:\n    def alienOrder(self, words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.alienOrder())"
   },
   {
     "id": "283",
     "slug": "move-zeroes",
-    "template": "class Solution:\n    def moveZeroes(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.moveZeroes())"
+    "template": "class Solution:\n    def moveZeroes(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.moveZeroes())"
   },
   {
     "id": "287",
     "slug": "find-the-duplicate-number",
-    "template": "class Solution:\n    def findDuplicate(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findDuplicate())"
+    "template": "class Solution:\n    def findDuplicate(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findDuplicate())"
   },
   {
     "id": "295",
@@ -522,7 +522,7 @@
   {
     "id": "300",
     "slug": "longest-increasing-subsequence",
-    "template": "class Solution:\n    def lengthOfLIS(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.lengthOfLIS())"
+    "template": "class Solution:\n    def lengthOfLIS(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.lengthOfLIS())"
   },
   {
     "id": "303",
@@ -532,32 +532,32 @@
   {
     "id": "309",
     "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
-    "template": "class Solution:\n    def maxProfit(prices):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxProfit())"
+    "template": "class Solution:\n    def maxProfit(self, prices):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxProfit())"
   },
   {
     "id": "310",
     "slug": "minimum-height-trees",
-    "template": "class Solution:\n    def find_min_height_trees(n: int, edges: List[List[int]]) -> List[int]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.find_min_height_trees())"
+    "template": "class Solution:\n    def find_min_height_trees(self, n: int, edges: List[List[int]]) -> List[int]:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.find_min_height_trees())"
   },
   {
     "id": "320",
     "slug": "generalized-abbreviation",
-    "template": "class Solution:\n    def generateAbbreviations(word):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.generateAbbreviations())"
+    "template": "class Solution:\n    def generateAbbreviations(self, word):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.generateAbbreviations())"
   },
   {
     "id": "322",
     "slug": "coin-change",
-    "template": "class Solution:\n    def coinChange(coins, amount):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.coinChange())"
+    "template": "class Solution:\n    def coinChange(self, coins, amount):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.coinChange())"
   },
   {
     "id": "323",
     "slug": "number-of-connected-components-in-an-undirected-graph",
-    "template": "class Solution:\n    def countComponents(n, edges):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.countComponents())"
+    "template": "class Solution:\n    def countComponents(self, n, edges):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.countComponents())"
   },
   {
     "id": "327",
     "slug": "count-of-range-sum",
-    "template": "class Solution:\n    def countRangeSum(nums, lower, upper):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.countRangeSum())"
+    "template": "class Solution:\n    def countRangeSum(self, nums, lower, upper):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.countRangeSum())"
   },
   {
     "id": "328",
@@ -567,117 +567,117 @@
   {
     "id": "336",
     "slug": "palindrome-pairs",
-    "template": "class Solution:\n    def palindrome_pairs(words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.palindrome_pairs())"
+    "template": "class Solution:\n    def palindrome_pairs(self, words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.palindrome_pairs())"
   },
   {
     "id": "338",
     "slug": "counting-bits",
-    "template": "class Solution:\n    def countBits(n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.countBits())"
+    "template": "class Solution:\n    def countBits(self, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.countBits())"
   },
   {
     "id": "347",
     "slug": "top-k-frequent-elements",
-    "template": "class Solution:\n    def k_most_frequent(nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.k_most_frequent())"
+    "template": "class Solution:\n    def k_most_frequent(self, nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.k_most_frequent())"
   },
   {
     "id": "358",
     "slug": "rearrange-string-k-distance-apart",
-    "template": "class Solution:\n    def rearrange_string(s, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.rearrange_string())"
+    "template": "class Solution:\n    def rearrange_string(self, s, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.rearrange_string())"
   },
   {
     "id": "373",
     "slug": "find-k-pairs-with-smallest-sums",
-    "template": "class Solution:\n    def kSmallestPairs(nums1, nums2, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.kSmallestPairs())"
+    "template": "class Solution:\n    def kSmallestPairs(self, nums1, nums2, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.kSmallestPairs())"
   },
   {
     "id": "377",
     "slug": "combination-sum-iv",
-    "template": "class Solution:\n    def combination_sum(nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combination_sum())"
+    "template": "class Solution:\n    def combination_sum(self, nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.combination_sum())"
   },
   {
     "id": "378",
     "slug": "kth-smallest-element-in-a-sorted-matrix",
-    "template": "class Solution:\n    def kthSmallest(matrix, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.kthSmallest())"
+    "template": "class Solution:\n    def kthSmallest(self, matrix, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.kthSmallest())"
   },
   {
     "id": "392",
     "slug": "is-subsequence",
-    "template": "class Solution:\n    def is_subsequence(s, t):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_subsequence())"
+    "template": "class Solution:\n    def is_subsequence(self, s, t):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_subsequence())"
   },
   {
     "id": "416",
     "slug": "partition-equal-subset-sum",
-    "template": "class Solution:\n    def canPartition(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.canPartition())"
+    "template": "class Solution:\n    def canPartition(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.canPartition())"
   },
   {
     "id": "417",
     "slug": "pacific-atlantic-water-flow",
-    "template": "class Solution:\n    def pacificAtlantic(heights):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.pacificAtlantic())"
+    "template": "class Solution:\n    def pacificAtlantic(self, heights):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.pacificAtlantic())"
   },
   {
     "id": "421",
     "slug": "maximum-xor-of-two-numbers-in-an-array",
-    "template": "class Solution:\n    def findMaximumXOR(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findMaximumXOR())"
+    "template": "class Solution:\n    def findMaximumXOR(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findMaximumXOR())"
   },
   {
     "id": "424",
     "slug": "longest-repeating-character-replacement",
-    "template": "class Solution:\n    def characterReplacement(s:str, k:int) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.characterReplacement())"
+    "template": "class Solution:\n    def characterReplacement(self, s:str, k:int) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.characterReplacement())"
   },
   {
     "id": "425",
     "slug": "word-squares",
-    "template": "class Solution:\n    def wordSquares(words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.wordSquares())"
+    "template": "class Solution:\n    def wordSquares(self, words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.wordSquares())"
   },
   {
     "id": "435",
     "slug": "non-overlapping-intervals",
-    "template": "class Solution:\n    def eraseOverlapIntervals(intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.eraseOverlapIntervals())"
+    "template": "class Solution:\n    def eraseOverlapIntervals(self, intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.eraseOverlapIntervals())"
   },
   {
     "id": "437",
     "slug": "path-sum-iii",
-    "template": "class Solution:\n    def path_sum_helper(node, target_sum, current_sum):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.path_sum_helper())"
+    "template": "class Solution:\n    def path_sum_helper(self, node, target_sum, current_sum):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.path_sum_helper())"
   },
   {
     "id": "442",
     "slug": "find-all-duplicates-in-an-array",
-    "template": "class Solution:\n    def find_duplicates(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.find_duplicates())"
+    "template": "class Solution:\n    def find_duplicates(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.find_duplicates())"
   },
   {
     "id": "444",
     "slug": "sequence-reconstruction",
-    "template": "class Solution:\n    def is_shortest_and_unique_supersequence(nums, sequences):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_shortest_and_unique_supersequence())"
+    "template": "class Solution:\n    def is_shortest_and_unique_supersequence(self, nums, sequences):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_shortest_and_unique_supersequence())"
   },
   {
     "id": "448",
     "slug": "find-all-numbers-disappeared-in-an-array",
-    "template": "class Solution:\n    def find_disappeared_numbers(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.find_disappeared_numbers())"
+    "template": "class Solution:\n    def find_disappeared_numbers(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.find_disappeared_numbers())"
   },
   {
     "id": "451",
     "slug": "sort-characters-by-frequency",
-    "template": "class Solution:\n    def sort_by_frequency(s):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.sort_by_frequency())"
+    "template": "class Solution:\n    def sort_by_frequency(self, s):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.sort_by_frequency())"
   },
   {
     "id": "452",
     "slug": "minimum-number-of-arrows-to-burst-balloons",
-    "template": "class Solution:\n    def findMinArrowShots(points):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findMinArrowShots())"
+    "template": "class Solution:\n    def findMinArrowShots(self, points):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findMinArrowShots())"
   },
   {
     "id": "472",
     "slug": "concatenated-words",
-    "template": "class Solution:\n    def is_concatenated(word, word_dict):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_concatenated())"
+    "template": "class Solution:\n    def is_concatenated(self, word, word_dict):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_concatenated())"
   },
   {
     "id": "480",
     "slug": "sliding-window-median",
-    "template": "class Solution:\n    def medianSlidingWindow(nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.medianSlidingWindow())"
+    "template": "class Solution:\n    def medianSlidingWindow(self, nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.medianSlidingWindow())"
   },
   {
     "id": "494",
     "slug": "target-sum",
-    "template": "class Solution:\n    def findTargetSumWays(nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findTargetSumWays())"
+    "template": "class Solution:\n    def findTargetSumWays(self, nums, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findTargetSumWays())"
   },
   {
     "id": "543",
@@ -687,12 +687,12 @@
   {
     "id": "567",
     "slug": "permutation-in-string",
-    "template": "class Solution:\n    def checkInclusion(s1: str, s2: str) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.checkInclusion())"
+    "template": "class Solution:\n    def checkInclusion(self, s1: str, s2: str) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.checkInclusion())"
   },
   {
     "id": "572",
     "slug": "subtree-of-another-tree",
-    "template": "def solution(...):\n    # Write your code here\n    pass"
+    "template": "def solution(self, ...):\n    # Write your code here\n    pass"
   },
   {
     "id": "617",
@@ -702,17 +702,17 @@
   {
     "id": "621",
     "slug": "task-scheduler",
-    "template": "class Solution:\n    def least_interval(tasks, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.least_interval())"
+    "template": "class Solution:\n    def least_interval(self, tasks, n):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.least_interval())"
   },
   {
     "id": "630",
     "slug": "course-schedule-iii",
-    "template": "class Solution:\n    def scheduleCourse(courses):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.scheduleCourse())"
+    "template": "class Solution:\n    def scheduleCourse(self, courses):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.scheduleCourse())"
   },
   {
     "id": "632",
     "slug": "smallest-range-covering-elements-from-k-lists",
-    "template": "class Solution:\n    def smallestRange(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.smallestRange())"
+    "template": "class Solution:\n    def smallestRange(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.smallestRange())"
   },
   {
     "id": "637",
@@ -727,12 +727,12 @@
   {
     "id": "643",
     "slug": "maximum-average-subarray-i",
-    "template": "class Solution:\n    def findMaxAverage(nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findMaxAverage())"
+    "template": "class Solution:\n    def findMaxAverage(self, nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findMaxAverage())"
   },
   {
     "id": "647",
     "slug": "palindromic-substrings",
-    "template": "class Solution:\n    def countSubstrings(s: str) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.countSubstrings())"
+    "template": "class Solution:\n    def countSubstrings(self, s: str) -> int:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.countSubstrings())"
   },
   {
     "id": "654",
@@ -742,57 +742,57 @@
   {
     "id": "658",
     "slug": "find-k-closest-elements",
-    "template": "def solution(...):\n    # Write your code here\n    pass"
+    "template": "def solution(self, ...):\n    # Write your code here\n    pass"
   },
   {
     "id": "662",
     "slug": "maximum-width-of-binary-tree",
-    "template": "class Solution:\n    def widthOfBinaryTree(root):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.widthOfBinaryTree())"
+    "template": "class Solution:\n    def widthOfBinaryTree(self, root):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.widthOfBinaryTree())"
   },
   {
     "id": "673",
     "slug": "number-of-longest-increasing-subsequence",
-    "template": "class Solution:\n    def findNumberOfLIS(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findNumberOfLIS())"
+    "template": "class Solution:\n    def findNumberOfLIS(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.findNumberOfLIS())"
   },
   {
     "id": "698",
     "slug": "partition-to-k-equal-sum-subsets",
-    "template": "class Solution:\n    def canPartitionKSubsets(nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.canPartitionKSubsets())"
+    "template": "class Solution:\n    def canPartitionKSubsets(self, nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.canPartitionKSubsets())"
   },
   {
     "id": "704",
     "slug": "binary-search",
-    "template": "def solution(...):\n    # Write your code here\n    pass"
+    "template": "def solution(self, ...):\n    # Write your code here\n    pass"
   },
   {
     "id": "713",
     "slug": "subarray-product-less-than-k",
-    "template": "class Solution:\n    def numSubarrayProductLessThanK(nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.numSubarrayProductLessThanK())"
+    "template": "class Solution:\n    def numSubarrayProductLessThanK(self, nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.numSubarrayProductLessThanK())"
   },
   {
     "id": "720",
     "slug": "longest-word-in-dictionary",
-    "template": "class Solution:\n    def longest_word(words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.longest_word())"
+    "template": "class Solution:\n    def longest_word(self, words):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.longest_word())"
   },
   {
     "id": "744",
     "slug": "find-smallest-letter-greater-than-target",
-    "template": "class Solution:\n    def networkDelayTime(times, n, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.networkDelayTime())"
+    "template": "class Solution:\n    def networkDelayTime(self, times, n, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.networkDelayTime())"
   },
   {
     "id": "745",
     "slug": "prefix-and-suffix-search",
-    "template": "class Solution:\n    def next_greatest_letter(letters, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.next_greatest_letter())"
+    "template": "class Solution:\n    def next_greatest_letter(self, letters, target):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.next_greatest_letter())"
   },
   {
     "id": "759",
     "slug": "employee-free-time",
-    "template": "class Solution:\n    def min_set_size(intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.min_set_size())"
+    "template": "class Solution:\n    def min_set_size(self, intervals):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.min_set_size())"
   },
   {
     "id": "767",
     "slug": "reorganize-string",
-    "template": "class Solution:\n    def is_prime(n: int) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_prime())"
+    "template": "class Solution:\n    def is_prime(self, n: int) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_prime())"
   },
   {
     "id": "784",
@@ -802,62 +802,62 @@
   {
     "id": "828",
     "slug": "count-unique-characters-of-all-substrings-of-a-given-string",
-    "template": "def solution(...):\n    # Write your code here\n    pass"
+    "template": "def solution(self, ...):\n    # Write your code here\n    pass"
   },
   {
     "id": "844",
     "slug": "backspace-string-compare",
-    "template": "class Solution:\n    def backspaceCompare(s: str, t: str) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.backspaceCompare())"
+    "template": "class Solution:\n    def backspaceCompare(self, s: str, t: str) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.backspaceCompare())"
   },
   {
     "id": "852",
     "slug": "peak-index-in-a-mountain-array",
-    "template": "class Solution:\n    def numFriendRequests(ages):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.numFriendRequests())"
+    "template": "class Solution:\n    def numFriendRequests(self, ages):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.numFriendRequests())"
   },
   {
     "id": "863",
     "slug": "all-nodes-distance-k-in-binary-tree",
-    "template": "class Solution:\n    def sumOfDistancesInTree(n, edges):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.sumOfDistancesInTree())"
+    "template": "class Solution:\n    def sumOfDistancesInTree(self, n, edges):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.sumOfDistancesInTree())"
   },
   {
     "id": "876",
     "slug": "middle-of-the-linked-list",
-    "template": "class Solution:\n    def is_n_straight_hand(hand, group_size):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_n_straight_hand())"
+    "template": "class Solution:\n    def is_n_straight_hand(self, hand, group_size):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.is_n_straight_hand())"
   },
   {
     "id": "895",
     "slug": "maximum-frequency-stack",
-    "template": "class Solution:\n    def shortestPathAllKeys(grid):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.shortestPathAllKeys())"
+    "template": "class Solution:\n    def shortestPathAllKeys(self, grid):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.shortestPathAllKeys())"
   },
   {
     "id": "904",
     "slug": "fruit-into-baskets",
-    "template": "class Solution:\n    def leafSimilar(root1, root2):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.leafSimilar())"
+    "template": "class Solution:\n    def leafSimilar(self, root1, root2):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.leafSimilar())"
   },
   {
     "id": "973",
     "slug": "k-closest-points-to-origin",
-    "template": "class Solution:\n    def moves_to_stamp(stamp: str, target: str) -> list:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.moves_to_stamp())"
+    "template": "class Solution:\n    def moves_to_stamp(self, stamp: str, target: str) -> list:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.moves_to_stamp())"
   },
   {
     "id": "977",
     "slug": "squares-of-a-sorted-array",
-    "template": "class Solution:\n    def distinctSubseqII(s):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.distinctSubseqII())"
+    "template": "class Solution:\n    def distinctSubseqII(self, s):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.distinctSubseqII())"
   },
   {
     "id": "986",
     "slug": "interval-list-intersections",
-    "template": "class Solution:\n    def largestTimeFromDigits(arr):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.largestTimeFromDigits())"
+    "template": "class Solution:\n    def largestTimeFromDigits(self, arr):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.largestTimeFromDigits())"
   },
   {
     "id": "995",
     "slug": "minimum-number-of-k-consecutive-bit-flips",
-    "template": "class Solution:\n    def min_k_bit_flips(nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.min_k_bit_flips())"
+    "template": "class Solution:\n    def min_k_bit_flips(self, nums, k):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.min_k_bit_flips())"
   },
   {
     "id": "1065",
     "slug": "index-pairs-of-a-string",
-    "template": "class Solution:\n    def has_all_codes_in_range(s: str, n: int) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.has_all_codes_in_range())"
+    "template": "class Solution:\n    def has_all_codes_in_range(self, s: str, n: int) -> bool:\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.has_all_codes_in_range())"
   },
   {
     "id": "1203",
@@ -867,11 +867,11 @@
   {
     "id": "1593",
     "slug": "split-a-string-into-the-max-number-of-unique-substrings",
-    "template": "class Solution:\n    def maxUniqueSplit(s, start=0, seen=None):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxUniqueSplit())"
+    "template": "class Solution:\n    def maxUniqueSplit(self, s, start=0, seen=None):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.maxUniqueSplit())"
   },
   {
     "id": "2022",
     "slug": "convert-1d-array-into-2d-array",
-    "template": "class Solution:\n    def max_alternating_sum(nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.max_alternating_sum())"
+    "template": "class Solution:\n    def max_alternating_sum(self, nums):\n        # Write your code here\n        pass\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    print(sol.max_alternating_sum())"
   }
 ]

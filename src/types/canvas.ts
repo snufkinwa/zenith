@@ -25,7 +25,13 @@ export interface AlgorithmCanvasProps {
   initialElements?: CanvasElement[];
 }
 
-export type ToolType = 'select' | 'rectangle' | 'circle' | 'line' | 'text' | 'arrow';
+export type ToolType =
+  | 'select'
+  | 'rectangle'
+  | 'circle'
+  | 'line'
+  | 'text'
+  | 'arrow';
 
 export interface CanvasState {
   elements: CanvasElement[];

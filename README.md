@@ -6,76 +6,54 @@
 
 ## Overview
 
-Zenith is a coding problem platform that leverages AI and advanced metrics to challenge and enhance the skills of future software engineers. Our platform provides a unique environment where users can engage with complex coding challenges, receive feedback powered by AI, take notes, and highlight important parts of the problems for better learning and retention.
+**ZENITH** is a modern coding problem platform designed to make reasoning visible. Built for learners, not performers, it blends AI, real-time collaboration, and visual debugging to help users grow as problem-solvers — not just pass coding tests.
+
+Whether you're a student, a self-taught dev, or just tired of black-box platforms, ZENITH gives you the space to think, test, and explain your way to deeper understanding.
 
 ## Features
 
-- **AI-Powered Feedback**: Get insights, hints and suggestions on your code.
-- **Advanced Metrics**: Track your progress and performance with detailed metrics.
-- **Community Engagement**: Join a community of like-minded developers and collaborate on challenges.
-- **Real-Time Updates**: Stay up-to-date with the latest challenges and features.
+- 🧠 **AI-Powered Feedback** using Claude 3.5 via AWS Bedrock  
+- 📊 **Real-Time Metrics** to track your progress and problem-solving approach  
+- 🖥️ **Step-through Debugging** with Python Tutor-style visualizations  
+- 👥 **Multi-user Collaboration** powered by AppSync  
+- ✍️ **Code Annotations** so you can take notes and highlight your process  
 
 ## Tech Stack
 
-- **Frontend**: React, TypeScript, CSS
-- **Backend**: Next.js, TypeScript
-- **Database**: <s>Firebase</s> Supabase
-- **AI**: OpenAI
+- **Frontend**: React, TypeScript, Tailwind CSS  
+- **Backend**: Next.js (App Router), TypeScript  
+- **Database**: DynamoDB
+- **AI**: Claude 3.5 via AWS Bedrock (no RAG, uses CSV + Athena)  
+- **Infra**: AWS Amplify, AppSync, Lambda, DynamoDB, S3, Athena  
 
 ## TODO
 
-✅ Integrate compilers for C, C++, JavaScript and Java <br />
-☐ Integrate AI for feedback <br />
-☐ Integrate AI for hints <br />
-☐ Integrate Langchain for AI <br />
-☐ Add challenges <br />
-✅ Add dashboard <br />
-✅ Add auth <br />
-☐ Add tests <br />
-☐ Add more documentation <br />
-
+✅ Add dashboard  
+✅ Add auth  
+✅ Add compiler support for Python
+☐ Integrate AI feedback system (Claude via Bedrock)  
+✅  Enable structured AI hints  
+☐ Connect CSV → Athena for dynamic AI responses  
+✅  Add challenges  
+☐ Add tests  
+☐ Improve documentation  
 
 ## Getting Started
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+Follow these instructions to run the project locally for development and testing.
 
 ### Prerequisites
 
-Make sure you have the following installed on your system:
+Make sure you have the following installed:
 
-- [Node.js](https://nodejs.org/) (v14.x or later)
-- [npm](https://www.npmjs.com/) (v6.x or later)
-- [Firebase CLI](https://firebase.google.com/docs/cli)
+- [Node.js](https://nodejs.org/) (v16+ recommended)  
+- [npm](https://www.npmjs.com/) or [pnpm](https://pnpm.io/)  
+- Supabase account and project  
 
 ### Installation
 
 1. **Clone the repository:**
 
-   ```sh
+   ```bash
    git clone https://github.com/your-username/zenith.git
    cd zenith
-   ```
-2. **Install dependencies:**
-
-   ```sh
-   npm install
-   ```
-3. Set up Firebase:
-
-    - Create a Firebase project on the [Firebase Console](https://console.firebase.google.com/).
-    - Initialize Firebase in the project directory:
-
-   ```sh
-   firebase init
-   ```
-   -Update the Firebase configuration in `src/firebase/config.ts` with your Firebase project details.
-
-### Running the Project
-
-1. **Start the development server:**
-
-   ```sh
-   npm run dev
-   ```
-   The project will be available at `http://localhost:3000`.
-

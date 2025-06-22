@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
@@ -14,9 +14,9 @@ interface LayoutWithNavProps {
 const LayoutWithNav: React.FC<LayoutWithNavProps> = ({ children }) => {
   const [isNavCollapsed, setIsNavCollapsed] = useState(false);
   const pathname = usePathname();
-  
+
   const pagesWithNav = ['/beta', '/dashboard', '/problems'];
-  const shouldShowNav = pagesWithNav.some(page => pathname.startsWith(page));
+  const shouldShowNav = pagesWithNav.some((page) => pathname.startsWith(page));
   const authPages = ['/login', '/signup', '/'];
   const isAuthPage = authPages.includes(pathname);
 
@@ -29,25 +29,25 @@ const LayoutWithNav: React.FC<LayoutWithNavProps> = ({ children }) => {
   }
 
   return (
-    <PomodoroProvider> 
-      <div className="h-screen flex flex-row overflow-hidden">
+    <PomodoroProvider>
+      <div className="flex h-screen flex-row overflow-hidden">
         {/* Sidebar */}
-        <aside 
-          className={`bg-gray-900 text-white flex flex-col h-full transition-all duration-300 ${
+        <aside
+          className={`flex h-full flex-col bg-gray-900 text-white transition-all duration-300 ${
             isNavCollapsed ? 'w-16' : 'w-64'
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
+          <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-700 p-4">
             {!isNavCollapsed && (
-              <div className="text-lg font-bold w-12">
+              <div className="w-12 text-lg font-bold">
                 <Logo />
               </div>
             )}
             <button
               onClick={() => setIsNavCollapsed(!isNavCollapsed)}
-              className="p-2 hover:bg-gray-700 rounded-md transition-colors"
-              title={isNavCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              className="rounded-md p-2 transition-colors hover:bg-gray-700"
+              title={isNavCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {isNavCollapsed ? (
                 <ChevronRight size={16} />
@@ -58,14 +58,13 @@ const LayoutWithNav: React.FC<LayoutWithNavProps> = ({ children }) => {
           </div>
 
           {/* Navigation Content */}
-          <div className="flex-1 min-h-0">
+          <div className="min-h-0 flex-1">
             <PlatformNav isCollapsed={isNavCollapsed} />
           </div>
-
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 bg-gray-50 overflow-y-auto h-full">
+        <main className="h-full flex-1 overflow-y-auto bg-gray-50">
           {children}
         </main>
       </div>

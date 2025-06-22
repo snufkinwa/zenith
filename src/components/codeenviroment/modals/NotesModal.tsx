@@ -11,7 +11,12 @@ interface NotesModalProps {
   onBringToFront: () => void;
 }
 
-const NotesModal: React.FC<NotesModalProps> = ({ isOpen, onClose, zIndex, onBringToFront }) => {
+const NotesModal: React.FC<NotesModalProps> = ({
+  isOpen,
+  onClose,
+  zIndex,
+  onBringToFront,
+}) => {
   const [notes, setNotes] = useState('');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
@@ -45,12 +50,14 @@ const NotesModal: React.FC<NotesModalProps> = ({ isOpen, onClose, zIndex, onBrin
       zIndex={zIndex}
       onBringToFront={onBringToFront}
     >
-      <div className="p-4 h-full flex flex-col">
+      <div className="flex h-full flex-col p-4">
         {/* Header with save button */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileText size={16} className="text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Problem Notes</span>
+            <span className="text-sm font-medium text-gray-700">
+              Problem Notes
+            </span>
           </div>
           <div className="flex items-center gap-2">
             {lastSaved && (
@@ -60,7 +67,7 @@ const NotesModal: React.FC<NotesModalProps> = ({ isOpen, onClose, zIndex, onBrin
             )}
             <button
               onClick={handleSave}
-              className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-1 rounded-md bg-blue-600 px-3 py-1.5 text-xs text-white transition-colors hover:bg-blue-700"
             >
               <Save size={12} />
               Save
@@ -73,14 +80,15 @@ const NotesModal: React.FC<NotesModalProps> = ({ isOpen, onClose, zIndex, onBrin
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Take notes about the problem, your approach, or anything else..."
-          className="flex-1 w-full p-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full flex-1 resize-none rounded-md border border-gray-300 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
         {/* Tips */}
-        <div className="mt-3 p-2 bg-blue-50 rounded-md">
+        <div className="mt-3 rounded-md bg-blue-50 p-2">
           <p className="text-xs text-blue-700">
-            <strong>Tip:</strong> Use this space to jot down your thought process, 
-            algorithm ideas, edge cases, or anything that helps you solve the problem.
+            <strong>Tip:</strong> Use this space to jot down your thought
+            process, algorithm ideas, edge cases, or anything that helps you
+            solve the problem.
           </p>
         </div>
       </div>

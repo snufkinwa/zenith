@@ -26,7 +26,7 @@ export const useTextInput = () => {
     showTextInput,
     textInput,
     textPosition,
-    
+
     // Actions
     showTextInputAt,
     hideTextInput,

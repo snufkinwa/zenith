@@ -13,12 +13,11 @@ export default function LoginPage() {
 
 function LoginLoadingFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-white text-center">
-        <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="text-center text-white">
+        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/30 border-t-white" />
         <p>Loading...</p>
       </div>
     </div>
   );
 }
-

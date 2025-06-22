@@ -1,21 +1,21 @@
 export const CANVAS_COLORS = [
-  '#33cc99', 
-  '#124dff', 
-  '#ff4444', 
-  '#ffaa00', 
-  '#9b59b6', 
-  '#2ecc71', 
-  '#e74c3c', 
-  '#000000'
+  '#33cc99',
+  '#124dff',
+  '#ff4444',
+  '#ffaa00',
+  '#9b59b6',
+  '#2ecc71',
+  '#e74c3c',
+  '#000000',
 ];
 
 export const CANVAS_FILL_COLORS = [
-  'transparent', 
-  '#33cc9920', 
-  '#124dff20', 
-  '#ff444420', 
-  '#ffaa0020', 
-  '#9b59b620'
+  'transparent',
+  '#33cc9920',
+  '#124dff20',
+  '#ff444420',
+  '#ffaa0020',
+  '#9b59b620',
 ];
 
 export const DEFAULT_CANVAS_STATE = {

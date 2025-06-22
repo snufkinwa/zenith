@@ -15,44 +15,57 @@ interface ModalProps {
   onBringToFront?: () => void;
 }
 
-const DraggableModal: React.FC<ModalProps> = ({ 
-  title, 
-  isOpen, 
-  onClose, 
-  children, 
+const DraggableModal: React.FC<ModalProps> = ({
+  title,
+  isOpen,
+  onClose,
+  children,
   initialPosition = { x: 100, y: 100 },
   initialSize = { width: 600, height: 500 },
   icon,
   zIndex = 1000,
-  onBringToFront
+  onBringToFront,
 }) => {
   const [position, setPosition] = useState(initialPosition);
   const [size, setSize] = useState(initialSize);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
-  const [previousState, setPreviousState] = useState({ position: initialPosition, size: initialSize });
-  
+  const [previousState, setPreviousState] = useState({
+    position: initialPosition,
+    size: initialSize,
+  });
+
   const modalRef = useRef<HTMLDivElement>(null);
-  const dragRef = useRef<{ startX: number; startY: number; startMouseX: number; startMouseY: number } | null>(null);
-  const resizeRef = useRef<{ startWidth: number; startHeight: number; startMouseX: number; startMouseY: number } | null>(null);
+  const dragRef = useRef<{
+    startX: number;
+    startY: number;
+    startMouseX: number;
+    startMouseY: number;
+  } | null>(null);
+  const resizeRef = useRef<{
+    startWidth: number;
+    startHeight: number;
+    startMouseX: number;
+    startMouseY: number;
+  } | null>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging && dragRef.current) {
         const deltaX = e.clientX - dragRef.current.startMouseX;
         const deltaY = e.clientY - dragRef.current.startMouseY;
-        
+
         setPosition({
           x: Math.max(0, dragRef.current.startX + deltaX),
           y: Math.max(0, dragRef.current.startY + deltaY),
         });
       }
-      
+
       if (isResizing && resizeRef.current) {
         const deltaX = e.clientX - resizeRef.current.startMouseX;
         const deltaY = e.clientY - resizeRef.current.startMouseY;
-        
+
         setSize({
           width: Math.max(300, resizeRef.current.startWidth + deltaX),
           height: Math.max(200, resizeRef.current.startHeight + deltaY),
@@ -109,7 +122,10 @@ const DraggableModal: React.FC<ModalProps> = ({
     } else {
       setPreviousState({ position, size });
       setPosition({ x: 20, y: 20 });
-      setSize({ width: window.innerWidth - 40, height: window.innerHeight - 40 });
+      setSize({
+        width: window.innerWidth - 40,
+        height: window.innerHeight - 40,
+      });
       setIsMaximized(true);
     }
   };
@@ -128,13 +144,13 @@ const DraggableModal: React.FC<ModalProps> = ({
   return (
     <div
       ref={modalRef}
-      className="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden"
+      className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-2xl"
       style={modalStyle}
       onClick={onBringToFront}
     >
       {/* Header */}
       <div
-        className="bg-gray-50 border-b border-gray-200 px-4 py-3 flex items-center justify-between cursor-move select-none"
+        className="flex cursor-move select-none items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-3"
         onMouseDown={handleMouseDown}
       >
         <div className="flex items-center gap-2">
@@ -144,30 +160,33 @@ const DraggableModal: React.FC<ModalProps> = ({
         <div className="flex items-center gap-1">
           <button
             onClick={toggleMaximize}
-            className="p-1.5 hover:bg-gray-200 rounded text-black transition-colors"
-            title={isMaximized ? "Restore" : "Maximize"}
+            className="rounded p-1.5 text-black transition-colors hover:bg-gray-200"
+            title={isMaximized ? 'Restore' : 'Maximize'}
           >
             {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
           </button>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-gray-200 rounded text-black transition-colors"
+            className="rounded p-1.5 text-black transition-colors hover:bg-gray-200"
             title="Close"
           >
             <X size={14} />
           </button>
         </div>
       </div>
-      
+
       {/* Content */}
-      <div className="h-full overflow-hidden" style={{ height: 'calc(100% - 60px)' }}>
+      <div
+        className="h-full overflow-hidden"
+        style={{ height: 'calc(100% - 60px)' }}
+      >
         {children}
       </div>
-      
+
       {/* Resize Handle */}
       {!isMaximized && (
         <div
-          className="absolute bottom-0 right-0 w-4 h-4 cursor-nw-resize bg-gray-300 hover:bg-gray-400 transition-colors"
+          className="absolute bottom-0 right-0 h-4 w-4 cursor-nw-resize bg-gray-300 transition-colors hover:bg-gray-400"
           onMouseDown={handleResizeMouseDown}
           style={{
             clipPath: 'polygon(100% 0%, 0% 100%, 100% 100%)',
@@ -178,4 +197,4 @@ const DraggableModal: React.FC<ModalProps> = ({
   );
 };
 
-export default DraggableModal
+export default DraggableModal;

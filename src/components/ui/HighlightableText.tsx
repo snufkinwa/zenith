@@ -24,7 +24,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
   problemId = 'default',
   className = '',
   isMarkdown = false,
-  onHighlightChange
+  onHighlightChange,
 }) => {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [selectedColor, setSelectedColor] = useState('#ffeb3b');
@@ -38,17 +38,17 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
     { name: 'Blue', value: '#2196f3' },
     { name: 'Orange', value: '#ff9800' },
     { name: 'Purple', value: '#9c27b0' },
-    { name: 'Pink', value: '#e91e63' }
+    { name: 'Pink', value: '#e91e63' },
   ];
 
   const removeHighlight = useCallback((id: string) => {
-    setHighlights(prev => prev.filter(h => h.id !== id));
+    setHighlights((prev) => prev.filter((h) => h.id !== id));
   }, []);
-  
+
   const clearExistingHighlights = useCallback(() => {
     if (!contentRef.current) return;
     const spans = contentRef.current.querySelectorAll('span.highlight-span');
-    spans.forEach(span => {
+    spans.forEach((span) => {
       const parent = span.parentNode;
       if (parent) {
         while (span.firstChild) {
@@ -62,12 +62,19 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
 
   const applyHighlights = useCallback(() => {
     clearExistingHighlights();
-    if (!showHighlights || !contentRef.current || highlights.length === 0) return;
+    if (!showHighlights || !contentRef.current || highlights.length === 0)
+      return;
 
-    const sorted = [...highlights].sort((a, b) => b.startOffset - a.startOffset);
+    const sorted = [...highlights].sort(
+      (a, b) => b.startOffset - a.startOffset,
+    );
 
-    sorted.forEach(h => {
-      const walker = document.createTreeWalker(contentRef.current!, NodeFilter.SHOW_TEXT, null);
+    sorted.forEach((h) => {
+      const walker = document.createTreeWalker(
+        contentRef.current!,
+        NodeFilter.SHOW_TEXT,
+        null,
+      );
       const range = document.createRange();
 
       let currentOffset = 0;
@@ -137,18 +144,25 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
     return () => clearTimeout(timer);
   }, [content, applyHighlights, selectedColor, isHighlightMode]);
 
-  const getTextOffset = useCallback((rootNode: Node, targetNode: Node, offset: number): number => {
-    let total = 0;
-    const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT, null);
-    let node;
-    while ((node = walker.nextNode())) {
-      if (node === targetNode) {
-        return total + offset;
+  const getTextOffset = useCallback(
+    (rootNode: Node, targetNode: Node, offset: number): number => {
+      let total = 0;
+      const walker = document.createTreeWalker(
+        rootNode,
+        NodeFilter.SHOW_TEXT,
+        null,
+      );
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node === targetNode) {
+          return total + offset;
+        }
+        total += node.textContent?.length || 0;
       }
-      total += node.textContent?.length || 0;
-    }
-    return -1;
-  }, []);
+      return -1;
+    },
+    [],
+  );
 
   const handleMouseUp = useCallback(() => {
     if (!isHighlightMode || !contentRef.current) return;
@@ -165,17 +179,29 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
       return;
     }
 
-    const start = getTextOffset(contentRef.current, range.startContainer, range.startOffset);
-    const end = getTextOffset(contentRef.current, range.endContainer, range.endOffset);
+    const start = getTextOffset(
+      contentRef.current,
+      range.startContainer,
+      range.startOffset,
+    );
+    const end = getTextOffset(
+      contentRef.current,
+      range.endContainer,
+      range.endOffset,
+    );
 
     if (start === -1 || end === -1) {
       sel.removeAllRanges();
       return;
     }
 
-    const overlap = highlights.some(h => start < h.endOffset && end > h.startOffset);
+    const overlap = highlights.some(
+      (h) => start < h.endOffset && end > h.startOffset,
+    );
     if (overlap) {
-      window.alert('Highlights cannot overlap. Please select a different area or remove the existing highlight first.');
+      window.alert(
+        'Highlights cannot overlap. Please select a different area or remove the existing highlight first.',
+      );
       sel.removeAllRanges();
       return;
     }
@@ -189,7 +215,7 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
       timestamp: Date.now(),
     };
 
-    setHighlights(prev => [...prev, newHighlight]);
+    setHighlights((prev) => [...prev, newHighlight]);
     sel.removeAllRanges();
   }, [isHighlightMode, selectedColor, getTextOffset, highlights]);
 
@@ -204,16 +230,40 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
       return (
         <ReactMarkdown
           components={{
-            code: ({ node, ...props }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-sm" {...props} />,
-            pre: ({ node, ...props }) => <pre className="bg-gray-100 p-3 rounded overflow-x-auto" {...props} />,
-            h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mb-4" {...props} />,
-            h2: ({ node, ...props }) => <h2 className="text-xl font-semibold mb-3" {...props} />,
-            h3: ({ node, ...props }) => <h3 className="text-lg font-medium mb-2" {...props} />,
-            p: ({ node, ...props }) => <p className="mb-3 leading-relaxed" {...props} />,
-            ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-3" {...props} />,
-            ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-3" {...props} />,
+            code: ({ node, ...props }) => (
+              <code
+                className="rounded bg-gray-100 px-1 py-0.5 text-sm"
+                {...props}
+              />
+            ),
+            pre: ({ node, ...props }) => (
+              <pre
+                className="overflow-x-auto rounded bg-gray-100 p-3"
+                {...props}
+              />
+            ),
+            h1: ({ node, ...props }) => (
+              <h1 className="mb-4 text-2xl font-bold" {...props} />
+            ),
+            h2: ({ node, ...props }) => (
+              <h2 className="mb-3 text-xl font-semibold" {...props} />
+            ),
+            h3: ({ node, ...props }) => (
+              <h3 className="mb-2 text-lg font-medium" {...props} />
+            ),
+            p: ({ node, ...props }) => (
+              <p className="mb-3 leading-relaxed" {...props} />
+            ),
+            ul: ({ node, ...props }) => (
+              <ul className="mb-3 list-disc pl-5" {...props} />
+            ),
+            ol: ({ node, ...props }) => (
+              <ol className="mb-3 list-decimal pl-5" {...props} />
+            ),
             li: ({ node, ...props }) => <li className="mb-1" {...props} />,
-            strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
+            strong: ({ node, ...props }) => (
+              <strong className="font-semibold" {...props} />
+            ),
             em: ({ node, ...props }) => <em className="italic" {...props} />,
           }}
         >
@@ -226,26 +276,30 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
 
   return (
     <div className={`highlightable-text ${className}`}>
-      <div className="flex items-center justify-between flex-wrap gap-y-2 mb-4 p-3 bg-gray-50 rounded-lg border">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-y-2 rounded-lg border bg-gray-50 p-3">
         <div className="flex items-center gap-4">
           <button
             onClick={() => setIsHighlightMode(!isHighlightMode)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              isHighlightMode ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              isHighlightMode
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
             title="Toggle highlight mode"
           >
-            <Highlighter className="w-4 h-4" />
+            <Highlighter className="h-4 w-4" />
             <span>Highlight Mode</span>
           </button>
 
           <div className="flex items-center gap-1">
-            {colors.map(color => (
+            {colors.map((color) => (
               <button
                 key={color.value}
                 onClick={() => setSelectedColor(color.value)}
-                className={`w-6 h-6 rounded-full border-2 transition-all ${
-                  selectedColor === color.value ? 'border-gray-800 scale-110 ring-2 ring-offset-1 ring-blue-500' : 'border-transparent hover:border-gray-400'
+                className={`h-6 w-6 rounded-full border-2 transition-all ${
+                  selectedColor === color.value
+                    ? 'scale-110 border-gray-800 ring-2 ring-blue-500 ring-offset-1'
+                    : 'border-transparent hover:border-gray-400'
                 }`}
                 style={{ backgroundColor: color.value }}
                 title={color.name}
@@ -257,19 +311,23 @@ const HighlightableText: React.FC<HighlightableTextProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowHighlights(!showHighlights)}
-            className="p-2 text-gray-600 rounded-md hover:bg-gray-200 transition-colors"
+            className="rounded-md p-2 text-gray-600 transition-colors hover:bg-gray-200"
             title={showHighlights ? 'Hide highlights' : 'Show highlights'}
           >
-            {showHighlights ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            {showHighlights ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
           </button>
 
           <button
             onClick={clearAllHighlights}
-            className="flex items-center gap-2 px-3 py-2 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 rounded-md bg-red-100 px-3 py-2 text-sm text-red-700 transition-colors hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-50"
             title="Clear all highlights"
             disabled={highlights.length === 0}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="h-4 w-4" />
             <span>Clear ({highlights.length})</span>
           </button>
         </div>

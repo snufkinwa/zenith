@@ -27,7 +27,12 @@ interface CanvasModalProps {
   onBringToFront: () => void;
 }
 
-const CanvasModal: React.FC<CanvasModalProps> = ({ isOpen, onClose, zIndex, onBringToFront }) => {
+const CanvasModal: React.FC<CanvasModalProps> = ({
+  isOpen,
+  onClose,
+  zIndex,
+  onBringToFront,
+}) => {
   const [elements, setElements] = useState<CanvasElement[]>([]);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -37,7 +42,7 @@ const CanvasModal: React.FC<CanvasModalProps> = ({ isOpen, onClose, zIndex, onBr
     try {
       const canvasData = {
         elements,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
       localStorage.setItem('zenith-canvas-data', JSON.stringify(canvasData));
       setLastSaved(new Date());
@@ -72,13 +77,13 @@ const CanvasModal: React.FC<CanvasModalProps> = ({ isOpen, onClose, zIndex, onBr
 
       canvas.width = 800;
       canvas.height = 600;
-      
+
       // White background
       ctx.fillStyle = 'white';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw all elements
-      elements.forEach(element => {
+      elements.forEach((element) => {
         ctx.strokeStyle = element.color;
         ctx.fillStyle = element.fillColor || 'transparent';
         ctx.lineWidth = element.strokeWidth;
@@ -99,7 +104,13 @@ const CanvasModal: React.FC<CanvasModalProps> = ({ isOpen, onClose, zIndex, onBr
             if (element.width) {
               const radius = element.width / 2;
               ctx.beginPath();
-              ctx.arc(element.x + radius, element.y + radius, radius, 0, 2 * Math.PI);
+              ctx.arc(
+                element.x + radius,
+                element.y + radius,
+                radius,
+                0,
+                2 * Math.PI,
+              );
               if (element.fillColor && element.fillColor !== 'transparent') {
                 ctx.fill();
               }
@@ -125,7 +136,10 @@ const CanvasModal: React.FC<CanvasModalProps> = ({ isOpen, onClose, zIndex, onBr
               ctx.stroke();
 
               // Draw arrowhead
-              const angle = Math.atan2(element.endY - element.y, element.endX - element.x);
+              const angle = Math.atan2(
+                element.endY - element.y,
+                element.endX - element.x,
+              );
               const arrowLength = 15;
               const arrowAngle = Math.PI / 6;
 
@@ -133,12 +147,12 @@ const CanvasModal: React.FC<CanvasModalProps> = ({ isOpen, onClose, zIndex, onBr
               ctx.moveTo(element.endX, element.endY);
               ctx.lineTo(
                 element.endX - arrowLength * Math.cos(angle - arrowAngle),
-                element.endY - arrowLength * Math.sin(angle - arrowAngle)
+                element.endY - arrowLength * Math.sin(angle - arrowAngle),
               );
               ctx.moveTo(element.endX, element.endY);
               ctx.lineTo(
                 element.endX - arrowLength * Math.cos(angle + arrowAngle),
-                element.endY - arrowLength * Math.sin(angle + arrowAngle)
+                element.endY - arrowLength * Math.sin(angle + arrowAngle),
               );
               ctx.stroke();
             }
@@ -169,7 +183,6 @@ const CanvasModal: React.FC<CanvasModalProps> = ({ isOpen, onClose, zIndex, onBr
     }
   };
 
-
   // Load saved data when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -199,33 +212,31 @@ const CanvasModal: React.FC<CanvasModalProps> = ({ isOpen, onClose, zIndex, onBr
       zIndex={zIndex}
       onBringToFront={onBringToFront}
     >
-      <div className="flex flex-col h-full">
+      <div className="flex h-full flex-col">
         {/* Top Toolbar */}
-        <div className="flex items-center justify-end px-4 py-2 bg-gray-50 border-b border-gray-200 shrink-0">
- 
-          
+        <div className="flex shrink-0 items-center justify-end border-b border-gray-200 bg-gray-50 px-4 py-2">
           <div className="flex items-center gap-2">
             {/* Last saved indicator */}
             {lastSaved && (
-              <span className="text-xs text-gray-500 mr-2">
+              <span className="mr-2 text-xs text-gray-500">
                 Saved: {lastSaved.toLocaleTimeString()}
               </span>
             )}
-            
+
             {/* Action buttons */}
             <button
               onClick={saveCanvas}
-              className="flex items-center gap-1 px-3 py-1 text-xs bg-green-100 hover:bg-green-200 text-green-700 rounded transition-colors"
+              className="flex items-center gap-1 rounded bg-green-100 px-3 py-1 text-xs text-green-700 transition-colors hover:bg-green-200"
               title="Save Canvas"
             >
               <Save size={12} />
               Save
             </button>
-            
+
             <button
               onClick={exportAsPNG}
               disabled={isExporting}
-              className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 rounded transition-colors disabled:opacity-50"
+              className="flex items-center gap-1 rounded bg-blue-100 px-3 py-1 text-xs text-blue-700 transition-colors hover:bg-blue-200 disabled:opacity-50"
               title="Export as PNG"
             >
               <Download size={12} />
@@ -237,7 +248,7 @@ const CanvasModal: React.FC<CanvasModalProps> = ({ isOpen, onClose, zIndex, onBr
         {/* Canvas Component */}
         <div className="flex-1 overflow-hidden">
           <AlgorithmCanvas
-            width={880} 
+            width={880}
             height={620}
             onElementsChange={setElements}
             initialElements={elements}

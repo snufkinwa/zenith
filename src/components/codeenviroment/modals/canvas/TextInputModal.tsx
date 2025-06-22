@@ -33,10 +33,10 @@ const TextInputModal: React.FC<TextInputModalProps> = ({
 
   return (
     <div
-      className="absolute bg-white border border-gray-300 rounded p-3 shadow-lg z-10"
+      className="absolute z-10 rounded border border-gray-300 bg-white p-3 shadow-lg"
       style={{
         left: Math.min(position.x, canvasWidth - 200),
-        top: Math.max(position.y - 60, 10)
+        top: Math.max(position.y - 60, 10),
       }}
     >
       <div className="flex flex-col gap-2">
@@ -46,19 +46,19 @@ const TextInputModal: React.FC<TextInputModalProps> = ({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder="Enter text..."
-          className="border border-gray-300 rounded px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-48 rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           autoFocus
         />
         <div className="flex gap-2">
           <button
             onClick={onSubmit}
-            className="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+            className="rounded bg-blue-500 px-3 py-1 text-xs text-white hover:bg-blue-600"
           >
             Add Text
           </button>
           <button
             onClick={onCancel}
-            className="px-3 py-1 bg-gray-300 text-gray-700 rounded text-xs hover:bg-gray-400"
+            className="rounded bg-gray-300 px-3 py-1 text-xs text-gray-700 hover:bg-gray-400"
           >
             Cancel
           </button>

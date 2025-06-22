@@ -13,8 +13,10 @@ const CanvasStatusBar: React.FC<CanvasStatusBarProps> = ({
   elementCount,
 }) => {
   return (
-    <div className="px-3 py-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-600 flex justify-between">
-      <span>Tool: {currentTool} | Color: {currentColor}</span>
+    <div className="flex justify-between border-t border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+      <span>
+        Tool: {currentTool} | Color: {currentColor}
+      </span>
       <span>{elementCount} elements</span>
     </div>
   );

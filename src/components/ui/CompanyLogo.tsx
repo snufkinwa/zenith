@@ -19,12 +19,14 @@ const CompanyLogo: React.FC<CompanyLogoProps> = ({
   size = 32,
   className = '',
   showName = false,
-  variant = 'rounded'
+  variant = 'rounded',
 }) => {
   const [logoError, setLogoError] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const logoUrl = logoError ? getLogoFallback(companySlug, size) : getCompanyLogo(companySlug, size);
+  const logoUrl = logoError
+    ? getLogoFallback(companySlug, size)
+    : getCompanyLogo(companySlug, size);
 
   const getVariantClasses = () => {
     switch (variant) {
@@ -49,22 +51,25 @@ const CompanyLogo: React.FC<CompanyLogoProps> = ({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <div 
+      <div
         className={`relative overflow-hidden ${getVariantClasses()} bg-gray-100`}
         style={{ width: size, height: size }}
       >
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-            <Building2 size={size * 0.5} className="text-gray-400 animate-pulse" />
+            <Building2
+              size={size * 0.5}
+              className="animate-pulse text-gray-400"
+            />
           </div>
         )}
-        
+
         <img
           src={logoUrl}
           alt={`${companyName} logo`}
           width={size}
           height={size}
-          className={`w-full h-full object-cover transition-opacity duration-200 ${
+          className={`h-full w-full object-cover transition-opacity duration-200 ${
             loading ? 'opacity-0' : 'opacity-100'
           }`}
           onError={handleImageError}
@@ -72,9 +77,9 @@ const CompanyLogo: React.FC<CompanyLogoProps> = ({
           loading="lazy"
         />
       </div>
-      
+
       {showName && (
-        <span className="text-sm font-medium text-gray-900 truncate">
+        <span className="truncate text-sm font-medium text-gray-900">
           {companyName}
         </span>
       )}

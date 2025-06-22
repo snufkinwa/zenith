@@ -47,34 +47,42 @@ const Editor: React.FC<EditorProps> = ({ input, setInput, problemSlug }) => {
         setIsDarkMode(e.newValue === 'dark');
       }
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  const handleChange = useCallback((value: string) => {
-    setInput(value);
-  }, [setInput]);
+  const handleChange = useCallback(
+    (value: string) => {
+      setInput(value);
+    },
+    [setInput],
+  );
 
   const toggleTheme = useCallback(() => {
     const newMode = !isDarkMode;
     setIsDarkMode(newMode);
     localStorage.setItem('editor-theme', newMode ? 'dark' : 'light');
-    
+
     // Trigger storage event for other components
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'editor-theme',
-      newValue: newMode ? 'dark' : 'light',
-    }));
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: 'editor-theme',
+        newValue: newMode ? 'dark' : 'light',
+      }),
+    );
   }, [isDarkMode]);
 
-  const getTemplateForProblem = useCallback((slug: string): string => {
-    const template = templates.find(t => t.slug === slug);
-    if (template) {
-      return template.template;
-    }
-    return getDefaultTemplate();
-  }, [templates]);
+  const getTemplateForProblem = useCallback(
+    (slug: string): string => {
+      const template = templates.find((t) => t.slug === slug);
+      if (template) {
+        return template.template;
+      }
+      return getDefaultTemplate();
+    },
+    [templates],
+  );
 
   const getDefaultTemplate = useCallback(() => {
     return `class Solution:
@@ -106,43 +114,64 @@ if __name__ == "__main__":
         setHasLoadedTemplate(true);
       }
     }
-  }, [problemSlug, templatesLoaded, getTemplateForProblem, setInput, getDefaultTemplate, hasLoadedTemplate]);
+  }, [
+    problemSlug,
+    templatesLoaded,
+    getTemplateForProblem,
+    setInput,
+    getDefaultTemplate,
+    hasLoadedTemplate,
+  ]);
 
   return (
-    <div className={`h-full flex flex-col ${isDarkMode ? 'bg-[#1a1b26]' : 'bg-[#d5d6db]'}`}>
+    <div
+      className={`flex h-full flex-col ${isDarkMode ? 'bg-[#1a1b26]' : 'bg-[#d5d6db]'}`}
+    >
       {/* Editor Header */}
-      <div className={`flex items-center justify-between px-4 py-3 border-b ${
-        isDarkMode 
-          ? 'bg-gray-800 border-gray-700' 
-          : 'bg-gray-50 border-gray-200'
-      }`}>
+      <div
+        className={`flex items-center justify-between border-b px-4 py-3 ${
+          isDarkMode
+            ? 'border-gray-700 bg-gray-800'
+            : 'border-gray-200 bg-gray-50'
+        }`}
+      >
         <div className="flex items-center gap-3">
-          <Code className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />
-          <h3 className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+          <Code
+            className={`h-5 w-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}
+          />
+          <h3
+            className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}
+          >
             Code Editor
           </h3>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className={`p-2 rounded-md transition-colors ${
+            className={`rounded-md p-2 transition-colors ${
               isDarkMode
-                ? 'bg-[#414868] hover:bg-[#4a5574] text-gray-300'
-                : 'bg-[#c4c8da] hover:bg-[#b6bbd0] text-[#33467c]'
+                ? 'bg-[#414868] text-gray-300 hover:bg-[#4a5574]'
+                : 'bg-[#c4c8da] text-[#33467c] hover:bg-[#b6bbd0]'
             }`}
             title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           >
-            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {isDarkMode ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
           </button>
-          
+
           {/* Python Language Indicator */}
-          <div className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium ${
-            isDarkMode
-              ? 'bg-blue-900 text-blue-200'
-              : 'bg-blue-100 text-blue-800'
-          }`}>
+          <div
+            className={`flex items-center gap-2 rounded-md px-3 py-1 text-sm font-medium ${
+              isDarkMode
+                ? 'bg-blue-900 text-blue-200'
+                : 'bg-blue-100 text-blue-800'
+            }`}
+          >
             <span>🐍</span>
             <span>Python</span>
           </div>
@@ -165,7 +194,7 @@ if __name__ == "__main__":
             indentOnInput: true,
             bracketMatching: true,
             searchKeymap: true,
-            tabSize: 4
+            tabSize: 4,
           }}
           extensions={[python()]}
           onChange={handleChange}

@@ -1,26 +1,48 @@
 // src/components/codeenviroment/BottomModal.tsx
 import React, { useState } from 'react';
-import { Edit3, PenTool, Clock, Plus, Brain, MessageCircle, Sparkles, Users, Share2, Eye, UserPlus, LogOut } from 'lucide-react';
+import {
+  Edit3,
+  PenTool,
+  Clock,
+  Plus,
+  Brain,
+  MessageCircle,
+  Sparkles,
+  Users,
+  Share2,
+  Eye,
+  UserPlus,
+  LogOut,
+} from 'lucide-react';
 
-// Import existing modals
 import NotesModal from './modals/NotesModal';
 import CanvasModal from './modals/CanvasModal';
 import PomodoroModal from './modals/PomodoroModal';
+import PythonTutorModal from './modals/PythonTutorModal';
 import CreateProblemModal from './modals/CreateProblemModal';
 import AIHintsModal from './modals/AIHintsModal';
 
 interface BottomModalProps {
   selectedProblem?: any;
   onProblemCreated?: (problem: any) => void;
+  currentCode?: string;
 }
 
-const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCreated }) => {
+const BottomModal: React.FC<BottomModalProps> = ({
+  selectedProblem,
+  onProblemCreated,
+  currentCode = '' 
+}) => {
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [modalZIndices, setModalZIndices] = useState<Record<string, number>>({});
-  
+  const [modalZIndices, setModalZIndices] = useState<Record<string, number>>(
+    {},
+  );
+
   // Session state (mock for now)
   const [isInSession, setIsInSession] = useState(false);
-  const [sessionParticipants, setSessionParticipants] = useState<string[]>(['You']);
+  const [sessionParticipants, setSessionParticipants] = useState<string[]>([
+    'You',
+  ]);
 
   const openModal = (modalName: string) => {
     setActiveModal(modalName);
@@ -33,21 +55,21 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
 
   const bringToFront = (modalName: string) => {
     const maxZ = Math.max(...Object.values(modalZIndices), 1000);
-    setModalZIndices(prev => ({
+    setModalZIndices((prev) => ({
       ...prev,
-      [modalName]: maxZ + 1
+      [modalName]: maxZ + 1,
     }));
   };
 
   const handleStartSession = () => {
-    // Mock session start - would integrate with Movex
+    // Mock session start - would integrate with AppSync
     setIsInSession(true);
-    setSessionParticipants(['You', 'John', 'Sarah']);
+    setSessionParticipants(['John', 'Sarah', 'You']);
     console.log('Starting collaborative session...');
   };
 
   const handleLeaveSession = () => {
-    // Mock session leave - would integrate with Movex
+    // Mock session leave - would integrate with AppSync
     setIsInSession(false);
     setSessionParticipants(['You']);
     console.log('Left collaborative session...');
@@ -60,39 +82,124 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
   };
 
   const handleVisualizePython = () => {
-    // Mock Python Tutor integration
-    console.log('Opening Python Tutor visualization...');
-    // Would open Python Tutor modal with current code
+    openModal('pythonTutor');
   };
 
-  const problemContext = selectedProblem ? {
-    title: selectedProblem.title,
-    description: selectedProblem.description,
-    difficulty: selectedProblem.difficulty,
-    tags: [] as string[], 
-    examples: selectedProblem.examples,
-    constraints: selectedProblem.constraints
-  } : undefined;
+  const problemContext = selectedProblem
+    ? {
+        title: selectedProblem.title,
+        description: selectedProblem.description,
+        difficulty: selectedProblem.difficulty,
+        tags: [] as string[],
+        examples: selectedProblem.examples,
+        constraints: selectedProblem.constraints,
+      }
+    : undefined;
 
   return (
     <div>
       {/* Bottom Action Bar */}
-      <div className="bg-white border-t border-gray-200 px-4 py-3">
+      <div className="border-t border-gray-200 bg-white px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Left Side - Session Info or Tools Label */}
           <div className="flex items-center gap-3">
             {isInSession ? (
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 px-3 py-1 bg-green-50 border border-green-200 rounded-md">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1 rounded-md border border-green-200 bg-green-50 px-3 py-1">
+                  <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
                   <Users size={14} className="text-green-600" />
                   <span className="text-sm font-medium text-green-700">
                     {sessionParticipants.length} in session
                   </span>
                 </div>
+
+                {/* Participant Avatars - positioned right next to session info */}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center -space-x-2">
+                    {sessionParticipants.map((participant, index) => {
+                      // Generate avatar based on participant name
+                      const getAvatarUrl = (name: string) => {
+                        if (name === 'You') {
+                          // Use a default "You" avatar or get from user profile
+                          return `https://ui-avatars.com/api/?name=You&background=3b82f6&color=ffffff&size=28&bold=true`;
+                        }
+                        // Generate avatar for other participants
+                        return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=28&bold=true`;
+                      };
+
+                      const getInitials = (name: string) => {
+                        return name === 'You'
+                          ? 'Y'
+                          : name
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')
+                              .toUpperCase()
+                              .slice(0, 2);
+                      };
+
+                      return (
+                        <div
+                          key={participant}
+                          className={`group relative cursor-pointer transition-transform hover:z-10 hover:scale-110 ${
+                            index > 0 ? 'hover:-translate-x-1' : ''
+                          }`}
+                          title={participant}
+                        >
+                          {/* Avatar Image */}
+                          <div
+                            className={`flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold ${
+                              participant === 'You'
+                                ? 'border-blue-300 bg-blue-500 text-white shadow-md'
+                                : 'border-gray-300 bg-gray-100 text-gray-700 shadow-sm'
+                            }`}
+                          >
+                            <img
+                              src={getAvatarUrl(participant)}
+                              alt={participant}
+                              className="h-full w-full rounded-full object-cover"
+                              onError={(e) => {
+                                // Fallback to initials if image fails to load
+                                const target =
+                                  e.currentTarget as HTMLImageElement;
+                                target.style.display = 'none';
+                                const fallback =
+                                  target.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                            {/* Fallback initials */}
+                            <span className="hidden h-full w-full items-center justify-center rounded-full text-xs font-bold">
+                              {getInitials(participant)}
+                            </span>
+                          </div>
+
+                          {/* Active indicator for current user */}
+                          {participant === 'You' && (
+                            <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500"></div>
+                          )}
+
+                          {/* Hover tooltip */}
+                          <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 transform whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
+                            {participant}
+                            <div className="absolute left-1/2 top-full -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Show participant count if more than 4 participants */}
+                  {sessionParticipants.length > 4 && (
+                    <div className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600">
+                      +{sessionParticipants.length - 4}
+                    </div>
+                  )}
+                </div>
+
                 <button
                   onClick={handleInviteToSession}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 rounded border border-blue-200 transition-colors"
+                  className="flex items-center gap-1 rounded border border-blue-200 bg-blue-50 px-2 py-1 text-xs text-blue-700 transition-colors hover:bg-blue-100"
                   title="Invite people to session"
                 >
                   <UserPlus size={12} />
@@ -100,7 +207,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
                 </button>
                 <button
                   onClick={handleLeaveSession}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-red-50 hover:bg-red-100 text-red-700 rounded border border-red-200 transition-colors"
+                  className="flex items-center gap-1 rounded border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-700 transition-colors hover:bg-red-100"
                   title="Leave session"
                 >
                   <LogOut size={12} />
@@ -118,7 +225,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
             {!isInSession && (
               <button
                 onClick={handleStartSession}
-                className="flex items-center gap-2 px-3 py-1.5 text-xs bg-green-50 hover:bg-green-100 text-green-700 rounded-md transition-colors border border-green-200"
+                className="flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-1.5 text-xs text-green-700 transition-colors hover:bg-green-100"
                 title="Start collaborative session"
               >
                 <Share2 size={14} />
@@ -129,7 +236,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
             {/* Create Problem */}
             <button
               onClick={() => openModal('createProblem')}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-green-50 hover:bg-green-100 text-green-700 rounded-md transition-colors"
+              className="flex items-center gap-2 rounded-md bg-green-50 px-3 py-1.5 text-xs text-green-700 transition-colors hover:bg-green-100"
               title="Create New Problem"
             >
               <Plus size={14} />
@@ -139,7 +246,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
             {/* Pomodoro Timer */}
             <button
               onClick={() => openModal('pomodoro')}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-red-50 hover:bg-red-100 text-red-700 rounded-md transition-colors"
+              className="flex items-center gap-2 rounded-md bg-red-50 px-3 py-1.5 text-xs text-red-700 transition-colors hover:bg-red-100"
               title="Focus Timer"
             >
               <Clock size={14} />
@@ -149,7 +256,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
             {/* Notes */}
             <button
               onClick={() => openModal('notes')}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md transition-colors"
+              className="flex items-center gap-2 rounded-md bg-blue-50 px-3 py-1.5 text-xs text-blue-700 transition-colors hover:bg-blue-100"
               title="Open Notes"
             >
               <Edit3 size={14} />
@@ -159,7 +266,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
             {/* Canvas */}
             <button
               onClick={() => openModal('canvas')}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-green-50 hover:bg-green-100 text-green-700 rounded-md transition-colors"
+              className="flex items-center gap-2 rounded-md bg-green-50 px-3 py-1.5 text-xs text-green-700 transition-colors hover:bg-green-100"
               title="Open Canvas"
             >
               <PenTool size={14} />
@@ -169,7 +276,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
             {/* Python Visualizer */}
             <button
               onClick={handleVisualizePython}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-yellow-50 hover:bg-yellow-100 text-yellow-700 rounded-md transition-colors"
+              className="flex items-center gap-2 rounded-md bg-yellow-50 px-3 py-1.5 text-xs text-yellow-700 transition-colors hover:bg-yellow-100"
               title="Visualize Python Code"
             >
               <Eye size={14} />
@@ -179,7 +286,7 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
             {/* AI Tutor (consolidated) */}
             <button
               onClick={() => openModal('hints')}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-md transition-colors"
+              className="flex items-center gap-2 rounded-md bg-purple-50 px-3 py-1.5 text-xs text-purple-700 transition-colors hover:bg-purple-100"
               title="AI Tutor - Get hints or tutoring"
             >
               <Sparkles size={14} />
@@ -187,29 +294,6 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
             </button>
           </div>
         </div>
-
-        {/* Session Participants (when in session) */}
-        {isInSession && sessionParticipants.length > 1 && (
-          <div className="mt-2 pt-2 border-t border-gray-100">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">Participants:</span>
-              <div className="flex items-center gap-1">
-                {sessionParticipants.map((participant, index) => (
-                  <div
-                    key={participant}
-                    className={`px-2 py-1 text-xs rounded ${
-                      participant === 'You' 
-                        ? 'bg-blue-100 text-blue-700 border border-blue-200' 
-                        : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    {participant}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Existing Modals */}
@@ -243,6 +327,15 @@ const BottomModal: React.FC<BottomModalProps> = ({ selectedProblem, onProblemCre
           onBringToFront={() => bringToFront('createProblem')}
         />
       )}
+
+        <PythonTutorModal
+        isOpen={activeModal === 'pythonTutor'}
+        onClose={closeModal}
+        currentCode={currentCode}
+        problemTitle={selectedProblem?.title}
+        zIndex={modalZIndices.pythonTutor || 1006}
+        onBringToFront={() => bringToFront('pythonTutor')}
+      />
 
       {/* AI Helper Modal (serves as both hints and tutor for now) */}
       <AIHintsModal

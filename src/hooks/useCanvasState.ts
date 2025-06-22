@@ -4,50 +4,73 @@ import { DEFAULT_CANVAS_STATE } from '@/constants/canvas';
 
 export const useCanvasState = (
   initialElements: CanvasElement[] = [],
-  onElementsChange?: (elements: CanvasElement[]) => void
+  onElementsChange?: (elements: CanvasElement[]) => void,
 ) => {
   const [elements, setElements] = useState<CanvasElement[]>(initialElements);
-  const [currentTool, setCurrentTool] = useState<ToolType>(DEFAULT_CANVAS_STATE.currentTool);
-  const [currentColor, setCurrentColor] = useState(DEFAULT_CANVAS_STATE.currentColor);
-  const [currentFillColor, setCurrentFillColor] = useState(DEFAULT_CANVAS_STATE.currentFillColor);
-  const [strokeWidth, setStrokeWidth] = useState(DEFAULT_CANVAS_STATE.strokeWidth);
+  const [currentTool, setCurrentTool] = useState<ToolType>(
+    DEFAULT_CANVAS_STATE.currentTool,
+  );
+  const [currentColor, setCurrentColor] = useState(
+    DEFAULT_CANVAS_STATE.currentColor,
+  );
+  const [currentFillColor, setCurrentFillColor] = useState(
+    DEFAULT_CANVAS_STATE.currentFillColor,
+  );
+  const [strokeWidth, setStrokeWidth] = useState(
+    DEFAULT_CANVAS_STATE.strokeWidth,
+  );
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [history, setHistory] = useState<CanvasElement[][]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  const saveToHistory = useCallback((newElements: CanvasElement[]) => {
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push([...newElements]);
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  }, [history, historyIndex]);
+  const saveToHistory = useCallback(
+    (newElements: CanvasElement[]) => {
+      const newHistory = history.slice(0, historyIndex + 1);
+      newHistory.push([...newElements]);
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+    },
+    [history, historyIndex],
+  );
 
-  const updateElements = useCallback((newElements: CanvasElement[]) => {
-    setElements(newElements);
-    onElementsChange?.(newElements);
-  }, [onElementsChange]);
+  const updateElements = useCallback(
+    (newElements: CanvasElement[]) => {
+      setElements(newElements);
+      onElementsChange?.(newElements);
+    },
+    [onElementsChange],
+  );
 
-  const addElement = useCallback((element: CanvasElement) => {
-    const newElements = [...elements, element];
-    saveToHistory(elements);
-    updateElements(newElements);
-  }, [elements, saveToHistory, updateElements]);
+  const addElement = useCallback(
+    (element: CanvasElement) => {
+      const newElements = [...elements, element];
+      saveToHistory(elements);
+      updateElements(newElements);
+    },
+    [elements, saveToHistory, updateElements],
+  );
 
-  const updateElement = useCallback((elementId: string, updates: Partial<CanvasElement>) => {
-    const newElements = elements.map(el => 
-      el.id === elementId ? { ...el, ...updates } : el
-    );
-    updateElements(newElements);
-  }, [elements, updateElements]);
+  const updateElement = useCallback(
+    (elementId: string, updates: Partial<CanvasElement>) => {
+      const newElements = elements.map((el) =>
+        el.id === elementId ? { ...el, ...updates } : el,
+      );
+      updateElements(newElements);
+    },
+    [elements, updateElements],
+  );
 
-  const deleteElement = useCallback((elementId: string) => {
-    const newElements = elements.filter(el => el.id !== elementId);
-    saveToHistory(elements);
-    updateElements(newElements);
-    if (selectedElement === elementId) {
-      setSelectedElement(null);
-    }
-  }, [elements, selectedElement, saveToHistory, updateElements]);
+  const deleteElement = useCallback(
+    (elementId: string) => {
+      const newElements = elements.filter((el) => el.id !== elementId);
+      saveToHistory(elements);
+      updateElements(newElements);
+      if (selectedElement === elementId) {
+        setSelectedElement(null);
+      }
+    },
+    [elements, selectedElement, saveToHistory, updateElements],
+  );
 
   const clearCanvas = useCallback(() => {
     if (window.confirm('Clear the canvas? This cannot be undone.')) {
@@ -87,14 +110,14 @@ export const useCanvasState = (
     selectedElement,
     historyIndex,
     history,
-    
+
     // Setters
     setCurrentTool,
     setCurrentColor,
     setCurrentFillColor,
     setStrokeWidth,
     setSelectedElement,
-    
+
     // Actions
     addElement,
     updateElement,

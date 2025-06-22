@@ -11,7 +11,6 @@ import { useTextInput } from '@/hooks/useTextInput';
 import { useCanvasEvents } from '@/hooks/useCanvasEvents';
 import { useCanvasRenderer } from '@/hooks/useCanvasRenderer';
 
-
 // Components
 import CanvasToolbar from '@/components/codeenviroment/modals/canvas/CanvasToolBar';
 import TextInputModal from '@/components/codeenviroment/modals/canvas/TextInputModal';
@@ -21,7 +20,7 @@ const AlgorithmCanvas: React.FC<AlgorithmCanvasProps> = ({
   width,
   height,
   onElementsChange,
-  initialElements = []
+  initialElements = [],
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -75,7 +74,7 @@ const AlgorithmCanvas: React.FC<AlgorithmCanvasProps> = ({
       y: textInputState.textPosition.y,
       text: textInputState.textInput,
       color: canvasState.currentColor,
-      strokeWidth: 1
+      strokeWidth: 1,
     };
 
     canvasState.addElement(newElement);
@@ -83,7 +82,7 @@ const AlgorithmCanvas: React.FC<AlgorithmCanvasProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex h-full flex-col bg-white">
       {/* Toolbar */}
       <CanvasToolbar
         currentTool={canvasState.currentTool}
@@ -98,7 +97,7 @@ const AlgorithmCanvas: React.FC<AlgorithmCanvasProps> = ({
       />
 
       {/* Canvas Area */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="relative flex-1 overflow-hidden">
         <canvas
           ref={canvasRef}
           width={width}

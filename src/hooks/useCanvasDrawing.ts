@@ -4,7 +4,9 @@ import { Point, CanvasElement } from '@/types/canvas';
 export const useCanvasDrawing = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState<Point | null>(null);
-  const [previewElement, setPreviewElement] = useState<CanvasElement | null>(null);
+  const [previewElement, setPreviewElement] = useState<CanvasElement | null>(
+    null,
+  );
   const [dragOffset, setDragOffset] = useState<Point | null>(null);
 
   const startDrawing = useCallback((point: Point) => {
@@ -39,7 +41,7 @@ export const useCanvasDrawing = () => {
     startPoint,
     previewElement,
     dragOffset,
-    
+
     // Actions
     startDrawing,
     stopDrawing,

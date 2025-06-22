@@ -1,5 +1,5 @@
-import CodeEnvironment from "@components/codeenviroment/CodeEnvironment";
-import problemsData from "@public/data/problems.json";
+import CodeEnvironment from '@components/codeenviroment/CodeEnvironment';
+import problemsData from '@public/data/problems.json';
 
 export default function BetaPage() {
   return (

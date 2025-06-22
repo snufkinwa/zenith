@@ -23,12 +23,12 @@ interface Hint {
   timestamp: string;
 }
 
-const AIHintsModal: React.FC<AIHintsModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  zIndex, 
+const AIHintsModal: React.FC<AIHintsModalProps> = ({
+  isOpen,
+  onClose,
+  zIndex,
   onBringToFront,
-  problemContext 
+  problemContext,
 }) => {
   const [query, setQuery] = useState('');
   const [hints, setHints] = useState<Hint[]>([]);
@@ -39,14 +39,14 @@ const AIHintsModal: React.FC<AIHintsModalProps> = ({
 
     setLoading(true);
     const timestamp = new Date().toLocaleTimeString();
-    
+
     try {
       // Build context from current problem if available
-      const context = problemContext ? 
-        `Problem: ${problemContext.title || 'Unknown'}\n` +
-        `Difficulty: ${problemContext.difficulty || 'Unknown'}\n` +
-        `Tags: ${problemContext.tags?.join(', ') || 'None'}\n` +
-        `Description: ${problemContext.description || 'No description available'}`
+      const context = problemContext
+        ? `Problem: ${problemContext.title || 'Unknown'}\n` +
+          `Difficulty: ${problemContext.difficulty || 'Unknown'}\n` +
+          `Tags: ${problemContext.tags?.join(', ') || 'None'}\n` +
+          `Description: ${problemContext.description || 'No description available'}`
         : '';
 
       const response = await fetch('/api/hints', {
@@ -57,7 +57,7 @@ const AIHintsModal: React.FC<AIHintsModalProps> = ({
         body: JSON.stringify({
           query: query.trim(),
           context: context,
-          useWebSearch: false
+          useWebSearch: false,
         }),
       });
 
@@ -66,26 +66,33 @@ const AIHintsModal: React.FC<AIHintsModalProps> = ({
       }
 
       const data = await response.json();
-      
+
       if (data.error) {
         throw new Error(data.error);
       }
 
-      setHints(prev => [...prev, {
-        question: query,
-        answer: data.hint || "No hint generated.",
-        timestamp
-      }]);
-      
+      setHints((prev) => [
+        ...prev,
+        {
+          question: query,
+          answer: data.hint || 'No hint generated.',
+          timestamp,
+        },
+      ]);
+
       setQuery('');
     } catch (error) {
       console.error('Error fetching hint:', error);
-      
-      setHints(prev => [...prev, {
-        question: query,
-        answer: "Sorry, I couldn't generate a hint right now. Please try again.",
-        timestamp
-      }]);
+
+      setHints((prev) => [
+        ...prev,
+        {
+          question: query,
+          answer:
+            "Sorry, I couldn't generate a hint right now. Please try again.",
+          timestamp,
+        },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -106,13 +113,14 @@ const AIHintsModal: React.FC<AIHintsModalProps> = ({
       zIndex={zIndex}
       onBringToFront={onBringToFront}
     >
-      <div className="p-4 h-full flex flex-col">
+      <div className="flex h-full flex-col p-4">
         {/* Show current problem context if available */}
         {problemContext && (
-          <div className="mb-3 p-2 bg-gray-50 rounded-md text-xs text-gray-700 flex items-center gap-2">
-            <strong>Current Problem:</strong> {problemContext.title || 'Unknown'}
+          <div className="mb-3 flex items-center gap-2 rounded-md bg-gray-50 p-2 text-xs text-gray-700">
+            <strong>Current Problem:</strong>{' '}
+            {problemContext.title || 'Unknown'}
             {problemContext.difficulty && (
-              <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 rounded">
+              <span className="ml-2 rounded bg-blue-100 px-2 py-0.5 text-blue-800">
                 {problemContext.difficulty}
               </span>
             )}
@@ -126,69 +134,89 @@ const AIHintsModal: React.FC<AIHintsModalProps> = ({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && !loading && handleAskHint()}
+              onKeyPress={(e) =>
+                e.key === 'Enter' && !loading && handleAskHint()
+              }
               placeholder="Ask for a hint about the problem..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               disabled={loading}
             />
             <button
               onClick={handleAskHint}
               disabled={loading || !query.trim()}
-              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:bg-purple-400 transition-colors text-sm flex items-center gap-2"
+              className="flex items-center gap-2 rounded-md bg-purple-600 px-4 py-2 text-sm text-white transition-colors hover:bg-purple-700 disabled:bg-purple-400"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
               ) : (
                 <Send size={16} />
               )}
               {loading ? 'Thinking...' : 'Ask AI'}
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            Ask questions like: &quot;How do I approach this?&quot;, &quot;What algorithm should I use?&quot;, &quot;Help with time complexity&quot;
+          <p className="mt-1 text-xs text-gray-500">
+            Ask questions like: &quot;How do I approach this?&quot;, &quot;What
+            algorithm should I use?&quot;, &quot;Help with time complexity&quot;
           </p>
         </div>
 
         {/* Hints History */}
         <div className="flex-1 overflow-auto">
           {hints.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Lightbulb className="w-12 h-12 mx-auto mb-4 opacity-50" />
+            <div className="py-8 text-center text-gray-500">
+              <Lightbulb className="mx-auto mb-4 h-12 w-12 opacity-50" />
               <p className="font-medium">No hints yet!</p>
-              <p className="text-sm">Ask the AI for help with the problem above.</p>
+              <p className="text-sm">
+                Ask the AI for help with the problem above.
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex items-center justify-between mb-2">
+              <div className="mb-2 flex items-center justify-between">
                 <h3 className="font-semibold text-gray-900">Hint History</h3>
                 <button
                   onClick={clearHints}
-                  className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                  className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700"
                 >
                   <RotateCcw size={12} />
                   Clear
                 </button>
               </div>
-              
+
               {hints.map((hint, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-medium text-blue-600">Q</span>
+                <div
+                  key={index}
+                  className="rounded-lg border border-gray-200 p-3"
+                >
+                  <div className="mb-2 flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100">
+                      <span className="text-xs font-medium text-blue-600">
+                        Q
+                      </span>
                     </div>
-                    <span className="text-sm font-medium text-gray-900">You asked:</span>
-                    <span className="text-xs text-gray-500 ml-auto">{hint.timestamp}</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      You asked:
+                    </span>
+                    <span className="ml-auto text-xs text-gray-500">
+                      {hint.timestamp}
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-700 mb-3 pl-8">{hint.question}</p>
-                  
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+                  <p className="mb-3 pl-8 text-sm text-gray-700">
+                    {hint.question}
+                  </p>
+
+                  <div className="mb-2 flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-100">
                       <Brain size={12} className="text-purple-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-900">AI suggests:</span>
+                    <span className="text-sm font-medium text-gray-900">
+                      AI suggests:
+                    </span>
                   </div>
-                  <div className="bg-purple-50 border border-purple-200 rounded-md p-3 ml-8">
-                    <p className="text-sm text-purple-800 whitespace-pre-wrap">{hint.answer}</p>
+                  <div className="ml-8 rounded-md border border-purple-200 bg-purple-50 p-3">
+                    <p className="whitespace-pre-wrap text-sm text-purple-800">
+                      {hint.answer}
+                    </p>
                   </div>
                 </div>
               ))}

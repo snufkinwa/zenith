@@ -19,7 +19,6 @@ export const useCanvasRenderer = ({
   selectedElement,
   previewElement,
 }: UseCanvasRendererProps) => {
-  
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -30,9 +29,8 @@ export const useCanvasRenderer = ({
     // Clear canvas
     ctx.clearRect(0, 0, width, height);
 
-
     // Draw all elements
-    elements.forEach(element => {
+    elements.forEach((element) => {
       drawElement(ctx, element);
 
       // Highlight selected element

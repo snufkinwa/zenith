@@ -1,20 +1,20 @@
-import { ChatOpenAI } from "@langchain/openai"
-import { HumanMessage, SystemMessage } from "@langchain/core/messages"
-import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio"
-import { TavilySearch } from "@langchain/tavily";
-import fs from "fs"
-import path from "path"
-import csv from "csv-parser"
+import { ChatOpenAI } from '@langchain/openai';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio';
+import { TavilySearch } from '@langchain/tavily';
+import fs from 'fs';
+import path from 'path';
+import csv from 'csv-parser';
 
-const chat = new ChatOpenAI({ 
-  modelName: "gpt-3.5-turbo", 
-  temperature: 0.4, 
-  openAIApiKey: process.env.OPENAI_API_KEY 
-})
+const chat = new ChatOpenAI({
+  modelName: 'gpt-3.5-turbo',
+  temperature: 0.4,
+  openAIApiKey: process.env.OPENAI_API_KEY,
+});
 
 const searchTool = new TavilySearch({
   maxResults: 3,
-  tavilyApiKey: process.env.TAVILY_API_KEY
+  tavilyApiKey: process.env.TAVILY_API_KEY,
 });
 
 interface CSVHint {
@@ -33,32 +33,41 @@ interface CSVHint {
   hidden?: string;
 }
 
-export async function generateHint(query: string, context = "", useWebSearch = false): Promise<string> {
+export async function generateHint(
+  query: string,
+  context = '',
+  useWebSearch = false,
+): Promise<string> {
   try {
-    let webContext = "";
+    let webContext = '';
     let csvContext = await searchAllCSVs(query);
 
     if (useWebSearch && process.env.TAVILY_API_KEY) {
       try {
-        const webResults = await searchTool.invoke({ query: query + " programming algorithm" });
-        webContext = webResults.map((result: any) => 
-          `${result.title}: ${result.content}`
-        ).join("\n\n");
+        const webResults = await searchTool.invoke({
+          query: query + ' programming algorithm',
+        });
+        webContext = webResults
+          .map((result: any) => `${result.title}: ${result.content}`)
+          .join('\n\n');
       } catch (error) {
-        console.warn("Web search failed, continuing with CSV data:", error);
+        console.warn('Web search failed, continuing with CSV data:', error);
       }
     }
 
-    let urlContent = "";
+    let urlContent = '';
     if (csvContext) {
       urlContent = await fetchRelevantURLs(csvContext);
     }
 
     // Sanitize context
     csvContext = csvContext
-      .replace(/CSV\s+Database\s+Results:/gi, "")
-      .replace(/(file|csv|database)[^:\n]*:*/gi, "")
-      .replace(/(csv\s+parsing|csv\s+data|csv\s+structure)/gi, "structured input");
+      .replace(/CSV\s+Database\s+Results:/gi, '')
+      .replace(/(file|csv|database)[^:\n]*:*/gi, '')
+      .replace(
+        /(csv\s+parsing|csv\s+data|csv\s+structure)/gi,
+        'structured input',
+      );
 
     const messages = [
       new SystemMessage(`You are an expert Python programming tutor specializing in coding problem hints.
@@ -85,30 +94,30 @@ ${webContext ? `Web Search Results:\n${webContext}\n` : ''}
 
 Question: ${query}
 
-Provide a helpful hint based on the above information.`)
-    ]
+Provide a helpful hint based on the above information.`),
+    ];
 
-    const result = await chat.invoke(messages)
-    return result.content.toString().trim()
+    const result = await chat.invoke(messages);
+    return result.content.toString().trim();
   } catch (error) {
-    console.error("Error generating hint:", error)
-    return "Sorry, I couldn't generate a hint right now. Please try again."
+    console.error('Error generating hint:', error);
+    return "Sorry, I couldn't generate a hint right now. Please try again.";
   }
 }
 
 async function searchAllCSVs(query: string): Promise<string> {
   const csvFiles = [
     'python_builtins_extended.csv',
-    'zenith_methods_concepts.csv', 
+    'zenith_methods_concepts.csv',
     'python_doc_topics.csv',
-    'zenith_pattern_guide.csv'
+    'zenith_pattern_guide.csv',
   ];
 
   const results: string[] = [];
   const lowerQuery = query.toLowerCase();
 
   for (const fileName of csvFiles) {
-    const filePath = path.join(process.cwd(), "public", "data", fileName);
+    const filePath = path.join(process.cwd(), 'public', 'data', fileName);
     if (!fs.existsSync(filePath)) continue;
 
     try {
@@ -128,41 +137,55 @@ function searchCSV(filePath: string, query: string): Promise<string> {
   return new Promise((resolve) => {
     const results: CSVHint[] = [];
 
-    if (query === "csv") {
-      resolve("");
+    if (query === 'csv') {
+      resolve('');
       return;
     }
 
     fs.createReadStream(filePath)
       .pipe(csv())
-      .on("data", (row: CSVHint) => {
-        if (row.hidden?.toLowerCase() === "true") return;
+      .on('data', (row: CSVHint) => {
+        if (row.hidden?.toLowerCase() === 'true') return;
 
         const searchFields = [
-          row.function, row.topic, row.concept, row.description,
-          row.category, row.type, row.keywords, row.when_to_use
-        ].filter(Boolean).map(field => field?.toLowerCase() || '');
+          row.function,
+          row.topic,
+          row.concept,
+          row.description,
+          row.category,
+          row.type,
+          row.keywords,
+          row.when_to_use,
+        ]
+          .filter(Boolean)
+          .map((field) => field?.toLowerCase() || '');
 
-        if (searchFields.some(field => field.includes(query))) {
+        if (searchFields.some((field) => field.includes(query))) {
           results.push(row);
         }
       })
-      .on("end", () => {
+      .on('end', () => {
         if (results.length > 0) {
-          const formatted = results.slice(0, 3).map(row => {
-            let result = "";
-            if (row.function) result += `Function: ${row.function}\n`;
-            if (row.topic) result += `Topic: ${row.topic}\n`;
-            if (row.concept) result += `Concept: ${row.concept}\n`;
-            if (row.description) result += `Description: ${row.description}\n`;
-            if (row.when_to_use) result += `When to use: ${row.when_to_use}\n`;
-            if (row.python_implementation) result += `Implementation: ${row.python_implementation}\n`;
-            if (row.url) result += `Reference: ${row.url}\n`;
-            return result;
-          }).join('\n---\n');
+          const formatted = results
+            .slice(0, 3)
+            .map((row) => {
+              let result = '';
+              if (row.function) result += `Function: ${row.function}\n`;
+              if (row.topic) result += `Topic: ${row.topic}\n`;
+              if (row.concept) result += `Concept: ${row.concept}\n`;
+              if (row.description)
+                result += `Description: ${row.description}\n`;
+              if (row.when_to_use)
+                result += `When to use: ${row.when_to_use}\n`;
+              if (row.python_implementation)
+                result += `Implementation: ${row.python_implementation}\n`;
+              if (row.url) result += `Reference: ${row.url}\n`;
+              return result;
+            })
+            .join('\n---\n');
           resolve(formatted);
         } else {
-          resolve("");
+          resolve('');
         }
       });
   });
@@ -172,7 +195,7 @@ async function fetchRelevantURLs(csvContext: string): Promise<string> {
   const urlRegex = /https?:\/\/[^\s]+/g;
   const urls = csvContext.match(urlRegex) || [];
 
-  if (urls.length === 0) return "";
+  if (urls.length === 0) return '';
 
   const contents: string[] = [];
 
@@ -192,12 +215,15 @@ async function fetchRelevantURLs(csvContext: string): Promise<string> {
   return contents.join('\n\n');
 }
 
-export async function searchHints(query: string, useWebSearch = false): Promise<string> {
+export async function searchHints(
+  query: string,
+  useWebSearch = false,
+): Promise<string> {
   const csvResults = await searchAllCSVs(query.toLowerCase());
 
   if (!csvResults && useWebSearch) {
-    return generateHint(query, "", true);
+    return generateHint(query, '', true);
   }
 
-  return csvResults || "No relevant hints found in the database.";
+  return csvResults || 'No relevant hints found in the database.';
 }

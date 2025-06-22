@@ -22,5 +22,3 @@ const ZenithLandingPage = () => {
 };
 
 export default ZenithLandingPage;
-
-

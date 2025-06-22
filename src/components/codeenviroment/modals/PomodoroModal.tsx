@@ -3,7 +3,7 @@
 import React from 'react';
 import { Clock as TimerIcon } from 'lucide-react';
 import DraggableModal from './DraggableModal';
-import PomodoroTimer from './pomodoro-timer'; 
+import PomodoroTimer from './pomodoro-timer';
 
 interface PomodoroModalProps {
   isOpen: boolean;
@@ -12,7 +12,12 @@ interface PomodoroModalProps {
   onBringToFront: () => void;
 }
 
-const PomodoroModal: React.FC<PomodoroModalProps> = ({ isOpen, onClose, zIndex, onBringToFront }) => {
+const PomodoroModal: React.FC<PomodoroModalProps> = ({
+  isOpen,
+  onClose,
+  zIndex,
+  onBringToFront,
+}) => {
   return (
     <DraggableModal
       title="Focus Timer"
@@ -24,8 +29,8 @@ const PomodoroModal: React.FC<PomodoroModalProps> = ({ isOpen, onClose, zIndex, 
       zIndex={zIndex}
       onBringToFront={onBringToFront}
     >
-      <div className="p-4 h-full overflow-auto">
-        <PomodoroTimer 
+      <div className="h-full overflow-auto p-4">
+        <PomodoroTimer
           onSessionComplete={() => {
             console.log('Pomodoro session completed!');
           }}

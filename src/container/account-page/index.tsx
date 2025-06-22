@@ -1,68 +1,74 @@
-'use client'
-import { useCallback, useEffect, useState } from 'react'
-import { createClient } from '@/utils/supabase/supabaseClient'
-import { type User } from '@supabase/supabase-js'
-import Avatar from '@components/profile/avatar'
+'use client';
+import { useCallback, useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/supabaseClient';
+import { type User } from '@supabase/supabase-js';
+import Avatar from '@components/profile/avatar';
 
 export default function AccountForm({ user }: { user: User | null }) {
-  const supabase = createClient()
-  const [loading, setLoading] = useState(true)
-  const [fullName, setFullName] = useState<string | null>(null)
-  const [username, setUsername] = useState<string | null>(null)
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
-  const [bio, setBio] = useState<string | null>(null)
-  const [location, setLocation] = useState<string | null>(null)
-  const [education, setEducation] = useState<string | null>(null)
-  const [website, setWebsite] = useState<string | null>(null)
-  const [github, setGithub] = useState<string | null>(null)
-  const [linkedin, setLinkedin] = useState<string | null>(null)
-  const [skills, setSkills] = useState<string[]>([])
-  const [targetRole, setTargetRole] = useState<string | null>(null)
-  const [preferredLanguages, setPreferredLanguages] = useState<string[]>([])
-  const [solvedProblems, setSolvedProblems] = useState<{easy: number, medium: number, hard: number}>({easy: 0, medium: 0, hard: 0})
-  const [studyGoal, setStudyGoal] = useState<string | null>(null)
+  const supabase = createClient();
+  const [loading, setLoading] = useState(true);
+  const [fullName, setFullName] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [bio, setBio] = useState<string | null>(null);
+  const [location, setLocation] = useState<string | null>(null);
+  const [education, setEducation] = useState<string | null>(null);
+  const [website, setWebsite] = useState<string | null>(null);
+  const [github, setGithub] = useState<string | null>(null);
+  const [linkedin, setLinkedin] = useState<string | null>(null);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [targetRole, setTargetRole] = useState<string | null>(null);
+  const [preferredLanguages, setPreferredLanguages] = useState<string[]>([]);
+  const [solvedProblems, setSolvedProblems] = useState<{
+    easy: number;
+    medium: number;
+    hard: number;
+  }>({ easy: 0, medium: 0, hard: 0 });
+  const [studyGoal, setStudyGoal] = useState<string | null>(null);
 
   const getProfile = useCallback(async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const { data, error, status } = await supabase
         .from('profiles')
         .select(`*`)
         .eq('id', user?.id)
-        .single()
+        .single();
       if (error && status !== 406) {
-        throw error
+        throw error;
       }
       if (data) {
-        setFullName(data.full_name)
-        setUsername(data.username)
-        setAvatarUrl(data.avatar_url)
-        setBio(data.bio)
-        setLocation(data.location)
-        setEducation(data.education)
-        setWebsite(data.website)
-        setGithub(data.github)
-        setLinkedin(data.linkedin)
-        setSkills(data.skills || [])
-        setTargetRole(data.target_role)
-        setPreferredLanguages(data.preferred_languages || [])
-        setSolvedProblems(data.solved_problems || {easy: 0, medium: 0, hard: 0})
-        setStudyGoal(data.study_goal)
+        setFullName(data.full_name);
+        setUsername(data.username);
+        setAvatarUrl(data.avatar_url);
+        setBio(data.bio);
+        setLocation(data.location);
+        setEducation(data.education);
+        setWebsite(data.website);
+        setGithub(data.github);
+        setLinkedin(data.linkedin);
+        setSkills(data.skills || []);
+        setTargetRole(data.target_role);
+        setPreferredLanguages(data.preferred_languages || []);
+        setSolvedProblems(
+          data.solved_problems || { easy: 0, medium: 0, hard: 0 },
+        );
+        setStudyGoal(data.study_goal);
       }
     } catch (error) {
-      alert('Error loading user data!')
+      alert('Error loading user data!');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [user, supabase])
+  }, [user, supabase]);
 
   useEffect(() => {
-    getProfile()
-  }, [user, getProfile])
+    getProfile();
+  }, [user, getProfile]);
 
   async function updateProfile() {
     try {
-      setLoading(true)
+      setLoading(true);
       const { error } = await supabase.from('profiles').upsert({
         id: user?.id as string,
         full_name: fullName,
@@ -80,13 +86,13 @@ export default function AccountForm({ user }: { user: User | null }) {
         solved_problems: solvedProblems,
         study_goal: studyGoal,
         updated_at: new Date().toISOString(),
-      })
-      if (error) throw error
-      alert('Profile updated!')
+      });
+      if (error) throw error;
+      alert('Profile updated!');
     } catch (error) {
-      alert('Error updating the data!')
+      alert('Error updating the data!');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -97,8 +103,8 @@ export default function AccountForm({ user }: { user: User | null }) {
         url={avatarUrl}
         size={150}
         onUpload={(url) => {
-          setAvatarUrl(url)
-          updateProfile()
+          setAvatarUrl(url);
+          updateProfile();
         }}
       />
       <div>
@@ -182,7 +188,9 @@ export default function AccountForm({ user }: { user: User | null }) {
           id="skills"
           type="text"
           value={skills.join(', ')}
-          onChange={(e) => setSkills(e.target.value.split(',').map(skill => skill.trim()))}
+          onChange={(e) =>
+            setSkills(e.target.value.split(',').map((skill) => skill.trim()))
+          }
         />
       </div>
       <div>
@@ -195,12 +203,18 @@ export default function AccountForm({ user }: { user: User | null }) {
         />
       </div>
       <div>
-        <label htmlFor="preferredLanguages">Preferred Programming Languages (comma-separated)</label>
+        <label htmlFor="preferredLanguages">
+          Preferred Programming Languages (comma-separated)
+        </label>
         <input
           id="preferredLanguages"
           type="text"
           value={preferredLanguages.join(', ')}
-          onChange={(e) => setPreferredLanguages(e.target.value.split(',').map(lang => lang.trim()))}
+          onChange={(e) =>
+            setPreferredLanguages(
+              e.target.value.split(',').map((lang) => lang.trim()),
+            )
+          }
         />
       </div>
       <div>
@@ -211,7 +225,12 @@ export default function AccountForm({ user }: { user: User | null }) {
             id="easyProblems"
             type="number"
             value={solvedProblems.easy}
-            onChange={(e) => setSolvedProblems({...solvedProblems, easy: Number(e.target.value)})}
+            onChange={(e) =>
+              setSolvedProblems({
+                ...solvedProblems,
+                easy: Number(e.target.value),
+              })
+            }
           />
         </div>
         <div>
@@ -220,7 +239,12 @@ export default function AccountForm({ user }: { user: User | null }) {
             id="mediumProblems"
             type="number"
             value={solvedProblems.medium}
-            onChange={(e) => setSolvedProblems({...solvedProblems, medium: Number(e.target.value)})}
+            onChange={(e) =>
+              setSolvedProblems({
+                ...solvedProblems,
+                medium: Number(e.target.value),
+              })
+            }
           />
         </div>
         <div>
@@ -229,7 +253,12 @@ export default function AccountForm({ user }: { user: User | null }) {
             id="hardProblems"
             type="number"
             value={solvedProblems.hard}
-            onChange={(e) => setSolvedProblems({...solvedProblems, hard: Number(e.target.value)})}
+            onChange={(e) =>
+              setSolvedProblems({
+                ...solvedProblems,
+                hard: Number(e.target.value),
+              })
+            }
           />
         </div>
       </div>
@@ -259,5 +288,5 @@ export default function AccountForm({ user }: { user: User | null }) {
         </form>
       </div>
     </div>
-  )
+  );
 }

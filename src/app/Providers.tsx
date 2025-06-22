@@ -1,31 +1,29 @@
-"use client";
+'use client';
 
 import { ThemeProvider } from 'next-themes';
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { createBrowserClient } from "@supabase/ssr";
-import { useState } from "react";
-import { MovexProvider } from 'movex-react';
-import movexConfig from '../movex.config';
+import { AuthProvider } from 'react-oidc-context';
 
 interface Props {
   children: React.ReactNode;
 }
 
-export default function Providers({ children }: Props) {
-const [supabaseClient] = useState(() =>
-  createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-);
+const cognitoAuthConfig = {
+  authority: process.env.NEXT_PUBLIC_COGNITO_AUTHORITY!,
+  client_id: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID!,
+  redirect_uri: process.env.NEXT_PUBLIC_COGNITO_REDIRECT_URI!,
+  post_logout_redirect_uri: process.env.NEXT_PUBLIC_COGNITO_LOGOUT_URI!,
+  response_type: "code",
+  scope: "email openid phone profile",
+  automaticSilentRenew: true,
+  includeIdTokenInSilentRenew: true,
+};
 
-  return (      
-  <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-    <SessionContextProvider supabaseClient={supabaseClient}>
-      <MovexProvider movexDefinition={movexConfig} endpointUrl="localhost:3333">
+export default function Providers({ children }: Props) {
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <AuthProvider {...cognitoAuthConfig}>
         {children}
-       </MovexProvider>
-    </SessionContextProvider> 
+      </AuthProvider>
     </ThemeProvider>
   );
 }
