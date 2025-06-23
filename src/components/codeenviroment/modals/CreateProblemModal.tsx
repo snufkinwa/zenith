@@ -425,7 +425,7 @@ const CreateProblemModal: React.FC<CreateProblemModalProps> = ({
                     className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
 
-                  {formData.constraints.length > 1 && (
+                  {formData.constraints.length > 0 && (
                     <button
                       onClick={() => removeConstraint(index)}
                       className="p-1 text-red-600 hover:text-red-800"

@@ -1,6 +1,9 @@
+// src/components/dashboard/dashboard.tsx
 import React, { useState, useEffect } from 'react';
 import ActivityHeatmap from './ActivityHeatMap';
-import { createClient } from '../../utils/supabase/supabaseClient';
+import { getCurrentUser } from 'aws-amplify/auth';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '@amplify/data/resource';
 import {
   BookOpen,
   Target,
@@ -9,6 +12,8 @@ import {
   TrendingUp,
   Clock,
 } from 'lucide-react';
+
+const client = generateClient<Schema>();
 
 interface UserProfile {
   full_name: string;
@@ -24,6 +29,7 @@ const Dashboard: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     fetchUserProfile();
@@ -31,31 +37,76 @@ const Dashboard: React.FC = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Get current user from Amplify Auth
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
 
-      if (!user) {
-        setError('User not authenticated');
-        return;
+      // Try to get profile from your Profile model
+      const { data: profiles } = await client.models.Profile.list({
+        filter: { userId: { eq: currentUser.userId } },
+      });
+
+      let profile: UserProfile;
+
+      if (profiles.length > 0) {
+        // Use data from Profile model
+        const userProfileData = profiles[0];
+
+        // Get solved problems count from ZenithSessions
+        const { data: sessions } = await client.models.ZenithSession.list({
+          filter: {
+            userId: { eq: currentUser.userId },
+            status: { eq: 'completed' }, // or however you track completed problems
+          },
+        });
+
+        // Count problems by difficulty (you'll need to enhance this based on your problem data)
+        const easyCount = sessions.filter((s) => s.mode === 'easy').length;
+        const mediumCount = sessions.filter((s) => s.mode === 'medium').length;
+        const hardCount = sessions.filter((s) => s.mode === 'hard').length;
+
+        profile = {
+          full_name:
+            userProfileData.fullName ||
+            userProfileData.username ||
+            'Anonymous Learner',
+          easy: easyCount,
+          medium: mediumCount,
+          hard: hardCount,
+          streak: 7, // TODO: Calculate actual streak from sessions
+          total_study_time: 180, // TODO: Sum from sessions
+          topics_studied: ['Arrays', 'Strings', 'Binary Trees'], // TODO: Extract from sessions
+        };
+      } else {
+        // Create default profile if none exists
+        profile = {
+          full_name: currentUser.signInDetails?.loginId || 'Anonymous Learner',
+          easy: 0,
+          medium: 0,
+          hard: 0,
+          streak: 0,
+          total_study_time: 0,
+          topics_studied: [],
+        };
+
+        // Optionally create the profile in the database
+        try {
+          await client.models.Profile.create({
+            userId: currentUser.userId,
+            fullName: profile.full_name,
+            email: currentUser.signInDetails?.loginId || '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+        } catch (createError) {
+          console.warn('Could not create profile:', createError);
+        }
       }
-
-      // Simple profile structure - replace with actual Supabase query when ready
-      const profile: UserProfile = {
-        full_name: user.user_metadata?.full_name || 'Anonymous Learner',
-        easy: 0,
-        medium: 0,
-        hard: 0,
-        streak: 0,
-        total_study_time: 0,
-        topics_studied: [],
-      };
 
       setUserProfile(profile);
     } catch (err) {
       setError('Failed to load profile');
-      console.error(err);
+      console.error('Dashboard error:', err);
     } finally {
       setLoading(false);
     }
@@ -100,256 +151,137 @@ const Dashboard: React.FC = () => {
         <div className="max-w-6xl space-y-6">
           {/* Welcome Header */}
           <div className="rounded-lg border bg-white p-6 shadow-sm">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-2xl font-bold text-white">
-                {userProfile.full_name.charAt(0).toUpperCase()}
-              </div>
+            <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Welcome back, {userProfile.full_name}!
+                  Welcome back, {userProfile.full_name}! 👋
                 </h1>
                 <p className="mt-1 text-gray-600">
-                  Continue your DSA learning journey
+                  Ready to tackle some coding challenges?
                 </p>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-gray-500">Current Streak</div>
+                <div className="text-2xl font-bold text-orange-600">
+                  {userProfile.streak || 0} days 🔥
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Progress Stats */}
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {/* Total Solved */}
             <div className="rounded-lg border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex items-center">
+                <div className="rounded-lg bg-green-100 p-2">
+                  <Target className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">
-                    Problems Solved
+                    Total Solved
                   </p>
-                  <p className="text-3xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-gray-900">
                     {totalSolved}
                   </p>
                 </div>
-                <div className="rounded-full bg-green-100 p-3">
-                  <Code className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+
+            {/* Easy Problems */}
+            <div className="rounded-lg border bg-white p-6 shadow-sm">
+              <div className="flex items-center">
+                <div className="rounded-lg bg-green-100 p-2">
+                  <BookOpen className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Easy</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {userProfile.easy}
+                  </p>
                 </div>
               </div>
             </div>
 
+            {/* Medium Problems */}
             <div className="rounded-lg border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Study Streak
-                  </p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {userProfile.streak || 0}
-                  </p>
+              <div className="flex items-center">
+                <div className="rounded-lg bg-yellow-100 p-2">
+                  <Code className="h-6 w-6 text-yellow-600" />
                 </div>
-                <div className="rounded-full bg-orange-100 p-3">
-                  <Calendar className="h-6 w-6 text-orange-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Medium</p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {userProfile.medium}
+                  </p>
                 </div>
               </div>
             </div>
 
+            {/* Hard Problems */}
             <div className="rounded-lg border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Study Time
-                  </p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {studyHours}h
-                  </p>
-                  {studyMinutes > 0 && (
-                    <p className="text-sm text-gray-500">{studyMinutes}m</p>
-                  )}
+              <div className="flex items-center">
+                <div className="rounded-lg bg-red-100 p-2">
+                  <TrendingUp className="h-6 w-6 text-red-600" />
                 </div>
-                <div className="rounded-full bg-blue-100 p-3">
-                  <Clock className="h-6 w-6 text-blue-600" />
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-lg border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Topics Learned
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Hard</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {userProfile.hard}
                   </p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {userProfile.topics_studied?.length || 0}
-                  </p>
-                </div>
-                <div className="rounded-full bg-purple-100 p-3">
-                  <BookOpen className="h-6 w-6 text-purple-600" />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {/* Learning Progress */}
-            <div className="space-y-6 lg:col-span-2">
-              {/* Difficulty Progress */}
-              <div className="rounded-lg border bg-white p-6 shadow-sm">
-                <h3 className="mb-6 text-lg font-semibold text-gray-900">
-                  Learning Progress
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between rounded-lg bg-green-50 p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-4 w-4 rounded-full bg-green-600"></div>
-                      <span className="font-medium text-gray-900">
-                        Easy Problems
-                      </span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-green-600">
-                        {userProfile.easy}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Great for building fundamentals
-                      </div>
-                    </div>
-                  </div>
+          {/* Activity Heatmap */}
+          <div className="rounded-lg border bg-white p-6 shadow-sm">
+            <h2 className="mb-4 text-lg font-semibold text-gray-900">
+              Activity This Year
+            </h2>
+            <ActivityHeatmap userId={user?.userId} />
+          </div>
 
-                  <div className="flex items-center justify-between rounded-lg bg-yellow-50 p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-4 w-4 rounded-full bg-yellow-600"></div>
-                      <span className="font-medium text-gray-900">
-                        Medium Problems
-                      </span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-yellow-600">
-                        {userProfile.medium}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Interview-level questions
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between rounded-lg bg-red-50 p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="h-4 w-4 rounded-full bg-red-600"></div>
-                      <span className="font-medium text-gray-900">
-                        Hard Problems
-                      </span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-red-600">
-                        {userProfile.hard}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Advanced challenges
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          {/* Recent Activity & Study Time */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {/* Study Time */}
+            <div className="rounded-lg border bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center">
+                <Clock className="mr-2 h-5 w-5 text-blue-600" />
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Study Time
+                </h2>
               </div>
-
-              {/* Activity Heatmap */}
-              <div className="rounded-lg border bg-white p-6 shadow-sm">
-                <div className="mb-6 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">
-                      Study Activity
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-600">
-                      Your consistent learning journey
-                    </p>
-                  </div>
-                  {userProfile.streak && userProfile.streak > 0 && (
-                    <div className="flex items-center space-x-2 rounded-full bg-orange-50 px-3 py-2">
-                      <div className="text-orange-500">🔥</div>
-                      <span className="text-sm font-semibold text-orange-700">
-                        {userProfile.streak} day streak
-                      </span>
-                    </div>
-                  )}
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600">
+                  {studyHours}h {studyMinutes}m
                 </div>
-                <div className="h-48 rounded-lg bg-gray-50 p-4">
-                  <ActivityHeatmap />
-                </div>
+                <p className="mt-1 text-gray-500">Total time spent coding</p>
               </div>
             </div>
 
-            {/* Side Panel */}
-            <div className="space-y-6">
-              {/* Learning Goals */}
-              <div className="rounded-lg border bg-white p-6 shadow-sm">
-                <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                  Today&lsquo;s Goals
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3 rounded-lg bg-blue-50 p-3">
-                    <Target className="h-5 w-5 text-blue-600" />
-                    <span className="text-sm text-gray-700">
-                      Solve 1 problem
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-3 rounded-lg bg-green-50 p-3">
-                    <BookOpen className="h-5 w-5 text-green-600" />
-                    <span className="text-sm text-gray-700">
-                      Study for 30 minutes
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-3 rounded-lg bg-purple-50 p-3">
-                    <TrendingUp className="h-5 w-5 text-purple-600" />
-                    <span className="text-sm text-gray-700">
-                      Learn a new concept
-                    </span>
-                  </div>
-                </div>
+            {/* Topics Studied */}
+            <div className="rounded-lg border bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center">
+                <BookOpen className="mr-2 h-5 w-5 text-purple-600" />
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Topics Studied
+                </h2>
               </div>
-
-              {/* Quick Actions */}
-              <div className="rounded-lg border bg-white p-6 shadow-sm">
-                <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                  Quick Actions
-                </h3>
-                <div className="space-y-3">
-                  <button className="w-full rounded-lg bg-blue-50 p-3 text-left transition-colors hover:bg-blue-100">
-                    <div className="text-sm font-medium text-blue-900">
-                      Continue Learning
-                    </div>
-                    <div className="text-xs text-blue-600">
-                      Pick up where you left off
-                    </div>
-                  </button>
-
-                  <button className="w-full rounded-lg bg-green-50 p-3 text-left transition-colors hover:bg-green-100">
-                    <div className="text-sm font-medium text-green-900">
-                      Practice Problems
-                    </div>
-                    <div className="text-xs text-green-600">
-                      Solve problems by topic
-                    </div>
-                  </button>
-
-                  <button className="w-full rounded-lg bg-purple-50 p-3 text-left transition-colors hover:bg-purple-100">
-                    <div className="text-sm font-medium text-purple-900">
-                      Review Notes
-                    </div>
-                    <div className="text-xs text-purple-600">
-                      Check your highlights
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Study Tips */}
-              <div className="rounded-lg border bg-white p-6 shadow-sm">
-                <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                  Study Tip
-                </h3>
-                <div className="rounded-lg bg-yellow-50 p-4">
-                  <p className="text-sm text-yellow-800">
-                    💡 <strong>Consistency beats intensity.</strong> Solving one
-                    problem daily is better than cramming 10 problems once a
-                    week.
-                  </p>
-                </div>
+              <div className="space-y-2">
+                {userProfile.topics_studied?.map((topic, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded bg-gray-50 p-2"
+                  >
+                    <span className="text-sm font-medium text-gray-700">
+                      {topic}
+                    </span>
+                    <span className="text-xs text-gray-500">Recently</span>
+                  </div>
+                )) || (
+                  <p className="text-sm text-gray-500">No topics studied yet</p>
+                )}
               </div>
             </div>
           </div>

@@ -408,7 +408,10 @@ export const PomodoroProvider: React.FC<PomodoroProviderProps> = ({
     pomodoroState.isActive,
     pomodoroState.timeLeft,
     pomodoroState.isPausedByIdle,
-    resetIdleTimer,
+    resetIdleTimer, 
+    LONG_BREAK,
+    SHORT_BREAK,
+    WORK_DURATION
   ]);
 
   // Cleanup idle warning timeout

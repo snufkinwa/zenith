@@ -1,17 +1,21 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
+    "types": [],
+    "typeRoots": [],
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "forceConsistentCasingInFileNames": true,
     "plugins": [
       {
         "name": "next"
@@ -30,7 +34,8 @@
       "@utils/*": ["./src/utils/*"],
       "@/lib/*": ["./src/lib/*"],
       "@/context/*": ["./src/context/*"],
-      "@/constants/*": ["./src/constants/*"]
+      "@/constants/*": ["./src/constants/*"],
+      "@amplify/*": ["./amplify/*"]
     }
   },
   "include": [
@@ -40,5 +45,11 @@
     "src/**/*",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "amplify/**/*",
+    ".amplify",
+    ".amplify/**/*",
+    "amplify_outputs.json"
+  ]
 }

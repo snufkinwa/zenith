@@ -525,7 +525,9 @@ const Terminal: React.FC<TerminalProps> = ({
                           ) : (
                             <AlertCircle className="h-5 w-5 text-red-500" />
                           )}
-                          <span className="font-medium text-gray-700">Test Result</span>
+                          <span className="font-medium text-gray-700">
+                            Test Result
+                          </span>
                           <span
                             className={`rounded px-2 py-1 text-xs font-medium ${
                               testResult.passed
@@ -546,7 +548,7 @@ const Terminal: React.FC<TerminalProps> = ({
                               className={`mt-1 rounded p-2 font-mono text-xs ${
                                 testResult.passed
                                   ? 'bg-green-100 text-gray-700'
-                                  : 'bg-red-100  text-gray-700' 
+                                  : 'bg-red-100 text-gray-700'
                               }`}
                             >
                               {testResult.actual}

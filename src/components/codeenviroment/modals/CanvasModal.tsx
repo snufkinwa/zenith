@@ -199,7 +199,7 @@ const CanvasModal: React.FC<CanvasModalProps> = ({
 
       return () => clearInterval(autoSaveInterval);
     }
-  }, [isOpen, elements]);
+  }, [isOpen, elements, saveCanvas]);
 
   return (
     <DraggableModal

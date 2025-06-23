@@ -73,18 +73,7 @@ const Editor: React.FC<EditorProps> = ({ input, setInput, problemSlug }) => {
     );
   }, [isDarkMode]);
 
-  const getTemplateForProblem = useCallback(
-    (slug: string): string => {
-      const template = templates.find((t) => t.slug === slug);
-      if (template) {
-        return template.template;
-      }
-      return getDefaultTemplate();
-    },
-    [templates],
-  );
-
-  const getDefaultTemplate = useCallback(() => {
+    const getDefaultTemplate = useCallback(() => {
     return `class Solution:
     def solve(self):
         # Write your code here
@@ -94,6 +83,17 @@ if __name__ == "__main__":
     sol = Solution()
     print(sol.solve())`;
   }, []);
+
+  const getTemplateForProblem = useCallback(
+    (slug: string): string => {
+      const template = templates.find((t) => t.slug === slug);
+      if (template) {
+        return template.template;
+      }
+      return getDefaultTemplate();
+    },
+    [templates, getDefaultTemplate],
+  );
 
   // Load template when problem changes
   useEffect(() => {

@@ -58,7 +58,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
   };
 
   return (
-    <div className="mx-auto max-w-md rounded-lg border bg-white p-6 shadow-lg text-gray-800">
+    <div className="mx-auto max-w-md rounded-lg border bg-white p-6 text-gray-800 shadow-lg">
       {/* Header */}
       <div className="mb-6 text-center">
         <div className="mb-2 flex items-center justify-center gap-2">

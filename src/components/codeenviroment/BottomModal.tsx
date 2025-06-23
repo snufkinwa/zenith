@@ -1,11 +1,11 @@
 // src/components/codeenviroment/BottomModal.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Edit3,
   PenTool,
   Clock,
   Plus,
-  Brain,
+  GraduationCap,
   MessageCircle,
   Sparkles,
   Users,
@@ -15,12 +15,19 @@ import {
   LogOut,
 } from 'lucide-react';
 
+import { MagicLinkService } from '@/utils/magicLinks';
+import { getCurrentUser } from 'aws-amplify/auth';
+import { generateClient } from 'aws-amplify/data';
+import type { Schema } from '@amplify/data/resource';
+
 import NotesModal from './modals/NotesModal';
 import CanvasModal from './modals/CanvasModal';
 import PomodoroModal from './modals/PomodoroModal';
 import PythonTutorModal from './modals/PythonTutorModal';
 import CreateProblemModal from './modals/CreateProblemModal';
-import AIHintsModal from './modals/AIHintsModal';
+import AITutorModal from './modals/AITutorModal';
+
+const client = generateClient<Schema>();
 
 interface BottomModalProps {
   selectedProblem?: any;
@@ -28,21 +35,48 @@ interface BottomModalProps {
   currentCode?: string;
 }
 
+interface User {
+  userId: string;
+  email?: string;
+  name?: string;
+}
+
 const BottomModal: React.FC<BottomModalProps> = ({
   selectedProblem,
   onProblemCreated,
-  currentCode = '' 
+  currentCode = '',
 }) => {
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [modalZIndices, setModalZIndices] = useState<Record<string, number>>(
     {},
   );
+  const [user, setUser] = useState<User | null>(null);
 
-  // Session state (mock for now)
+  // Session state
   const [isInSession, setIsInSession] = useState(false);
-  const [sessionParticipants, setSessionParticipants] = useState<string[]>([
-    'You',
-  ]);
+  const [sessionParticipants, setSessionParticipants] = useState<string[]>([]);
+  const [sessionLink, setSessionLink] = useState<string>('');
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+
+  // Load current user on mount
+  useEffect(() => {
+    loadCurrentUser();
+  }, []);
+
+  const loadCurrentUser = async () => {
+    try {
+      const currentUser = await getCurrentUser();
+      setUser({
+        userId: currentUser.userId,
+        email: currentUser.signInDetails?.loginId,
+        name: currentUser.signInDetails?.loginId?.split('@')[0] || 'User',
+      });
+    } catch (error) {
+      console.log('User not authenticated');
+      setUser(null);
+    }
+  };
 
   const openModal = (modalName: string) => {
     setActiveModal(modalName);
@@ -61,24 +95,97 @@ const BottomModal: React.FC<BottomModalProps> = ({
     }));
   };
 
-  const handleStartSession = () => {
-    // Mock session start - would integrate with AppSync
-    setIsInSession(true);
-    setSessionParticipants(['John', 'Sarah', 'You']);
-    console.log('Starting collaborative session...');
+  const handleStartSession = async () => {
+    if (!user) {
+      alert('Please sign in to start a collaborative session');
+      return;
+    }
+
+    try {
+      // Create ZenithSession in DynamoDB
+      const sessionId = `session-${Date.now()}`;
+
+      const sessionData = {
+        sessionId,
+        userId: user.userId,
+        problemId: selectedProblem?.id || 'unknown',
+        mode: 'collaboration',
+        status: 'active',
+        collaborators: {
+          [user.userId]: {
+            name: user.name || user.email,
+            joinedAt: new Date().toISOString(),
+            isOwner: true,
+          },
+        },
+        finalAnswer: currentCode,
+        lastUpdated: Math.floor(Date.now() / 1000),
+      };
+
+      // Save session to DynamoDB
+      await client.models.ZenithSession.create(sessionData);
+
+      // Generate magic link for sharing
+      const link = await MagicLinkService.createMagicLink('collab', {
+        sessionId,
+        problemId: selectedProblem?.id,
+        title: `Collaborate on ${selectedProblem?.title || 'Problem'}`,
+      });
+
+      setIsInSession(true);
+      setSessionLink(link);
+      setSessionParticipants([user.name || 'You']);
+      setShowInviteModal(true);
+
+      console.log('Started collaborative session:', sessionId);
+    } catch (error) {
+      console.error('Error starting session:', error);
+      alert('Failed to start session. Please try again.');
+    }
   };
 
-  const handleLeaveSession = () => {
-    // Mock session leave - would integrate with AppSync
-    setIsInSession(false);
-    setSessionParticipants(['You']);
-    console.log('Left collaborative session...');
+  const handleLeaveSession = async () => {
+    try {
+      // Update session status in DynamoDB
+      // You'd implement session cleanup logic here
+
+      setIsInSession(false);
+      setSessionParticipants([]);
+      setSessionLink('');
+      setShowInviteModal(false);
+      console.log('Left collaborative session');
+    } catch (error) {
+      console.error('Error leaving session:', error);
+    }
   };
 
-  const handleInviteToSession = () => {
-    // Mock invite functionality
-    console.log('Opening invite modal...');
-    // Would show invite link/email modal
+  const handleCopyInviteLink = async () => {
+    if (!sessionLink) return;
+
+    try {
+      await navigator.clipboard.writeText(sessionLink);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy link:', error);
+    }
+  };
+
+  const getParticipantAvatar = (
+    participant: string,
+    isCurrentUser: boolean = false,
+  ) => {
+    const name = isCurrentUser ? user?.name || 'You' : participant;
+    return {
+      name,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${isCurrentUser ? '3b82f6' : 'random'}&color=ffffff&size=28&bold=true`,
+      initials: name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2),
+    };
   };
 
   const handleVisualizePython = () => {
@@ -90,7 +197,7 @@ const BottomModal: React.FC<BottomModalProps> = ({
         title: selectedProblem.title,
         description: selectedProblem.description,
         difficulty: selectedProblem.difficulty,
-        tags: [] as string[],
+        tags: selectedProblem.tags || [],
         examples: selectedProblem.examples,
         constraints: selectedProblem.constraints,
       }
@@ -113,30 +220,14 @@ const BottomModal: React.FC<BottomModalProps> = ({
                   </span>
                 </div>
 
-                {/* Participant Avatars - positioned right next to session info */}
+                {/* Participant Avatars */}
                 <div className="flex items-center gap-2">
                   <div className="flex items-center -space-x-2">
                     {sessionParticipants.map((participant, index) => {
-                      // Generate avatar based on participant name
-                      const getAvatarUrl = (name: string) => {
-                        if (name === 'You') {
-                          // Use a default "You" avatar or get from user profile
-                          return `https://ui-avatars.com/api/?name=You&background=3b82f6&color=ffffff&size=28&bold=true`;
-                        }
-                        // Generate avatar for other participants
-                        return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=28&bold=true`;
-                      };
-
-                      const getInitials = (name: string) => {
-                        return name === 'You'
-                          ? 'Y'
-                          : name
-                              .split(' ')
-                              .map((n) => n[0])
-                              .join('')
-                              .toUpperCase()
-                              .slice(0, 2);
-                      };
+                      const avatarData = getParticipantAvatar(
+                        participant,
+                        participant === 'You' || participant === user?.name,
+                      );
 
                       return (
                         <div
@@ -146,20 +237,19 @@ const BottomModal: React.FC<BottomModalProps> = ({
                           }`}
                           title={participant}
                         >
-                          {/* Avatar Image */}
                           <div
                             className={`flex h-7 w-7 items-center justify-center rounded-full border-2 text-xs font-semibold ${
-                              participant === 'You'
+                              participant === 'You' ||
+                              participant === user?.name
                                 ? 'border-blue-300 bg-blue-500 text-white shadow-md'
                                 : 'border-gray-300 bg-gray-100 text-gray-700 shadow-sm'
                             }`}
                           >
                             <img
-                              src={getAvatarUrl(participant)}
+                              src={avatarData.avatar}
                               alt={participant}
                               className="h-full w-full rounded-full object-cover"
                               onError={(e) => {
-                                // Fallback to initials if image fails to load
                                 const target =
                                   e.currentTarget as HTMLImageElement;
                                 target.style.display = 'none';
@@ -168,14 +258,14 @@ const BottomModal: React.FC<BottomModalProps> = ({
                                 if (fallback) fallback.style.display = 'flex';
                               }}
                             />
-                            {/* Fallback initials */}
                             <span className="hidden h-full w-full items-center justify-center rounded-full text-xs font-bold">
-                              {getInitials(participant)}
+                              {avatarData.initials}
                             </span>
                           </div>
 
                           {/* Active indicator for current user */}
-                          {participant === 'You' && (
+                          {(participant === 'You' ||
+                            participant === user?.name) && (
                             <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500"></div>
                           )}
 
@@ -189,7 +279,6 @@ const BottomModal: React.FC<BottomModalProps> = ({
                     })}
                   </div>
 
-                  {/* Show participant count if more than 4 participants */}
                   {sessionParticipants.length > 4 && (
                     <div className="-ml-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600">
                       +{sessionParticipants.length - 4}
@@ -198,13 +287,18 @@ const BottomModal: React.FC<BottomModalProps> = ({
                 </div>
 
                 <button
-                  onClick={handleInviteToSession}
-                  className="flex items-center gap-1 rounded border border-blue-200 bg-blue-50 px-2 py-1 text-xs text-blue-700 transition-colors hover:bg-blue-100"
-                  title="Invite people to session"
+                  onClick={handleCopyInviteLink}
+                  className={`flex items-center gap-1 rounded border px-2 py-1 text-xs transition-colors ${
+                    linkCopied
+                      ? 'border-green-200 bg-green-50 text-green-700'
+                      : 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                  }`}
+                  title="Copy invite link"
                 >
                   <UserPlus size={12} />
-                  Invite
+                  {linkCopied ? 'Copied!' : 'Invite'}
                 </button>
+
                 <button
                   onClick={handleLeaveSession}
                   className="flex items-center gap-1 rounded border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-700 transition-colors hover:bg-red-100"
@@ -222,7 +316,7 @@ const BottomModal: React.FC<BottomModalProps> = ({
           {/* Right Side - Tool Buttons */}
           <div className="flex items-center gap-2">
             {/* Session Management */}
-            {!isInSession && (
+            {!isInSession && user && (
               <button
                 onClick={handleStartSession}
                 className="flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-1.5 text-xs text-green-700 transition-colors hover:bg-green-100"
@@ -283,20 +377,20 @@ const BottomModal: React.FC<BottomModalProps> = ({
               Visualize
             </button>
 
-            {/* AI Tutor (consolidated) */}
+            {/* AI Tutor */}
             <button
-              onClick={() => openModal('hints')}
+              onClick={() => openModal('aiTutor')}
               className="flex items-center gap-2 rounded-md bg-purple-50 px-3 py-1.5 text-xs text-purple-700 transition-colors hover:bg-purple-100"
-              title="AI Tutor - Get hints or tutoring"
+              title="AI Tutor - Get personalized help"
             >
-              <Sparkles size={14} />
+              <GraduationCap size={14} />
               AI Tutor
             </button>
           </div>
         </div>
       </div>
 
-      {/* Existing Modals */}
+      {/* Modals */}
       <NotesModal
         isOpen={activeModal === 'notes'}
         onClose={closeModal}
@@ -328,7 +422,7 @@ const BottomModal: React.FC<BottomModalProps> = ({
         />
       )}
 
-        <PythonTutorModal
+      <PythonTutorModal
         isOpen={activeModal === 'pythonTutor'}
         onClose={closeModal}
         currentCode={currentCode}
@@ -337,13 +431,13 @@ const BottomModal: React.FC<BottomModalProps> = ({
         onBringToFront={() => bringToFront('pythonTutor')}
       />
 
-      {/* AI Helper Modal (serves as both hints and tutor for now) */}
-      <AIHintsModal
-        isOpen={activeModal === 'hints'}
+      {/* AI Tutor Modal */}
+      <AITutorModal
+        isOpen={activeModal === 'aiTutor'}
         onClose={closeModal}
         problemContext={problemContext}
-        zIndex={modalZIndices.hints || 1005}
-        onBringToFront={() => bringToFront('hints')}
+        zIndex={modalZIndices.aiTutor || 1005}
+        onBringToFront={() => bringToFront('aiTutor')}
       />
     </div>
   );

@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import CodeEnvironment from '@/components/codeenviroment/CodeEnvironment';
 import type { Problem } from '@/components/codeenviroment/CodeEnvironment';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 function BetaPageContent() {
   const [problems, setProblems] = useState<Problem[]>([]);
@@ -96,7 +97,10 @@ export default function BetaPage() {
         </div>
       }
     >
-      <BetaPageContent />
+      <ProtectedRoute>
+        <BetaPageContent />
+      </ProtectedRoute>
+      `
     </Suspense>
   );
 }
