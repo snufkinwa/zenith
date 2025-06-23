@@ -35,7 +35,9 @@
       "@/lib/*": ["./src/lib/*"],
       "@/context/*": ["./src/context/*"],
       "@/constants/*": ["./src/constants/*"],
-      "@amplify/*": ["./amplify/*"]
+      "@amplify/*": ["./amplify/*"],
+      "@/amplify/*": ["./amplify/*"],
+      "@amplify_outputs": ["./amplify_outputs.json"],
     }
   },
   "include": [

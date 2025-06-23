@@ -146,7 +146,8 @@ const AITutorModal: React.FC<AITutorModalProps> = ({
               <GraduationCap className="mx-auto mb-4 h-12 w-12 text-blue-300" />
               <p className="font-medium">Hi! I&lsquo;m your coding tutor 👋</p>
               <p className="text-sm">
-                Ask me anything about the problem - I&lsquo;m here to help you learn!
+                Ask me anything about the problem - I&lsquo;m here to help you
+                learn!
               </p>
             </div>
           ) : (

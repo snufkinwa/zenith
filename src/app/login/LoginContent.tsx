@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getCurrentUser } from 'aws-amplify/auth';
+import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
 import Login from '@/components/login';
 
 export default function LoginContent() {
@@ -25,18 +25,20 @@ export default function LoginContent() {
       setIsLoading(true);
       setError(null);
 
-      // Try to get current user from Amplify
-      await getCurrentUser();
-      setIsAuthenticated(true);
-
-      // Redirect if authenticated
-      const destination = redirectTo || '/beta';
-      router.replace(destination);
+      const session = await fetchAuthSession();
+      
+      if (session.tokens) {
+        await getCurrentUser();
+        setIsAuthenticated(true);
+        
+        const destination = redirectTo || '/beta';
+        router.replace(destination);
+      } else {
+        setIsAuthenticated(false);
+      }
     } catch (error: any) {
-      // User is not authenticated
       setIsAuthenticated(false);
-
-      // Only set error if it's not just "not signed in"
+      
       if (error.name !== 'UserUnAuthenticatedError') {
         setError(error.message || 'Authentication error occurred');
       }

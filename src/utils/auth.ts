@@ -29,7 +29,7 @@ export function useAuthHelpers() {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     checkAuthState();
   }, [checkAuthState]);

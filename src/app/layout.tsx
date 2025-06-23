@@ -1,13 +1,10 @@
+// src/app/layout.tsx
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import LayoutWithNav from './layoutwithnav';
 import { ThemeProvider } from 'next-themes';
-import { Amplify } from 'aws-amplify';
-import outputs from '../../amplify_outputs.json';
-
-// Configure Amplify
-Amplify.configure(outputs);
+import AmplifyProvider from '@/components/AmplifyProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <LayoutWithNav>{children}</LayoutWithNav>
-        </ThemeProvider>
+        <AmplifyProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <LayoutWithNav>{children}</LayoutWithNav>
+          </ThemeProvider>
+        </AmplifyProvider>
       </body>
     </html>
   );

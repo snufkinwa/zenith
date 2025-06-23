@@ -49,6 +49,7 @@ const schema = a.schema({
     })
     .identifier(['linkId']) // Use linkId as primary key
     .authorization((allow) => [
+      allow.guest().to(['read']),
       allow.authenticated().to(['read']),
       allow.owner().to(['create', 'update', 'delete']),
     ]),
@@ -60,6 +61,9 @@ export const data = defineData({
   schema,
   authorizationModes: {
     defaultAuthorizationMode: 'userPool',
+    apiKeyAuthorizationMode: {
+      expiresInDays: 30,
+    },
   },
 });
 

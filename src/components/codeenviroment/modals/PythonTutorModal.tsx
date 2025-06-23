@@ -372,8 +372,8 @@ const PythonTutorModal: React.FC<PythonTutorModalProps> = ({
               <Eye size={48} className="mb-4 text-gray-400" />
               <h3 className="mb-2 text-lg font-medium">No Visualization Yet</h3>
               <p className="max-w-md text-center text-sm">
-                Enter your Python code above and click &quot;Visualize&quot; to see
-                step-by-step execution with variable states and call stack
+                Enter your Python code above and click &quot;Visualize&quot; to
+                see step-by-step execution with variable states and call stack
                 visualization.
               </p>
             </div>

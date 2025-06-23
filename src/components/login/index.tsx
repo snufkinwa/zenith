@@ -1,17 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { getCurrentUser } from 'aws-amplify/auth';
-import { Authenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
+'use client';
+
+import React, { useState, useEffect, type FormEvent } from 'react';
+import { signIn, signUp, getCurrentUser, signInWithRedirect } from 'aws-amplify/auth';
 import { useRouter } from 'next/navigation';
 import ZenithLogo from '../ui/logo';
 import { ArrowLeft } from 'lucide-react';
+// Amplify is configured in AmplifyProvider
+
+interface SignInFormElements extends HTMLFormControlsCollection {
+  email: HTMLInputElement;
+  password: HTMLInputElement;
+}
+
+interface SignInForm extends HTMLFormElement {
+  readonly elements: SignInFormElements;
+}
 
 const Login: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showAuthenticator, setShowAuthenticator] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const router = useRouter();
 
+  // Check if user is already authenticated
   useEffect(() => {
     checkAuthStatus();
   }, []);
@@ -19,21 +31,87 @@ const Login: React.FC = () => {
   const checkAuthStatus = async () => {
     try {
       await getCurrentUser();
-      setIsAuthenticated(true);
       router.push('/beta');
     } catch (error) {
-      setIsAuthenticated(false);
+      // User is not authenticated, show login form
     } finally {
+      setCheckingAuth(false);
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent<SignInForm>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    const form = event.currentTarget;
+    const email = form.elements.email.value.trim();
+    const password = form.elements.password.value;
+
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      if (isSignUp) {
+        await signUp({
+          username: email,
+          password,
+          options: {
+            userAttributes: { email },
+          },
+        });
+        setError('Account created! Please check your email to verify your account, then sign in.');
+        setIsSignUp(false);
+      } else {
+        await signIn({
+          username: email,
+          password,
+        });
+        router.push('/beta');
+      }
+    } catch (error: any) {
+      console.error('Auth error:', error);
+      
+      switch (error.name) {
+        case 'UserNotConfirmedException':
+          setError('Please check your email and confirm your account first.');
+          break;
+        case 'NotAuthorizedException':
+          setError('Invalid email or password.');
+          break;
+        case 'UserNotFoundException':
+          setError('No account found with this email. Try creating an account.');
+          break;
+        case 'TooManyRequestsException':
+          setError('Too many failed attempts. Please try again later.');
+          break;
+        case 'UsernameExistsException':
+          setError('An account with this email already exists. Try signing in instead.');
+          break;
+        default:
+          setError(error.message || 'Authentication failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      await signInWithRedirect({ provider: 'Google' });
+    } catch (error: any) {
+      console.error('Google sign in error:', error);
+      setError('Google sign in failed. Please try again.');
       setIsLoading(false);
     }
   };
 
   const handleBackToMain = () => {
     window.location.href = '/';
-  };
-
-  const handleSignIn = () => {
-    setShowAuthenticator(true);
   };
 
   const getGoogleIcon = () => (
@@ -57,8 +135,8 @@ const Login: React.FC = () => {
     </svg>
   );
 
-  // Show loading state
-  if (isLoading) {
+  // Show loading while checking auth
+  if (checkingAuth) {
     return (
       <div className="relative flex min-h-screen items-center justify-center bg-black p-4">
         <div className="absolute inset-0 bg-gradient-to-br from-[#33cc99]/30 to-[#124dff]/30"></div>
@@ -72,157 +150,9 @@ const Login: React.FC = () => {
     );
   }
 
-  // User is authenticated - redirect
-  if (isAuthenticated) {
-    return (
-      <div className="relative flex min-h-screen items-center justify-center bg-black p-4">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#33cc99]/30 to-[#124dff]/30"></div>
-        <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-8 shadow-2xl backdrop-blur-md">
-          <div className="text-center text-green-200">
-            <h2 className="mb-2 text-lg font-semibold">Already Signed In</h2>
-            <p className="text-sm">Redirecting to dashboard...</p>
-            <button
-              onClick={() => router.push('/beta')}
-              className="mt-4 rounded-lg bg-[#33cc99] px-4 py-2 text-white hover:bg-[#33cc99]/80"
-            >
-              Go to Dashboard
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show Authenticator modal
-  if (showAuthenticator) {
-    return (
-      <div className="relative flex min-h-screen items-center justify-center bg-black p-4">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#33cc99]/30 to-[#124dff]/30"></div>
-
-        {/* Close button */}
-        <button
-          onClick={() => setShowAuthenticator(false)}
-          className="absolute right-6 top-6 z-50 text-white hover:text-gray-300"
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-
-        {/* Authenticator with custom styling */}
-        <div className="w-full max-w-md">
-          <style jsx global>{`
-            .amplify-authenticator {
-              --amplify-colors-background-primary: rgba(255, 255, 255, 0.1);
-              --amplify-colors-background-secondary: rgba(255, 255, 255, 0.05);
-              --amplify-colors-border-primary: rgba(255, 255, 255, 0.2);
-              --amplify-colors-font-primary: white;
-              --amplify-colors-font-secondary: rgba(255, 255, 255, 0.8);
-              --amplify-colors-brand-primary-10: #33cc99;
-              --amplify-colors-brand-primary-80: #33cc99;
-              --amplify-colors-brand-primary-90: #124dff;
-              border-radius: 1rem;
-              backdrop-filter: blur(16px);
-              border: 1px solid rgba(255, 255, 255, 0.2);
-            }
-
-            .amplify-button--primary {
-              background: linear-gradient(135deg, #33cc99, #124dff);
-              border: none;
-              border-radius: 0.75rem;
-              font-weight: 500;
-              transition: all 0.2s;
-            }
-
-            .amplify-button--primary:hover {
-              transform: scale(1.02);
-              opacity: 0.9;
-            }
-
-            .amplify-input {
-              background: rgba(255, 255, 255, 0.1);
-              border: 1px solid rgba(255, 255, 255, 0.2);
-              border-radius: 0.5rem;
-              color: white;
-              backdrop-filter: blur(8px);
-            }
-
-            .amplify-input:focus {
-              border-color: #33cc99;
-              box-shadow: 0 0 0 2px rgba(51, 204, 153, 0.3);
-            }
-
-            .amplify-tabs-item {
-              color: rgba(255, 255, 255, 0.7);
-            }
-
-            .amplify-tabs-item[data-state='active'] {
-              color: white;
-              border-bottom-color: #33cc99;
-            }
-          `}</style>
-
-          <Authenticator
-            signUpAttributes={['email']}
-            socialProviders={['google']}
-            variation="modal"
-            hideSignUp={false}
-            components={{
-              Header() {
-                return (
-                  <div className="mb-6 text-center">
-                    <ZenithLogo />
-                    <h2 className="mt-4 text-lg font-semibold text-white">
-                      Welcome to the future of coding
-                    </h2>
-                    <p className="mt-2 text-sm text-white/80">
-                      Sign in to access your coding challenges
-                    </p>
-                  </div>
-                );
-              },
-              Footer() {
-                return (
-                  <div className="mt-6 text-center">
-                    <p className="text-xs text-white/50">
-                      Secure authentication powered by AWS Cognito
-                    </p>
-                  </div>
-                );
-              },
-            }}
-          >
-            {({ signOut, user }) => {
-              // User is authenticated, redirect to beta
-              router.push('/beta');
-              return (
-                <div className="text-center text-white">
-                  <h2 className="mb-2 text-lg font-semibold">Welcome!</h2>
-                  <p className="mb-4 text-sm">
-                    Redirecting to your dashboard...
-                  </p>
-                </div>
-              );
-            }}
-          </Authenticator>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-black p-4">
-      {/* Gradient overlay with reduced opacity */}
+      {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#33cc99]/30 to-[#124dff]/30"></div>
 
       {/* Back to Main Site Button */}
@@ -236,53 +166,103 @@ const Login: React.FC = () => {
 
       <div className="w-full max-w-md">
         <div className="rounded-2xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-md">
-          <div className="flex-column mb-8 justify-center text-center">
+          {/* Header */}
+          <div className="mb-8 text-center">
             <div className="mb-4 flex justify-center">
               <ZenithLogo />
             </div>
-            <p className="mb-4 text-lg font-semibold text-white">
-              Welcome to the future of coding
-            </p>
+            <h2 className="mb-2 text-xl font-semibold text-white">
+              {isSignUp ? 'Create Account' : 'Welcome Back'}
+            </h2>
             <p className="text-sm text-white/80">
-              Sign in to access your coding challenges
+              {isSignUp 
+                ? 'Join the future of coding challenges' 
+                : 'Sign in to access your coding challenges'
+              }
             </p>
           </div>
 
-          <div className="space-y-4">
-            {/* Sign-In Button */}
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-200">
+              {error}
+            </div>
+          )}
+
+          {/* Google Sign In */}
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            className="mb-6 flex w-full transform items-center justify-center gap-3 rounded-xl border border-white/20 bg-white/5 px-6 py-4 font-medium text-white transition-all duration-200 hover:scale-[1.02] hover:bg-white/10 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {getGoogleIcon()}
+            <span>Continue with Google</span>
+          </button>
+
+          <div className="mb-6 flex items-center">
+            <div className="flex-1 border-t border-white/20"></div>
+            <span className="px-4 text-sm text-white/60">or</span>
+            <div className="flex-1 border-t border-white/20"></div>
+          </div>
+
+          {/* Email/Password Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-white/80 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 backdrop-blur-sm focus:border-[#33cc99] focus:outline-none focus:ring-2 focus:ring-[#33cc99]/50"
+                placeholder="your@email.com"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white placeholder-white/50 backdrop-blur-sm focus:border-[#33cc99] focus:outline-none focus:ring-2 focus:ring-[#33cc99]/50"
+                placeholder="••••••••"
+              />
+            </div>
+
             <button
-              type="button"
-              className="flex w-full transform items-center justify-center gap-3 rounded-xl border border-white/20 bg-white/5 px-6 py-4 font-medium text-white transition-all duration-200 hover:scale-[1.02] hover:bg-white/10 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50"
-              onClick={handleSignIn}
+              type="submit"
+              disabled={isLoading}
+              className="w-full transform rounded-lg bg-gradient-to-r from-[#33cc99] to-[#124dff] px-6 py-3 font-medium text-white transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {getGoogleIcon()}
-              <span className="text-lg">Continue with Google</span>
+              {isLoading ? 'Please wait...' : (isSignUp ? 'Create Account' : 'Sign In')}
+            </button>
+          </form>
+
+          {/* Toggle Sign Up/Sign In */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setError(null);
+              }}
+              className="text-sm text-[#33cc99] hover:text-[#33cc99]/80 underline"
+            >
+              {isSignUp 
+                ? 'Already have an account? Sign in' 
+                : "Don't have an account? Sign up"
+              }
             </button>
           </div>
 
-          <div className="mt-8 border-t border-white/20 pt-6">
-            <div className="text-center text-sm text-white/70">
-              <p>
-                By signing in, you agree to our{' '}
-                <a
-                  href="#"
-                  className="text-[#33cc99] underline hover:text-[#33cc99]/80"
-                >
-                  Terms of Service
-                </a>{' '}
-                and{' '}
-                <a
-                  href="#"
-                  className="text-[#33cc99] underline hover:text-[#33cc99]/80"
-                >
-                  Privacy Policy
-                </a>
-              </p>
-            </div>
-          </div>
-
-          {/* Powered by indicator */}
-          <div className="mt-6 text-center">
+          {/* Footer */}
+          <div className="mt-8 text-center">
             <p className="text-xs text-white/50">
               Secure authentication powered by AWS Cognito
             </p>

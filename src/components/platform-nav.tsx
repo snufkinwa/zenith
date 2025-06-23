@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Home, Code, LogOut, BookOpen, Video } from 'lucide-react';
+import { signOut } from 'aws-amplify/auth';
+import { useState } from 'react';
 
 interface PlatformNavProps {
   isCollapsed?: boolean;
@@ -10,6 +12,8 @@ interface PlatformNavProps {
 
 const PlatformNav: React.FC<PlatformNavProps> = ({ isCollapsed = false }) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const navigationItems = [
     {
@@ -31,6 +35,18 @@ const PlatformNav: React.FC<PlatformNavProps> = ({ isCollapsed = false }) => {
       active: pathname.startsWith('/beta'),
     },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      setIsSigningOut(true);
+      await signOut();
+      // Redirect to home page after successful sign out
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out: ', error);
+      setIsSigningOut(false);
+    }
+  };
 
   const NavItem = ({
     item,
@@ -70,18 +86,21 @@ const PlatformNav: React.FC<PlatformNavProps> = ({ isCollapsed = false }) => {
       <div className="border-t border-gray-700 px-3 py-4">
         <div className="space-y-1">
           {/* Logout Button */}
-          <form action="/auth/signout" method="post" className="w-full">
-            <button
-              type="submit"
-              className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-gray-300 transition-colors hover:bg-red-600 hover:text-white ${
-                isCollapsed ? 'justify-center' : ''
-              }`}
-              title={isCollapsed ? 'Logout' : ''}
-            >
-              <LogOut size={20} />
-              {!isCollapsed && <span className="font-medium">Logout</span>}
-            </button>
-          </form>
+          <button
+            onClick={handleSignOut}
+            disabled={isSigningOut}
+            className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-gray-300 transition-colors hover:bg-red-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 ${
+              isCollapsed ? 'justify-center' : ''
+            }`}
+            title={isCollapsed ? 'Logout' : ''}
+          >
+            <LogOut size={20} className={isSigningOut ? 'animate-spin' : ''} />
+            {!isCollapsed && (
+              <span className="font-medium">
+                {isSigningOut ? 'Signing out...' : 'Logout'}
+              </span>
+            )}
+          </button>
         </div>
       </div>
     </nav>

@@ -73,7 +73,7 @@ const Editor: React.FC<EditorProps> = ({ input, setInput, problemSlug }) => {
     );
   }, [isDarkMode]);
 
-    const getDefaultTemplate = useCallback(() => {
+  const getDefaultTemplate = useCallback(() => {
     return `class Solution:
     def solve(self):
         # Write your code here
