@@ -3,7 +3,11 @@
     "skipLibCheck": true,
     "types": [],
     "typeRoots": [],
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "strict": true,
     "noEmit": true,
@@ -22,23 +26,56 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@public/*": ["./public/*"],
-      "@/public/*": ["./public/*"],
-      "@/components/*": ["./src/components/*"],
-      "@components/*": ["./src/components/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@config/*": ["./src/config/*"],
-      "@containers/*": ["./src/containers/*"],
-      "@styles/*": ["./src/styles/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/context/*": ["./src/context/*"],
-      "@/constants/*": ["./src/constants/*"],
-      "@amplify/*": ["./amplify/*"],
-      "@/amplify/*": ["./amplify/*"],
-      "@amplify_outputs": ["./amplify_outputs.json"],
-    }
+      "@/*": [
+        "./src/*"
+      ],
+      "@public/*": [
+        "./public/*"
+      ],
+      "@/public/*": [
+        "./public/*"
+      ],
+      "@/components/*": [
+        "./src/components/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@/hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@config/*": [
+        "./src/config/*"
+      ],
+      "@containers/*": [
+        "./src/containers/*"
+      ],
+      "@styles/*": [
+        "./src/styles/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@/lib/*": [
+        "./src/lib/*"
+      ],
+      "@/context/*": [
+        "./src/context/*"
+      ],
+      "@/constants/*": [
+        "./src/constants/*"
+      ],
+      "@amplify/*": [
+        "./amplify/*"
+      ],
+      "@/amplify/*": [
+        "./amplify/*"
+      ],
+      "@amplify_outputs": [
+        "./amplify_outputs.json"
+      ]
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",
